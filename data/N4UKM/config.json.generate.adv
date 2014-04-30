@@ -1,0 +1,102 @@
+cat << CTAG
+{
+	name:ADV,
+		elements:[
+			{ STitleBar:{
+				title:"Krait C-States Settings"
+			}},
+				{ SCheckBox:{
+					description:"Shallowest Sleep with instant wake up.",
+					label:"C0 (WFI)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled" ]; then
+							cat /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled
+						else
+							echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Slightly deeper sleep with slight latency when waking up. (Disable this if you encounter screen flickering)",
+					label:"C1 (Retention)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/retention/idle_enabled" ]; then
+							cat /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled
+						else
+							echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Deeper sleep with longer latency when waking up.",
+					label:"C2 (Stand Alone Power Collapse)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled" ]; then
+							cat /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled
+						else
+							echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Really deep sleep with longest latency when waking up.",
+					label:"C3 (Power Collapse)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled" ]; then
+							cat /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled
+						else
+							echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled"
+				}},
+			
+			`if [ -f "/sys/kernel/mm/ksm/run" ]; then
+			KSM=\`cat /sys/kernel/mm/ksm/run\`
+			PTS=\`cat /sys/kernel/mm/ksm/pages_to_scan\`
+			SLEEP=\`cat /sys/kernel/mm/ksm/sleep_millisecs\`
+			
+				echo '{ SPane:{
+					title:"Kernel Samepage Merging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests.",
+						default:'$KSM',
+						action:"generic /sys/kernel/mm/ksm/run"
+					}},'
+					echo '{ SSeekBar:{
+						title:"Pages To Scan",
+						unit:" pages",
+						step:10,
+						min:0,
+						max:500,
+						default:'$PTS',
+						action:"generic /sys/kernel/mm/ksm/pages_to_scan"
+					}},'
+					echo '{ SSeekBar:{
+						title:"Scan Delay Interval",
+						unit:" ms",
+						step:10,
+						min:0,
+						max:500,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/kernel/sched/gentle_fair_sleepers" ]; then
+			GFS=\`cat /sys/kernel/sched/gentle_fair_sleepers\`
+			
+				echo '{ SPane:{
+					title:"Gentle Fair Sleepers"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Sleeper Fairness is a concept used by CFS which treat sleeping/waiting tasks as if they were in a run queue. This implies tasks which spend most of the time waiting for an user input and such will get a fair share of CPU when they need it. Disabling Gentle Fair Sleepers could improve UI responsiveness.",
+						default:'$GFS',
+						action:"generic /sys/kernel/sched/gentle_fair_sleepers"
+					}},'
+			fi`
+		]
+}
+CTAG

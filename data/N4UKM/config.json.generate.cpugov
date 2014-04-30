@@ -1,0 +1,27 @@
+cat << CTAG
+{
+	name:CPU GOV,
+		elements:[
+			{ STitleBar:{
+				title:"CPU Governor Tunables"
+			}},
+				{ STreeDescriptor:{
+					path:"/sys/devices/system/cpu/cpufreq",
+					generic: {
+						directory: {
+							STreeDescriptor:{
+								generic: {
+									directory: {},
+									element: {
+										SGeneric: { title:"@NAME" }
+									}
+								},
+								exclude: [ "sampling_rate" ]
+							},
+						}
+					},
+					exclude: [ "overall_stats", "vdd_table" ]
+				}},
+		]
+}
+CTAG

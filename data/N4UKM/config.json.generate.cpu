@@ -1,0 +1,83 @@
+cat << CTAG
+{
+	name:CPU,
+		elements:[
+			{ SLiveLabel:{
+					title:"Current CPU Frequency:",
+					refresh:1500,
+					style:italic,
+					action:"live cpufreq"
+				}},
+			{ STitleBar:{
+				title:"CPU Frequency Scaling"
+			}},
+				{ SSeekBar:{
+					title:"CPU Min Frequency",
+					description:"Set the minimum frequency the CPU scales down to.",
+					default:`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq`,
+					action:"cpuset /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
+					values:{
+						`for CPUMIN in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+						LABEL=$((CPUMIN / 1000))
+						echo "$CPUMIN:\"${LABEL} MHz\", "
+						done`
+					}
+				}},
+				{ SSeekBar:{
+					title:"CPU Max Frequency",
+					description:"Set the maximum frequency the CPU scales up to.",
+					default:`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq`,
+					action:"cpuset /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
+					values:{
+						`for CPUMAX in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+						LABEL=$((CPUMAX / 1000))
+						echo "$CPUMAX:\"${LABEL} MHz\", "
+						done`
+					}
+				}},
+				
+				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
+				SOMF=\`cat /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq\`
+				
+					echo '{ SSeekBar:{
+						title:"CPU Max Screen Off Frequency",
+						description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+						default:'$SOMF',
+						action:"generic /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq",
+						values:{'
+							for CPUSOMF in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPUSOMF / 1000))
+								echo "$CPUSOMF:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi`
+				
+			{ SPane:{
+				title:"CPU Governor",
+				description:"The CPU governor determines how the CPU behaves in response to changes in workload. More info: <a href='http://timos.me/tm/wiki/cpugovernors'>HERE</a>"
+			}},
+				{ SOptionList:{
+					default:`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`,
+					action:"cpuset /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor",
+					values:[
+						`for CPUGOV in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors\` ; do
+						echo "\"$CPUGOV\","
+						done`
+					],
+					notify:[
+						{
+							on:APPLY,
+							do:[ REFRESH, CANCEL ],
+							to:"/sys/devices/system/cpu/cpufreq"
+						},
+						{
+							on:REFRESH,
+							do:REFRESH,
+							to:"/sys/devices/system/cpu/cpufreq"
+						}
+					]
+				}},
+		]
+}
+CTAG

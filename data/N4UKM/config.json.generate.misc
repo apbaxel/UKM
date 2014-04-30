@@ -1,0 +1,173 @@
+bool() {
+  [ `cat $1` == "Y" ] && echo "1";
+  [ `cat $1` == "N" ] && echo "0";
+}
+
+cat << CTAG
+{
+    name:MISC,
+		elements:[
+			{ STitleBar:{
+				title:"TCP Congestion Control"
+			}},
+				{ SOptionList:{
+					description:"Set the algorithm of internet congestion avoidance, to possibly improve speeds and load times. More info: <a href='https://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm'>HERE</a>",
+					default:`cat /proc/sys/net/ipv4/tcp_congestion_control`,
+					action:"generic /proc/sys/net/ipv4/tcp_congestion_control",
+					values:[
+						`for TCPCC in \`cat /proc/sys/net/ipv4/tcp_available_congestion_control\` ; do
+						echo "\"$TCPCC\","
+						done`
+					]
+				}},
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ]; then
+			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
+			
+				echo '{ SPane:{
+					title:"Temperature Throttle"
+				}},
+					{ SCheckBox:{
+						description:"SOC temperature limit toggle.",
+						label:"Enable",
+						default:'$THERMAL',
+						action:"boolean /sys/module/msm_thermal/parameters/enabled"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/throttle_temp" ]; then
+			TEMP=\`cat /sys/module/msm_thermal/parameters/throttle_temp\`
+			
+				echo '{ SPane:{
+					title:"Throttle Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/throttle_temp"
+				}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/temp_max" ]; then
+			TEMP=\`cat /sys/module/msm_thermal/parameters/temp_max\`
+			
+				echo '{ SPane:{
+					title:"Maximum Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/temp_max"
+				}},'
+			fi`
+			
+			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
+			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
+			
+				echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"boolean /sys/module/sync/parameters/fsync_enabled"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/class/misc/fsynccontrol/fsync_enabled" ]; then
+			FSYNC=\`cat /sys/class/misc/fsynccontrol/fsync_enabled\`
+			
+				echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/kernel/dyn_fsync/Dyn_fsync_active" ]; then
+			FSYNC=\`cat /sys/kernel/dyn_fsync/Dyn_fsync_active\`
+			
+				echo '{ SPane:{
+					title:"Dynamic FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"While screen is on, file sync is temporarily deferred. When screen is off, a flush is called to synchronize all outstanding writes.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active"
+					}},'
+			fi`
+
+			{ SPane:{
+				title:"Vibrator Strength"
+			}},
+				{ SSeekBar:{
+					description:"Allows to set the intensity of the vibrator.",
+					unit:"%",
+					step:1,
+					min:0,
+					max:100,
+					default:`cat /sys/class/timed_output/vibrator/amp`,
+					action:"generic /sys/class/timed_output/vibrator/amp"
+				}},
+			
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ]; then
+			FC=\`cat /sys/kernel/fast_charge/force_fast_charge\`
+			
+				echo '{ SPane:{
+				title:"USB Fast Charge"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, device will charge faster when connected through USB. NOTE: Enabling this will disable access to phone storage via USB.",
+						default:'$FC',
+						action:"generic /sys/kernel/fast_charge/force_fast_charge"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_otg/parameters/otg_hack_enable" ]; then
+			OTG=\`cat /sys/module/msm_otg/parameters/otg_hack_enable\`
+			
+				echo '{ SPane:{
+					title:"USB OTG (On-The-Go)"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Enabling this allows for OTG operation. More info: <a href='http://forum.xda-developers.com/nexus-4/orig-development/usb-otg-externally-powered-usb-otg-t2181820'>HERE</a>",
+						default:'$OTG',
+						action:"generic /sys/module/msm_otg/parameters/otg_hack_enable"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/class/misc/batterylifeextender/charging_limit" ]; then
+				BLX=\`cat /sys/class/misc/batterylifeextender/charging_limit\`
+			
+				echo '{ SPane:{
+					title:"Battery Life Extender (BLX)"
+				}},
+					{ SSeekBar:{
+						description:"Limit the capacity to which the battery will be charged.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:100,
+						default:'$BLX',
+						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
+					}},'
+			fi`
+		]
+}
+CTAG

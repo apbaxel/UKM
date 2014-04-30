@@ -1,0 +1,43 @@
+#!/system/bin/sh
+
+UCI_PATH=/data/N4UKM
+UCI_CONFIG=$UCI_PATH/config.json;
+UCI_ACTION=$UCI_PATH/actions/;
+DEBUG=$UCI_PATH/debug;
+
+if [ ! -f $UCI_CONFIG ]; then
+	mount -t rootfs -o rw, remount rootfs;
+	chmod -R 755 $UCI_ACTION;
+	
+	if [ ! -f $DEBUG/pvs_bin ]; then
+		PVS=`dmesg | grep PVS`
+		echo ${PVS##*:} > $DEBUG/pvs_bin
+	fi
+	
+	if [ ! -f $DEBUG/speed_bin ]; then
+		SPEED=`dmesg | grep SPEED`
+		echo ${SPEED##*:} > $DEBUG/speed_bin
+	fi
+	
+	if [ ! -f $DEBUG/last_kmsg ]; then
+		LAST_KMSG=`tail -n 1 /proc/last_kmsg`
+		echo $LAST_KMSG > $DEBUG/last_kmsg
+	fi
+	
+	source $UCI_PATH/config.json.generate > $UCI_CONFIG;
+	
+	mount -t rootfs -o ro, remount rootfs;
+fi;
+
+case "${1}" in
+  config)
+		cat $UCI_CONFIG;;
+  configpath)
+		echo $UCI_CONFIG;;
+  actionpath)
+		echo $UCI_ACTION;;
+  reset)
+		mount -t rootfs -o rw,remount rootfs;
+		rm -f $UCI_CONFIG;
+		mount -t rootfs -o ro,remount rootfs;;
+esac;

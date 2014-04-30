@@ -1,0 +1,15 @@
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		echo $2 > $1
+		
+		if [ $2 -eq 1 ]; then
+			if [ "$1" == "/sys/devices/virtual/misc/touchwake/enabled" ] && [ -f "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ]; then
+				echo "0" > /sys/devices/virtual/input/lge_touch/dt_wake_enabled;
+			elif [ "$1" == "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ] && [ -f "/sys/devices/virtual/misc/touchwake/enabled" ]; then
+				echo "0" > /sys/devices/virtual/misc/touchwake/enabled;
+			fi
+		fi
+
+	fi;	
+ echo `cat $1`;
+fi;

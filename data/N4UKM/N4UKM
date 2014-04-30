@@ -1,0 +1,43 @@
+#!/system/bin/sh
+
+# **************************************************************
+# Add Synapse support
+# **************************************************************
+
+UCI_PATH=/data/N4UKM
+UCI_CONFIG=$UCI_PATH/config.json;
+DEBUG=$UCI_PATH/debug;
+UCI_FILE=$UCI_PATH/uci;
+UCI_XBIN=/system/xbin/uci;
+
+# Delete known files that re-create uci config
+
+rm -f data/ak/ak-post-boot.sh #ak
+
+# Delete default uci config in case kernel has one already to avoid duplicates.
+
+if [ -e "/sbin/uci" ]; then
+	rm -f /sbin/uci
+fi
+
+# Delete all debug files so it can be re-created on boot.
+
+rm -f $DEBUG/*
+
+# Symlink uci file to xbin in case it's not found.
+
+if [ ! -e $UCI_XBIN ]; then
+	mount -o remount,rw /system
+	mount -t rootfs -o remount,rw rootfs
+	
+	chmod 755 $UCI_FILE
+	ln -s $UCI_FILE $UCI_XBIN
+	
+	mount -t rootfs -o remount,ro rootfs
+	mount -o remount,ro /system
+fi
+
+# Reset uci config so it can be re-created on boot.
+
+$UCI_XBIN reset;
+$UCI_XBIN

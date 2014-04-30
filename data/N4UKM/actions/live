@@ -1,0 +1,41 @@
+case $1 in
+
+	cpufreq)
+	
+		if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU0="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		else
+			CPU0="Offline"
+		fi
+		
+		if [ -r "/sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU1="$((`cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		else
+			CPU1="Offline"
+		fi
+		
+		if [ -r "/sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU2="$((`cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		else
+			CPU2="Offline"
+		fi
+		
+		if [ -r "/sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU3="$((`cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		else
+			CPU3="Offline"
+		fi
+		
+		echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";;
+		
+	entropy)
+		echo "`cat /proc/sys/kernel/random/entropy_avail`";
+		;;
+	gpufreq)
+		GPUFREQ="$((`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
+		echo "$GPUFREQ";
+		;;
+	cpuload)
+		echo "`cat /sys/module/msm_hotplug/current_load`";
+		;;
+esac;

@@ -1,0 +1,51 @@
+CPU=/sys/devices/system/cpu;
+
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		echo $2 > $1
+		
+		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_min_freq" ]; then
+			if [ -f "$CPU/cpu1/cpufreq/scaling_min_freq" ]; then
+				echo $2 > $CPU/cpu1/cpufreq/scaling_min_freq
+			fi
+			
+			if [ -f "$CPU/cpu2/cpufreq/scaling_min_freq" ]; then
+				echo $2 > $CPU/cpu2/cpufreq/scaling_min_freq
+			fi
+			
+			if [ -f "$CPU/cpu3/cpufreq/scaling_min_freq" ]; then
+				echo $2 > $CPU/cpu3/cpufreq/scaling_min_freq
+			fi
+		fi
+		
+		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_max_freq" ]; then
+			if [ -f "$CPU/cpu1/cpufreq/scaling_max_freq" ]; then
+				echo $2 > $CPU/cpu1/cpufreq/scaling_max_freq
+			fi
+			
+			if [ -f "$CPU/cpu2/cpufreq/scaling_max_freq" ]; then
+				echo $2 > $CPU/cpu2/cpufreq/scaling_max_freq
+			fi
+			
+			if [ -f "$CPU/cpu3/cpufreq/scaling_max_freq" ]; then
+				echo $2 > $CPU/cpu3/cpufreq/scaling_max_freq
+			fi
+		fi
+		
+		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_governor" ]; then
+			if [ -f "$CPU/cpu1/cpufreq/scaling_governor" ]; then
+				echo $2 > $CPU/cpu1/cpufreq/scaling_governor
+			fi
+			
+			if [ -f "$CPU/cpu2/cpufreq/scaling_governor" ]; then
+				echo $2 > $CPU/cpu2/cpufreq/scaling_governor
+			fi
+			
+			if [ -f "$CPU/cpu3/cpufreq/scaling_governor" ]; then
+				echo $2 > $CPU/cpu3/cpufreq/scaling_governor
+			fi
+		fi
+	fi
+
+	echo `cat $1`
+fi;

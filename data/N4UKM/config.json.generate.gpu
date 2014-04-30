@@ -1,0 +1,89 @@
+cat << CTAG
+{
+	name:GPU,
+		elements:[
+			{ SLiveLabel:{
+					title:"Current GPU Frequency:",
+					refresh:1500,
+					style:italic,
+					action:"live gpufreq"
+				}},
+			{ SPane:{
+				title:"GPU Max Frequency",
+				description:"Set the maximum frequency the GPU scales up to."
+			}},
+				{ SSeekBar:{
+					default:`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk`,
+					action:"generic /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk",
+					values:{
+						`for GPUFREQ in \`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies\` ; do
+						LABEL=$((GPUFREQ / 1000000))
+						echo "$GPUFREQ:\"${LABEL} MHz\", "
+						done`
+					}
+				}},
+			{ SPane:{
+				title:"GPU Governor",
+				description:"The GPU Governor makes scaling decisions based on specific algorithm for 2D/3D scenarios."
+			}},
+				{ SOptionList:{
+					default:
+						`POLICY=\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy\`
+						GOV=\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor\`
+						
+						if [ "$POLICY" = "trustzone" ]; then
+							echo $GOV
+						else
+							echo $POLICY
+						fi`,
+					action:"gpugov /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor",
+					values:[
+						`GOV="ondemand, performance"
+						
+						if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
+							GOV="$GOV, simple"
+						fi
+						
+						if [ "\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/avail_policies | grep conservative\`" ]; then
+							GOV="$GOV, conservative"
+						fi
+						
+						echo $GOV`
+					]
+				}},
+				`if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+					echo '{ SPane:{
+					title:"Simple Governor Tunables"
+					}},'
+					
+					if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
+						LAZ=\`cat /sys/module/msm_kgsl_core/parameters/simple_laziness\`
+						
+						echo '{ SSeekBar:{
+						title:"Laziness",
+						description:"Adjusts the number of times the governor skips ramp down requests. Higher = better performance (more battery drain).",
+						default:'$LAZ',
+						action:"generic /sys/module/msm_kgsl_core/parameters/simple_laziness",
+						min:0,
+						max:10,
+						step:1
+						}},'
+					fi
+					
+					if [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+						RAMP=\`cat /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold\`
+						
+						echo '{ SSeekBar:{
+						title:"Ramp Threshold",
+						description:"Adjusts the threshold to ramp up or down GPU frequencies. Lower = better performance (more battery drain).",
+						default:'$RAMP',
+						action:"generic /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold",
+						min:0,
+						max:10000,
+						step:1000
+						}},'
+					fi
+				fi`
+		]
+}
+CTAG

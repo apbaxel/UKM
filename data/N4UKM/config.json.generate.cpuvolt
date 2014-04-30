@@ -1,0 +1,72 @@
+cat << CTAG
+{
+	name:CPU VOLT,
+		elements:[
+			
+			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
+			
+				echo '{ STitleBar:{
+					title:"CPU Global Voltage"
+				}},
+					{ SSeekBar:{
+						default:0,
+						action:"cpuvolt global",
+						unit:" uV",
+						min:-300000,
+						max:300000,
+						step:25000,
+						notify:['
+							while read CPUFREQ VOLT; do
+							CPUFREQ=\`echo $CPUFREQ | sed "s/://"\`
+							LABEL=$((CPUFREQ / 1000))
+								echo '{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"cpuvolt '$CPUFREQ'"
+								},'
+							done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels
+						echo ']
+					}},'
+			fi`
+			
+			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
+				
+				echo '{ SPane:{
+					title:"CPU Frequency Voltage"
+				}},'
+					while read CPUFREQ VOLT; do
+					CPUFREQ=\`echo $CPUFREQ | sed "s/://"\`
+					LABEL=$((CPUFREQ / 1000))
+						echo '{ SSeekBar:{
+								title:"'${CPUFREQ}' MHz",
+								default:'$VOLT',
+								action:"cpuvolt '$CPUFREQ'",
+								unit:" uV",
+								min:600000,
+								max:1400000,
+								step:500
+							}},'
+						done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels
+			fi`
+			
+			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
+				
+				echo '{ SPane:{
+					title:"CPU Frequency Voltage"
+				}},'
+					while read CPUFREQ VOLT UNIT; do
+						echo '{ SSeekBar:{
+							title:"'${CPUFREQ//mhz\:/}' MHz",
+							unit:"' ${UNIT}'",
+							min:600,
+							max:1400,
+							step:1,
+							default:'$VOLT',
+							action:"voltage cpuvolt '${CPUFREQ}'"
+						}},
+						';
+							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+			fi`
+		]
+}
+CTAG

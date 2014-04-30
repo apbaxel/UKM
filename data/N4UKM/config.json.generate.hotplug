@@ -1,0 +1,223 @@
+cat << CTAG
+{
+	name:HOTPLUG,
+		elements:[
+			
+			`if [ -f "/system/bin/mpdecision" ] && [ ! -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
+			MPDEC=\`ps | grep mpdecision\`
+			
+			if [ -n "$MPDEC" ]; then 
+				MPDEC=1
+			else
+				MPDEC=0
+			fi
+			
+				echo '{ SPane:{
+					title:"MPDecision"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Stock Qualcomm hotplug driver and frequency service. This should be disabled if current kernel has an alternative.",
+						default:'$MPDEC',
+						action:"mpdecision /system/bin/mpdecision"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/module/intelli_plug/parameters/intelli_plug_active" ]; then
+			INTELLIPLUG=\`cat /sys/module/intelli_plug/parameters/intelli_plug_active\`
+			
+				echo '{ SPane:{
+					title:"Intelliplug"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by faux123.",
+						default:'$INTELLIPLUG',
+						action:"generic /sys/module/intelli_plug/parameters/intelli_plug_active"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/module/intelli_plug/parameters/eco_mode_active" ]; then
+			ECOMODE=\`cat /sys/module/intelli_plug/parameters/eco_mode_active\`
+			
+				echo '{ SCheckBox:{
+						label:"Eco Mode",
+						description:"Special power savings mode where the kernel automatically reconfigures its decisions in real time and optimizes to use only 2 out of 4 cores.",
+						default:'$ECOMODE',
+						action:"generic /sys/module/intelli_plug/parameters/eco_mode_active"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/kernel/msm_cpufreq_limit/cpufreq_limit" ]; then
+			SC=\`cat /sys/kernel/msm_cpufreq_limit/cpufreq_limit\`
+			
+				echo '{ SSeekBar:{
+						title:"CPU Frequency Limit (Snakecharmer)",
+						description:"Allows you to set a specific Max CPU frequency to ALL cores at the same time.",
+						default:'$SC',
+						action:"generic /sys/kernel/msm_cpufreq_limit/cpufreq_limit",
+						values:{'
+							for SNAKE in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((SNAKE / 1000))
+							echo "$SNAKE:\"${LABEL} MHz\", "
+							done;
+					echo '}
+				}},'
+			fi`
+			
+			`if [ -f "/system/bin/mpdecision" ] && [ -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
+			MSMMPD=\`cat /sys/kernel/msm_mpdecision/conf/enabled\`
+				
+				echo '{ SPane:{
+					title:"MSM MPDecision"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by show-p1984.",
+						default:'$MSMMPD',
+						action:"generic /sys/kernel/msm_mpdecision/conf/enabled"
+					}},'
+				
+				if [ -f "/sys/kernel/msm_mpdecision/conf/scroff_single_core" ]; then
+				SOSC=\`cat /sys/kernel/msm_mpdecision/conf/scroff_single_core\`
+				
+					echo '{ SCheckBox:{
+							label:"Screen off Single Core",
+							description:"Use only one core if screen is off.",
+							default:'$SOSC',
+							action:"generic /sys/kernel/msm_mpdecision/conf/scroff_single_core"
+						}},'
+				fi
+				
+				if [ -f "/sys/kernel/msm_mpdecision/conf/min_cpus" ]; then
+				MINCPU=\`cat /sys/kernel/msm_mpdecision/conf/min_cpus\`
+				
+					echo '{ SSeekBar:{
+							title:"Min CPUs",
+							description:"Minimum CPUs online at any time.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MINCPU',
+							action:"generic /sys/kernel/msm_mpdecision/conf/min_cpus",
+					}},'
+				fi
+				
+				if [ -f "/sys/kernel/msm_mpdecision/conf/max_cpus" ]; then
+				MAXCPU=\`cat /sys/kernel/msm_mpdecision/conf/max_cpus\`
+				
+					echo '{ SSeekBar:{
+							title:"Max CPUs",
+							description:"Maximum CPUs online at any time.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/kernel/msm_mpdecision/conf/max_cpus",
+					}},'
+				fi
+				
+				if [ -f "/sys/kernel/msm_mpdecision/conf/idle_freq" ]; then
+				IDLEFREQ=\`cat /sys/kernel/msm_mpdecision/conf/idle_freq\`
+				
+					echo '{ SSeekBar:{
+							title:"Idle Frequency",
+							description:"If CPU0 is below this frequency, does not plug in CPU 1-3.",
+							default:'$IDLEFREQ',
+							action:"generic /sys/kernel/msm_mpdecision/conf/idle_freq",
+							values:{'
+								for FREQ in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+								LABEL=$((FREQ / 1000))
+								echo "$FREQ:\"${LABEL} MHz\", "
+								done;
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "/sys/kernel/msm_mpdecision/conf/boost_enabled" ]; then
+				BOOST=\`cat /sys/kernel/msm_mpdecision/conf/boost_enabled\`
+				
+					echo '{ SCheckBox:{
+							label:"Event Boost",
+							description:"This will boost your minimum CPU speed if you touch the screen or press a button.",
+							default:'$BOOST',
+							action:"generic /sys/kernel/msm_mpdecision/conf/boost_enabled"
+						}},'
+				fi
+			fi`
+
+			`if [ -f "/sys/module/msm_hotplug/enabled" ]; then
+			MSMHOT=\`cat /sys/module/msm_hotplug/enabled\`
+
+				echo '{ SPane:{
+					title:"MSM Hotplug"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by myfluxi.",
+						default:'$MSMHOT',
+						action:"generic /sys/module/msm_hotplug/enabled"
+					}},'
+				
+				if [ -f "/sys/module/msm_hotplug/min_cpus_online" ]; then
+				MINCPU=\`cat /sys/module/msm_hotplug/min_cpus_online\`
+				
+					echo '{ SSeekBar:{
+							title:"Min CPUs",
+							description:"Minimum CPUs online at any time.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MINCPU',
+							action:"generic /sys/module/msm_hotplug/min_cpus_online",
+					}},'
+				fi
+				
+				if [ -f "/sys/module/msm_hotplug/max_cpus_online" ]; then
+				MAXCPU=\`cat /sys/module/msm_hotplug/max_cpus_online\`
+				
+					echo '{ SSeekBar:{
+							title:"Max CPUs",
+							description:"Maximum CPUs online at any time.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/msm_hotplug/max_cpus_online",
+					}},'
+				fi
+				
+				if [ -f "/sys/module/msm_hotplug/cpus_boosted" ]; then
+				BOOST=\`cat /sys/module/msm_hotplug/cpus_boosted\`
+				
+					echo '{ SSeekBar:{
+							title:"Max CPUs Boosted",
+							description:"Maximum number of CPUs boosted at the same time.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$BOOST',
+							action:"generic /sys/module/msm_hotplug/cpus_boosted",
+					}},'
+				fi
+				
+				if [ -f "/sys/module/msm_hotplug/suspend_freq" ]; then
+				SUSPFREQ=\`cat /sys/module/msm_hotplug/suspend_freq\`
+				
+					echo '{ SSeekBar:{
+							title:"Suspend Frequency",
+							description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+							default:'$SUSPFREQ',
+							action:"generic /sys/module/msm_hotplug/suspend_freq",
+							values:{'
+								for FREQ in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+								LABEL=$((FREQ / 1000))
+								echo "$FREQ:\"${LABEL} MHz\", "
+								done;
+						echo '}
+					}},'
+				fi
+			fi`
+		]
+}
+CTAG

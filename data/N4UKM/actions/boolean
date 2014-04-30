@@ -1,0 +1,22 @@
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		VALUE=$2
+		
+		if [ "$VALUE" -eq 1 ]; then
+			echo "Y" > $1
+		elif [ "$VALUE" -eq 0 ]; then
+			echo "N" > $1
+		fi
+	fi
+
+VALUE=`cat $1`
+
+	if [ $VALUE = "Y" ]; then
+		echo "1"
+	elif [ $VALUE = "N" ]; then
+		echo "0"
+	fi
+	
+else
+	echo "0"
+fi;

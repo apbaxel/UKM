@@ -1,0 +1,18 @@
+cat << CTAG
+{
+    sections: [
+		`. /data/N4UKM/config.json.generate.info`,
+		`. /data/N4UKM/config.json.generate.cpu`,
+		`. /data/N4UKM/config.json.generate.cpugov`,
+		`. /data/N4UKM/config.json.generate.hotplug`,
+		`. /data/N4UKM/config.json.generate.cpuvolt`,
+		`. /data/N4UKM/config.json.generate.io`,
+		`. /data/N4UKM/config.json.generate.gpu`,
+		`. /data/N4UKM/config.json.generate.mem`,
+		`. /data/N4UKM/config.json.generate.lmk`,
+		`. /data/N4UKM/config.json.generate.wake`,
+		`. /data/N4UKM/config.json.generate.misc`,
+		`. /data/N4UKM/config.json.generate.adv`
+    ]
+}
+CTAG
