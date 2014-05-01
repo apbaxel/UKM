@@ -2,26 +2,26 @@ case $1 in
 
 	cpufreq)
 	
-		if [ -r "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU0="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		if [ -e "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU0="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)) MHz";
 		else
 			CPU0="Offline"
 		fi
 		
-		if [ -r "/sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU1="$((`cat /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		if [ -e "/sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU1="$((`cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)) MHz";
 		else
 			CPU1="Offline"
 		fi
 		
-		if [ -r "/sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU2="$((`cat /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		if [ -e "/sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU2="$((`cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq` / 1000)) MHz";
 		else
 			CPU2="Offline"
 		fi
 		
-		if [ -r "/sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU3="$((`cat /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq` / 1000)) MHz";
+		if [ -e "/sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq" ]; then
+			CPU3="$((`cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq` / 1000)) MHz";
 		else
 			CPU3="Offline"
 		fi
