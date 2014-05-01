@@ -1,0 +1,123 @@
+if [ -d /data/data/com.af.synapse ]; then
+  SYNAPSE_SD_DIR=/sdcard/Synapse;
+  SYNAPSE_BOOT_DIR=$SYNAPSE_SD_DIR/kernel_backups;
+  SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_profiles;
+
+  SYNAPSE_DATA=/data/data/com.af.synapse/databases;
+
+  [ ! -d "$SYNAPSE_BOOT_DIR" ] && mkdir -p "$SYNAPSE_BOOT_DIR";
+  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"` ] && echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+  [ ! -d "$SYNAPSE_CONFIG_DIR" ] && mkdir -p "$SYNAPSE_CONFIG_DIR";
+  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"` ] && echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+
+  SYNAPSE_BOOT_IMG=`cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+  SYNAPSE_CONFIG_PROFILE=`cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+fi;
+
+reset_uci() {
+  /system/xbin/uci reset;
+  /system/xbin/uci;
+}
+
+case "$1" in
+  listboot)
+    echo `ls "$SYNAPSE_BOOT_DIR"`
+  ;;
+
+  pickboot)
+    if [ -f "$SYNAPSE_BOOT_DIR/$2" -o "$2" == "None" ]; then
+      echo "$2" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+    fi;
+    echo `cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+  ;;
+
+  flashboot)
+    if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+      dd if="$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" of="$2" 2> /dev/null;
+	  reboot;
+    elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+      echo "None selected.";
+    else
+      echo "File not found.";
+    fi;
+  ;;
+
+  keepboot)
+    timestamp=`date +%Y-%m-%d.%H.%M.%S`;
+    dd if="$2" of="$SYNAPSE_BOOT_DIR/boot-$timestamp.img" 2> /dev/null;
+    echo "boot-$timestamp.img created. Restart Synapse to see updated list.";
+    reset_uci;
+  ;;
+
+  delboot)
+    if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+      rm -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG";
+      echo "$SYNAPSE_BOOT_IMG removed. Restart Synapse to see updated list.";
+      reset_uci;
+    elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+      echo "None selected.";
+    else
+      echo "File not found.";
+    fi;
+  ;;
+
+  listconfig)
+    echo `ls "$SYNAPSE_CONFIG_DIR"`
+  ;;
+
+  pickconfig)
+    if [ -f "$SYNAPSE_CONFIG_DIR/$2" -o "$2" == "None" ]; then
+      echo "$2" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+    fi;
+    echo `cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+  ;;
+
+  applyconfig)
+    if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+      rm -f $SYNAPSE_DATA/*
+      cd $SYNAPSE_DATA
+      tar -xz -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+      echo "$SYNAPSE_CONFIG_PROFILE restored. Restart Synapse to refresh.";
+      reset_uci;
+    elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+      echo "None selected.";
+    else
+      echo "File not found.";
+    fi;
+  ;;
+
+  keepconfig)
+    timestamp=`date +%Y-%m-%d.%H.%M.%S`;
+    cd $SYNAPSE_DATA
+    tar -cz -f "$SYNAPSE_CONFIG_DIR/config-$timestamp.tgz" *;
+    echo "config-$timestamp.tgz created. Restart Synapse to see updated list.";
+    reset_uci;
+  ;;
+
+  delconfig)
+    if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+      rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+      echo "$SYNAPSE_CONFIG_PROFILE removed. Restart Synapse to see updated list.";
+      reset_uci;
+    elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+      echo "None selected.";
+    else
+      echo "File not found.";
+    fi;
+  ;;
+
+  restart)
+    reset_uci;
+    sleep 1;
+    am force-stop com.af.synapse 2> /dev/null;
+    sleep 1;
+    am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+  ;;
+
+  reboot)
+    sleep 1;
+    reboot;
+  ;;
+
+esac;
+
