@@ -88,7 +88,7 @@ cat << CTAG
 					generic: {
 						directory: {},
 						element: {
-							SGeneric: { title:"@NAME" }
+							SGeneric: { title:"@BASENAME" }
 						}
 					},
 				}},
