@@ -8,6 +8,8 @@ cat << CTAG
 		`. /data/N4UKM/config.json.generate.cpuvolt`,
 		`. /data/N4UKM/config.json.generate.io`,
 		`. /data/N4UKM/config.json.generate.gpu`,
+		`. /data/N4UKM/config.json.generate.gamma`,
+		`. /data/N4UKM/config.json.generate.speaker`,
 		`. /data/N4UKM/config.json.generate.mem`,
 		`. /data/N4UKM/config.json.generate.lmk`,
 		`. /data/N4UKM/config.json.generate.wake`,

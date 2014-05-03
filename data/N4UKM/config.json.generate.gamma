@@ -1,0 +1,73 @@
+cat << CTAG
+{
+	name:GAMMA,
+		elements:[
+			
+			`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ]; then
+			PROF=\`cat /data/N4UKM/files/gamma_prof\`
+			KCAL=\`cat /sys/devices/platform/kcal_ctrl.0/kcal\`
+			BLUE=\`cat /sys/devices/platform/mipi_lgit.1537/kgamma_b\`
+			GREEN=\`cat /sys/devices/platform/mipi_lgit.1537/kgamma_g\`
+			RED=\`cat /sys/devices/platform/mipi_lgit.1537/kgamma_r\`
+				
+				echo '{ SPane:{
+						title:"Gamma Profiles",
+						description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=6'>HERE</a>"
+					}},
+						{ SOptionList:{
+							default:Google_Stock,
+							action:"gammafaux /data/N4UKM/files/gamma_prof",
+							values:[ Custom, Google_Stock, LG_Stock,
+								Obsanity_Amoled, Bundi22_iPhone5, PA_HalfBreed, MohitGalaxy3, Kel_Ghu, Mohit_NewStock,
+							],
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/devices/platform/kcal_ctrl.0/kcal"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r"
+								}
+							]
+						}},
+					{ SPane:{
+						title:"Values",
+					}},
+						{ SGeneric:{
+							title:"Calibration",
+							default:'$KCAL',
+							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+						}},
+						{ SGeneric:{
+							title:"Blue",
+							default:'$BLUE',
+							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
+						}},
+						{ SGeneric:{
+							title:"Green",
+							default:'$GREEN',
+							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g",
+						}},
+						{ SGeneric:{
+							title:"Red",
+							default:'$RED',
+							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r",
+						}},'
+			fi`
+			
+		]
+}
+CTAG

@@ -1,0 +1,106 @@
+LG_Stock() {
+COMP_RATE=0
+FIXED_GAIN=12
+ATK_TIME=5
+REL_TIME=11
+HOLD_TIME=0
+OUT_LIM=0
+OUTPUT_LIMIT_LEVEL=26
+AGC_MAX_GAIN=12
+NOISE_GATE_THRESHOLD=1
+}
+
+Max_Loudness() {
+COMP_RATE=2
+FIXED_GAIN=30
+ATK_TIME=3
+REL_TIME=30
+HOLD_TIME=0
+OUT_LIM=0
+OUTPUT_LIMIT_LEVEL=31
+AGC_MAX_GAIN=12
+NOISE_GATE_THRESHOLD=0
+}
+
+Voice() {
+COMP_RATE=2
+FIXED_GAIN=6
+ATK_TIME=2
+REL_TIME=11
+HOLD_TIME=0
+OUT_LIM=0
+OUTPUT_LIMIT_LEVEL=28
+AGC_MAX_GAIN=12
+NOISE_GATE_THRESHOLD=1
+}
+
+Quiet() {
+COMP_RATE=3
+FIXED_GAIN=3
+ATK_TIME=6
+REL_TIME=24
+HOLD_TIME=0
+OUT_LIM=0
+OUTPUT_LIMIT_LEVEL=16
+AGC_MAX_GAIN=9
+NOISE_GATE_THRESHOLD=2
+}
+
+if [ -f $1 ]; then
+
+	if [[ ! -z $2 ]]; then
+		
+		if [ "$1" == "/data/N4UKM/files/speaker_prof" ]; then
+			echo $2 > $1
+		
+			if [ $2 != "Custom" ]; then
+				$2
+				echo $COMP_RATE > /sys/bus/i2c/devices/0-0058/comp_rate
+				echo $FIXED_GAIN > /sys/bus/i2c/devices/0-0058/fixed_gain
+				echo $ATK_TIME > /sys/bus/i2c/devices/0-0058/ATK_time
+				echo $REL_TIME > /sys/bus/i2c/devices/0-0058/REL_time
+				echo $HOLD_TIME > /sys/bus/i2c/devices/0-0058/Hold_time
+				echo $OUT_LIM > /sys/bus/i2c/devices/0-0058/out_lim
+				echo $OUTPUT_LIMIT_LEVEL > /sys/bus/i2c/devices/0-0058/Output_limit_level
+				echo $AGC_MAX_GAIN > /sys/bus/i2c/devices/0-0058/AGC_Max_Gain
+				echo $NOISE_GATE_THRESHOLD > /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold
+			fi
+			
+		elif [ "$1" == "/sys/bus/i2c/devices/0-0058/AGC_Max_Gain" ]; then
+			V=$2
+			V=$((V - 18))
+			
+			echo $V > $1
+		else
+			if [ "$2" -lt 0 ]; then
+				V=$2
+				V=$((V - 256))
+				
+				echo $V > $1
+			else
+				echo $2 > $1
+			fi
+		fi
+	fi
+	
+	C=`cat $1`
+	
+	if [ "$1" == "/data/N4UKM/files/speaker_prof" ]; then
+		echo $C
+	elif [ "$1" == "/sys/bus/i2c/devices/0-0058/AGC_Max_Gain" ]; then
+		C=${C##*: }
+		C=$((C + 18))
+		
+		echo $C
+	else
+		C=${C##*: }
+		
+		if [ "$C" -gt 200 ]; then
+			C=$((256 - C))
+			
+			echo $C
+		else
+			echo $C
+		fi
+	fi
+fi
