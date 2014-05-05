@@ -2,6 +2,7 @@ cat << CTAG
 {
     sections: [
 		`. /data/N4UKM/config.json.generate.info`,
+		`. /data/N4UKM/config.json.generate.status`,
 		`. /data/N4UKM/config.json.generate.cpu`,
 		`. /data/N4UKM/config.json.generate.cpugov`,
 		`. /data/N4UKM/config.json.generate.hotplug`,
@@ -9,6 +10,7 @@ cat << CTAG
 		`. /data/N4UKM/config.json.generate.io`,
 		`. /data/N4UKM/config.json.generate.gpu`,
 		`. /data/N4UKM/config.json.generate.gamma`,
+		`. /data/N4UKM/config.json.generate.sound`,
 		`. /data/N4UKM/config.json.generate.speaker`,
 		`. /data/N4UKM/config.json.generate.mem`,
 		`. /data/N4UKM/config.json.generate.lmk`,

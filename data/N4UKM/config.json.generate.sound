@@ -1,0 +1,86 @@
+cat << CTAG
+{
+	name:SOUND,
+		elements:[
+			
+			`if [ -d "/sys/kernel/sound_control_3" ]; then
+			
+				echo '{ SPane:{
+						title:"Sound Profiles",
+						description:"After you apply a profile, turn audio Off/On to update."
+					}},
+						{ SOptionList:{
+							default:LG_Stock,
+							action:"soundfaux /data/N4UKM/files/sound_prof",
+							values:[ Custom, LG_Stock, Quality, Loudness, Quiet,
+							],
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain"
+								},
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain"
+								}
+							]
+						}},
+					{ SPane:{
+						title:"Gain Controls",
+					}},
+						{ SSeekBar:{
+							title:"Headphone (Left & Right)",
+							min:-30,
+							max:10,
+							default:0,
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
+						}},
+						{ SSeekBar:{
+							title:"Speaker",
+							min:-30,
+							max:10,
+							default:0,
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
+						}},
+						{ SSeekBar:{
+							title:"Headphone PowerAmp (Left & Right)",
+							min:-6,
+							max:6,
+							default:0,
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
+						}},
+						{ SSeekBar:{
+							title:"Handset Microphone",
+							min:-30,
+							max:10,
+							default:0,
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
+						}},
+						{ SSeekBar:{
+							title:"Camcorder Microphone",
+							min:-30,
+							max:10,
+							default:0,
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",
+						}},'
+			fi`
+		]
+}
+CTAG

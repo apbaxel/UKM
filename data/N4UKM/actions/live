@@ -1,5 +1,24 @@
 case $1 in
+	battemp)
+		BAT_C="$((`cat /sys/class/power_supply/battery/temp` / 10))°C";
+		BAT_H=`cat /sys/class/power_supply/battery/health`;
 
+		echo "$BAT_C@nHealth: $BAT_H";
+		;;
+	cputemp)
+		CPU_C="`cat /sys/class/thermal/thermal_zone7/temp`°C";
+
+		echo "$CPU_C";
+		;;
+	memory)
+		TOTAL=`cat /proc/meminfo | grep MemTotal | sed "s/Mem//"`
+		FREE=`cat /proc/meminfo | grep MemFree | sed "s/Mem//"`
+		echo "$TOTAL@n$FREE"
+		;;
+	time)
+		UPTIME=`uptime`;
+		echo "${UPTIME//, /@n}";
+		;;
 	cpufreq)
 	
 		if [ -e "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq" ]; then
@@ -26,8 +45,8 @@ case $1 in
 			CPU3="Offline"
 		fi
 		
-		echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";;
-		
+		echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
+		;;
 	entropy)
 		echo "`cat /proc/sys/kernel/random/entropy_avail`";
 		;;
