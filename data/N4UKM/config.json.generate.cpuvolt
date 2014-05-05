@@ -32,7 +32,8 @@ cat << CTAG
 			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
 				
 				echo '{ SPane:{
-					title:"CPU Frequency Voltage"
+					title:"CPU Frequency Voltage",
+					description:"Decreasing voltages will lower heat and power consumption of the CPU. Increasing it on overclocked frequencies improves stability. Too low voltages may cause instability and freezes."
 				}},'
 					while read CPUFREQ VOLT; do
 					CPUFREQ=\`echo $CPUFREQ | sed "s/://"\`
@@ -50,9 +51,34 @@ cat << CTAG
 			fi`
 			
 			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
+			
+				echo '{ STitleBar:{
+					title:"CPU Global Voltage"
+				}},
+					{ SSeekBar:{
+						default:0,
+						action:"voltage cpuvoltglobal global",
+						unit:" mV",
+						min:-300,
+						max:300,
+						step:25,
+						notify:['
+							while read CPUFREQ VOLT UNIT; do
+								echo '{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"voltage cpuvolt '${CPUFREQ}'"
+								},'
+							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+						echo ']
+					}},'
+			fi`
+			
+			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
 				
 				echo '{ SPane:{
-					title:"CPU Frequency Voltage"
+					title:"CPU Frequency Voltage",
+					description:"Decreasing voltages will lower heat and power consumption of the CPU. Increasing it on overclocked frequencies improves stability. Too low voltages may cause instability and freezes."
 				}},'
 					while read CPUFREQ VOLT UNIT; do
 						echo '{ SSeekBar:{
