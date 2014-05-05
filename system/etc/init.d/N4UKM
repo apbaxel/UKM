@@ -24,6 +24,12 @@ fi
 
 rm -f $DEBUG/*
 
+# Reset profiles to default
+
+echo "Google_Stock" > /data/N4UKM/files/gamma_prof
+echo "LG_Stock" > /data/N4UKM/files/sound_prof
+echo "LG_Stock" > /data/N4UKM/files/speaker_prof
+
 # Symlink uci file to xbin in case it's not found.
 
 if [ ! -e $UCI_XBIN ]; then
