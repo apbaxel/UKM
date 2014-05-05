@@ -2,8 +2,10 @@ cat << CTAG
 {
 	name:GPU,
 		elements:[
-			{ SLiveLabel:{
-					title:"Current GPU Frequency:",
+			{ SPane:{
+				title:"Current GPU Frequency:"
+			}},
+				{ SLiveLabel:{
 					refresh:1000,
 					style:italic,
 					action:"live gpufreq"
@@ -83,6 +85,21 @@ cat << CTAG
 						step:1000
 						}},'
 					fi
+				fi`
+				
+				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table" ]; then
+					
+					echo '{ SPane:{
+					title:"GPU Voltages"
+					}},'
+						while read UVOLT UNIT; do
+						VOLTAGE=$(($VOLTAGE+1))
+							echo '{ SSeekBar:{
+								default:'$UVOLT',
+								title:"Voltage '${VOLTAGE}'",
+								action:"voltage gpuvolt '${VOLTAGE}'",
+								unit:"' ${UNIT}'", min:900, max:1200, step:10 }},'
+						done < /sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table
 				fi`
 		]
 }

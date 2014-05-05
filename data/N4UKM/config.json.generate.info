@@ -7,11 +7,19 @@ cat << CTAG
 					en:"General",
 					es:"General"
 				},
-				description:{
-					en:"This is the N4 Universal Kernel Manager. Created by apb_axel.",
-					es:"Este es el Gestor Universal de Núcleo para N4. Creado por apb_axel."
-				}
-			}},
+			}},	
+				{ SDescription:{
+					description:"This is the N4 Universal Kernel Manager"
+				}},
+				{ SDescription:{
+					description:"Version 1.3"
+				}},
+				{ SDescription:{
+					description:"Created by apb_axel"
+				}},
+				{ SDescription:{
+					description:"XDA Link: <a href='http://forum.xda-developers.com/nexus-4/general/zip-synapse-script-n4-universal-kernel-t2736986'>HERE</a>"
+				}},
 			{ SPane:{
 				title:{
 					en:"Model Number",

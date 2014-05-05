@@ -2,12 +2,14 @@ cat << CTAG
 {
 	name:CPU,
 		elements:[
+			{ SPane:{
+				title:"Current CPU Frequency:"
+			}},
 			{ SLiveLabel:{
-					title:"Current CPU Frequency:",
-					refresh:500,
-					style:italic,
-					action:"live cpufreq"
-				}},
+				refresh:1000,
+				style:italic,
+				action:"live cpufreq"
+			}},
 			{ STitleBar:{
 				title:"CPU Frequency Scaling"
 			}},
