@@ -16,7 +16,7 @@ cat << CTAG
 										SGeneric: { title:"@BASENAME" }
 									}
 								},
-								exclude: [ "sampling_rate" ]
+								exclude: [ "sampling_rate", "boostpulse" ]
 							},
 						}
 					},
