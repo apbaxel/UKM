@@ -1,0 +1,5 @@
+if [[ ! -z $2 ]]; then
+	setprop $1 $2;
+fi
+
+echo `getprop $1`
