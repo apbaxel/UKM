@@ -27,12 +27,33 @@ cat << CTAG
 					action:"live memory"
 				}},
 			{ SPane:{
-				title:"Times:"
+				title:"Uptime:"
 			}},
 				{ SLiveLabel:{
-					refresh:1000,
+					refresh:0,
 					style:italic,
-					action:"live time"
+					action:"live uptime"
+				}},
+			{ SPane:{
+				title:"Unused States:"
+			}},
+				{ SLiveLabel:{
+					refresh:0,
+					style:italic,
+					action:"live unused"
+				}},
+			{ SPane:{
+				title:"Time in States:"
+			}},
+				{ SLiveLabel:{
+					refresh:0,
+					style:italic,
+					action:"live time 0 9"
+				}},
+				{ SLiveLabel:{
+					refresh:0,
+					style:italic,
+					action:"live time 10 19"
 				}},
 		]
 }

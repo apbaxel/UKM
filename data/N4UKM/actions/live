@@ -1,23 +1,67 @@
 case $1 in
 	battemp)
-		BAT_C="$((`cat /sys/class/power_supply/battery/temp` / 10))°C";
+		BAT_C=`cat /sys/class/power_supply/battery/temp`
+		BAT_C=`awk "BEGIN { print ( $BAT_C / 10 ) }"`
+		BAT_F=`awk "BEGIN { print ( ($BAT_C * 1.8) + 32 ) }"`
 		BAT_H=`cat /sys/class/power_supply/battery/health`;
 
-		echo "$BAT_C@nHealth: $BAT_H";
+		echo "$BAT_C°C | $BAT_F°F@nHealth: $BAT_H";
 		;;
 	cputemp)
-		CPU_C="`cat /sys/class/thermal/thermal_zone7/temp`°C";
+		CPU_C=`cat /sys/class/thermal/thermal_zone7/temp`;
+		CPU_F=`awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`
 
-		echo "$CPU_C";
+		echo "$CPU_C°C | $CPU_F°F";
 		;;
 	memory)
-		TOTAL=`cat /proc/meminfo | grep MemTotal | sed "s/Mem//"`
-		FREE=`cat /proc/meminfo | grep MemFree | sed "s/Mem//"`
-		echo "$TOTAL@n$FREE"
+		while read TYPE MEM KB; do
+			if [ "$TYPE" == "MemTotal:" ]; then
+				TOTAL="$((MEM / 1024)) MB"
+			elif [ "$TYPE" = "MemFree:" ]; then
+				CACHED=$((MEM / 1024))
+			elif [ "$TYPE" = "Cached:" ]; then
+				FREE=$((MEM / 1024))
+			fi
+		done < /proc/meminfo;
+		
+		FREE="$((FREE + CACHED)) MB"
+		
+		echo "Total: $TOTAL@nFree: $FREE"
 		;;
-	time)
+	uptime)
 		UPTIME=`uptime`;
 		echo "${UPTIME//, /@n}";
+		;;
+	unused)
+		UNUSED="";
+		while read FREQ TIME; do
+			FREQ="$((FREQ / 1000)) MHz"
+			if [ $TIME -eq "0" ]; then
+				UNUSED="$UNUSED$FREQ "
+			fi
+		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+		
+		echo "$UNUSED"
+		;;
+	time)
+		STATE="";
+		CNT=0;
+		SUM=`awk '{s+=$2} END {print s}' /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state`;
+		
+		while read FREQ TIME; do
+			if [ "$CNT" -ge $2 ] && [ "$CNT" -le $3 ]; then
+				FREQ="$((FREQ / 1000)) MHz"
+				if [ $TIME -gt "0" ]; then
+					PERC=`awk "BEGIN { print ( ($TIME / $SUM) * 100) }"`
+					PERC="`printf "%0.1f\n" $PERC`%"
+					TIME=$((TIME / 100))
+					STATE="$STATE $FREQ - `echo - | awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'` - ($PERC)@n"
+				fi
+			fi
+			CNT=$((CNT+1))
+		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+		
+		echo "$STATE"
 		;;
 	cpufreq)
 	
