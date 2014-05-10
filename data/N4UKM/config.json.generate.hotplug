@@ -1,3 +1,8 @@
+bool() {
+  [ `cat $1` == "Y" ] && echo "1";
+  [ `cat $1` == "N" ] && echo "0";
+}
+
 cat << CTAG
 {
 	name:HOTPLUG,
@@ -62,6 +67,47 @@ cat << CTAG
 							echo "$SNAKE:\"${LABEL} MHz\", "
 							done;
 					echo '}
+				}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
+			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
+			
+				echo '{ SCheckBox:{
+						label:"Intellithermal",
+						description:"Temperature limit toggle.",
+						default:'$THERMAL',
+						action:"boolean /sys/module/msm_thermal/parameters/enabled"
+					}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/limit_temp_degC" ]; then
+			TEMP=\`cat /sys/module/msm_thermal/parameters/limit_temp_degC\`
+			
+			echo '{ SSeekBar:{
+					title:"Frequency Throttle Temperature",
+					description:"Temperature to start throttling frequencies.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/limit_temp_degC"
+				}},'
+			fi`
+
+			`if [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
+			TEMP=\`cat /sys/module/msm_thermal/parameters/core_limit_temp_degC\`
+			
+			echo '{ SSeekBar:{
+					title:"Core Throttle Temperature",
+					description:"Temperature to start shutting down cores",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/core_limit_temp_degC"
 				}},'
 			fi`
 			

@@ -21,7 +21,7 @@ cat << CTAG
 					]
 				}},
 			
-			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ]; then
+			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ ! -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
 			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
 			
 				echo '{ SPane:{
