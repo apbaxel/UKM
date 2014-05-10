@@ -39,7 +39,7 @@ cat << CTAG
 					CPUFREQ=\`echo $CPUFREQ | sed "s/://"\`
 					LABEL=$((CPUFREQ / 1000))
 						echo '{ SSeekBar:{
-								title:"'${CPUFREQ}' MHz",
+								title:"'${LABEL}' MHz",
 								default:'$VOLT',
 								action:"cpuvolt '$CPUFREQ'",
 								unit:" uV",
