@@ -9,23 +9,23 @@ cat << CTAG
 				},
 			}},	
 				{ SDescription:{
-					description:"This is the N4 Universal Kernel Manager"
+					description:"This is the N4 Universal Kernel Manager."
 				}},
 				{ SDescription:{
-					description:"Version 1.4"
+					description:"Created by <a href='http://forum.xda-developers.com/member.php?u=5658634'>apb_axel</a>."
 				}},
 				{ SDescription:{
-					description:"Created by apb_axel"
+					description:"Version 1.5"
 				}},
 				{ SDescription:{
 					description:"XDA Link: <a href='http://forum.xda-developers.com/nexus-4/general/zip-synapse-script-n4-universal-kernel-t2736986'>HERE</a>"
 				}},
 			{ SPane:{
 				title:{
-					en:"Model Number",
-					es:"Número de Modelo"
+					en:"Device",
+					es:"Dispositivo"
 				},
-				description:"`getprop ro.product.model`"
+				description:"`getprop ro.product.model` (`getprop ro.product.device`)"
 			}},
 			{ SPane:{
 				title:{
