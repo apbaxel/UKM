@@ -37,10 +37,11 @@ case $1 in
 		while read FREQ TIME; do
 			FREQ="$((FREQ / 1000)) MHz"
 			if [ $TIME -eq "0" ]; then
-				UNUSED="$UNUSED$FREQ "
+				UNUSED="$UNUSED$FREQ, "
 			fi
 		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
 		
+		UNUSED=${UNUSED%??}
 		echo "$UNUSED"
 		;;
 	time)
@@ -61,6 +62,7 @@ case $1 in
 			CNT=$((CNT+1))
 		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
 		
+		STATE=${STATE%??}
 		echo "$STATE"
 		;;
 	cpufreq)
