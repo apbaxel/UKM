@@ -6,7 +6,7 @@ UCI_ACTION=$UCI_PATH/actions/;
 DEBUG=$UCI_PATH/debug;
 
 if [ ! -f $UCI_CONFIG ]; then
-	#mount -t rootfs -o rw, remount rootfs;
+	mount -t rootfs -o rw,remount rootfs;
 	chmod -R 755 $UCI_ACTION;
 	
 	if [ ! -f $DEBUG/pvs_bin ]; then
@@ -26,7 +26,7 @@ if [ ! -f $UCI_CONFIG ]; then
 	
 	source $UCI_PATH/config.json.generate > $UCI_CONFIG;
 	
-	#mount -t rootfs -o ro, remount rootfs;
+	mount -t rootfs -o ro,remount rootfs;
 fi;
 
 case "${1}" in
@@ -37,7 +37,7 @@ case "${1}" in
   actionpath)
 		echo $UCI_ACTION;;
   reset)
-		#mount -t rootfs -o rw,remount rootfs;
+		mount -t rootfs -o rw,remount rootfs;
 		rm -f $UCI_CONFIG;
-		#mount -t rootfs -o ro,remount rootfs;;
+		mount -t rootfs -o ro,remount rootfs;;
 esac;
