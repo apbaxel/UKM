@@ -247,6 +247,93 @@ cat << CTAG
 					}},'
 				fi
 				
+				if [ -f "/sys/module/msm_hotplug/boost_lock_duration" ]; then
+				BOOSTLOCK=\`cat /sys/module/msm_hotplug/boost_lock_duration\`
+
+					echo '{ SSeekBar:{
+							title:"Boost Lock Duration",
+							description:"Minimum interval a CPU is boosted.",
+							unit:" ms",
+							min:1,
+							max:10000,
+							step:1,
+							default:'$BOOSTLOCK',
+							action:"generic /sys/module/msm_hotplug/boost_lock_duration"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/msm_hotplug/down_lock_duration" ]; then
+				DOWNLOCK=\`cat /sys/module/msm_hotplug/down_lock_duration\`
+
+					echo '{ SSeekBar:{
+							title:"Down Lock Duration",
+							description:"Minimum interval a CPU is kept online.",
+							unit:" ms",
+							min:1,
+							max:10000,
+							step:1,
+							default:'$DOWNLOCK',
+							action:"generic /sys/module/msm_hotplug/down_lock_duration"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/msm_hotplug/history_size" ]; then
+				HISTORYSIZE=\`cat /sys/module/msm_hotplug/history_size\`
+
+					echo '{ SSeekBar:{
+							title:"History Size",
+							description:"Number of samples taken in consideration for avarage load across CPUs. Lower means quicker/more erratic.",
+							min:1,
+							max:60,
+							step:1,
+							default:'$HISTORYSIZE',
+							action:"generic /sys/module/msm_hotplug/history_size"
+					}},'
+				fi
+
+				if [ -f "/sys/module/msm_hotplug/update_rate" ]; then
+				UPDATERATE=\`cat /sys/module/msm_hotplug/update_rate\`
+
+					echo '{ SSeekBar:{
+							title:"Update Rate",
+							description:"Interval between taking samples of load across CPUs. Lower means quicker/more erratic.",
+							unit:" ms",
+							min:1,
+							max:60,
+							step:1,
+							default:'$UPDATERATE',
+							action:"generic /sys/module/msm_hotplug/update_rate"
+					}},'
+				fi
+
+				if [ -f "/sys/module/msm_hotplug/fast_lane_load" ]; then
+				FASTLANE=\`cat /sys/module/msm_hotplug/fast_lane_load\`
+
+					echo '{ SSeekBar:{
+							title:"Fast Lane Load",
+							description:"Improve latencies by instantly putting online all CPUs if current load on any CPU is above a certain threshold. Fast lane load should not be higher than 78, as load per CPU will not be above this value in our metric.",
+							min:1,
+							max:100,
+							step:1,
+							default:'$FASTLANE',
+							action:"generic /sys/module/msm_hotplug/fast_lane_load"
+					}},'
+				fi
+
+				if [ -f "/sys/module/msm_hotplug/offline_load" ]; then
+				OFFLINELOAD=\`cat /sys/module/msm_hotplug/offline_load\`
+
+					echo '{ SSeekBar:{
+							title:"Offline Load",
+							description:"Dont offline a CPU if it would drop under the lower levels up threshold load (0 = disabled).",
+							min:0,
+							max:100,
+							step:1,
+							default:'$OFFLINELOAD',
+							action:"generic /sys/module/msm_hotplug/offline_load"
+					}},'
+				fi
+				
 				if [ -f "/sys/module/msm_hotplug/suspend_freq" ]; then
 				SUSPFREQ=\`cat /sys/module/msm_hotplug/suspend_freq\`
 				
@@ -261,6 +348,114 @@ cat << CTAG
 								echo "$FREQ:\"${LABEL} MHz\", "
 								done;
 						echo '}
+					}},'
+				fi
+			fi`
+			
+			`if [ -d "/sys/module/auto_hotplug/parameters" ]; then
+			MSMHOT=\`cat /sys/module/msm_hotplug/enabled\`
+			
+				echo '{ SPane:{
+					title:"Auto Hotplug",
+					description:"An in kernel replacement for Qualcomms MPDecision. Developed by Thalamus.",
+				}},'
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/disable_load_threshold" ]; then
+				DLT=\`cat /sys/module/auto_hotplug/parameters/disable_load_threshold\`
+				
+					echo '{ SSeekBar:{
+							title:"Disable Load Threshold",
+							description:"Load at which a CPU is taken offline.",
+							min:40,
+							max:125,
+							step:1,
+							default:'$DLT',
+							action:"generic /sys/module/auto_hotplug/parameters/disable_load_threshold"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/enable_load_threshold" ]; then
+				ELT=\`cat /sys/module/auto_hotplug/parameters/enable_load_threshold\`
+				
+					echo '{ SSeekBar:{
+							title:"Enable Load Threshold",
+							description:"Load at which an extra CPU is put online.",
+							min:130,
+							max:250,
+							step:1,
+							default:'$ELT',
+							action:"generic /sys/module/auto_hotplug/parameters/enable_load_threshold"
+					}},'
+				fi
+			
+				if [ -f "/sys/module/auto_hotplug/parameters/enable_all_load_threshold" ]; then
+				EALT=\`cat /sys/module/auto_hotplug/parameters/enable_all_load_threshold\`
+				
+					echo '{ SSeekBar:{
+							title:"Enable All Load Threshold",
+							description:"Load at which all CPUs are enabled.",
+							min:270,
+							max:550,
+							step:1,
+							default:'$EALT',
+							action:"generic /sys/module/auto_hotplug/parameters/enable_all_load_threshold"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/min_sampling_rate" ]; then
+				MSR=\`cat /sys/module/auto_hotplug/parameters/min_sampling_rate\`
+				
+					echo '{ SSeekBar:{
+							title:"Minimum Sampling Period",
+							description:"Sample rate in milliseconds, converted to jiffies at runtime.",
+							unit:" ms",
+							min:10,
+							max:50,
+							step:1,
+							default:'$MSR',
+							action:"generic /sys/module/auto_hotplug/parameters/min_sampling_rate"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/sampling_periods" ]; then
+				SP=\`cat /sys/module/auto_hotplug/parameters/sampling_periods\`
+				
+					echo '{ SSeekBar:{
+							title:"Sampling Period",
+							description:"Number of samples in the circular buffer (more samples = less aggressive, less samples = more aggressive).",
+							min:5,
+							max:50,
+							step:1,
+							default:'$SP',
+							action:"generic /sys/module/auto_hotplug/parameters/sampling_periods"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/min_online_cpus" ]; then
+				MINCPU=\`cat /sys/module/auto_hotplug/parameters/min_online_cpus\`
+				
+					echo '{ SSeekBar:{
+							title:"Minimum Online CPU",
+							description:"Minimum number of cores online (regardless of load) when screen is on (tune up for performance/bench-marking).",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MINCPU',
+							action:"generic /sys/module/auto_hotplug/parameters/min_online_cpus"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/auto_hotplug/parameters/max_online_cpus" ]; then
+				MAXCPU=\`cat /sys/module/auto_hotplug/parameters/max_online_cpus\`
+				
+					echo '{ SSeekBar:{
+							title:"Maximum Online CPU",
+							description:"Maximum number of cores online (regardless of load) when screen is on (tune down for battery savings)",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/auto_hotplug/parameters/max_online_cpus"
 					}},'
 				fi
 			fi`
