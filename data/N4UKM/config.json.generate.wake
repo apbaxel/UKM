@@ -51,7 +51,8 @@ cat << CTAG
 					}},
 					{ SSeekBar:{
 						title:"Touch Wake Delay",
-						description:"Set a delay (until the touch controls will be disabled, after screen off) in seconds. Value of 0 means the touch controls will be kept enabled indefinitely.",
+						description:"Set a delay (until the touch controls will be disabled, after screen off). Value of 0 means the touch controls will be kept enabled indefinitely.",
+						unit:" sec",
 						step:1000,
 						min:0,
 						max:600000,

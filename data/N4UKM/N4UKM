@@ -63,4 +63,4 @@ fi
 # Reset uci config so it can be re-created on boot.
 
 $UCI_XBIN reset;
-$UCI_XBIN
+$UCI_XBIN;
