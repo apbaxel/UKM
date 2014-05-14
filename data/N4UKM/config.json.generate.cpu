@@ -16,7 +16,7 @@ cat << CTAG
 				{ SSeekBar:{
 					title:"CPU Min Frequency",
 					description:"Set the minimum frequency the CPU scales down to.",
-					default:`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq`,
+					default:384000,
 					action:"cpuset /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq",
 					values:{
 						`for CPUMIN in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
@@ -28,7 +28,7 @@ cat << CTAG
 				{ SSeekBar:{
 					title:"CPU Max Frequency",
 					description:"Set the maximum frequency the CPU scales up to.",
-					default:`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq`,
+					default:1512000,
 					action:"cpuset /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
 					values:{
 						`for CPUMAX in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
@@ -52,6 +52,22 @@ cat << CTAG
 								echo "$CPUSOMF:\"${LABEL} MHz\", "
 							done
 						echo '}
+					}},'
+				fi`
+				
+				`if [ -f "/sys/devices/system/cpu/sched_mc_power_savings" ]; then
+				SMPS=\`cat /sys/devices/system/cpu/sched_mc_power_savings\`
+				
+					echo '{ SPane:{
+						title:"CPU Multicore Power Saving",
+						description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive the grouping."
+					}},
+					
+					{ SSeekBar:{
+						default:'$SMPS',
+						action:"generic /sys/devices/system/cpu/sched_mc_power_savings",
+						values:{ 0:"0: Disabled", 1:"1: Enabled", 2:"2: Aggressive"
+						}
 					}},'
 				fi`
 				
