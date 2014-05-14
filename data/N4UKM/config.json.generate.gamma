@@ -68,6 +68,47 @@ cat << CTAG
 						}},'
 			fi`
 			
+			`if [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ]; then
+				BRMOD=\`cat /sys/devices/i2c-0/0-0038/lm3530_br_mode\`
+
+				echo '{ SPane:{
+						title:"LCD Backlight"
+				}},
+					{ SCheckBox:{
+						label:"Linear/Exponential.",
+						description:"Sets the linear (Checked) or exponential (Un-Checked) brightness mapping mode. Please note that the exponential brightness mode uses a very low LCD brightness on a low external light.",
+						default:'$BRMOD',
+						action:"generic /sys/devices/i2c-0/0-0038/lm3530_br_mode"
+					}},'
+
+				if [ -f "/sys/devices/i2c-0/0-0038/lm3530_min_br" ]; then
+				BRMIN=\`cat /sys/devices/i2c-0/0-0038/lm3530_min_br\`
+
+					echo '{ SSeekBar:{
+							title:"Min Brightness",
+							description:"Sets the minimum brightness level.",
+							min:2,
+							max:114,
+							step:1,
+							default:'$BRMIN',
+							action:"generic /sys/devices/i2c-0/0-0038/lm3530_min_br",
+					}},'
+				fi
+
+				if [ -f "/sys/devices/i2c-0/0-0038/lm3530_max_br" ]; then
+				BRMAX=\`cat /sys/devices/i2c-0/0-0038/lm3530_max_br\`
+
+					echo '{ SSeekBar:{
+							title:"Max Brightness",
+							description:"Sets the maximum brightness level.",
+							min:2,
+							max:114,
+							step:1,
+							default:'$BRMAX',
+							action:"generic /sys/devices/i2c-0/0-0038/lm3530_max_br",
+					}},'
+				fi					
+			fi`
 		]
 }
 CTAG
