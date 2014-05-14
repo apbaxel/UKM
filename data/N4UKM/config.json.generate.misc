@@ -3,6 +3,20 @@ bool() {
   [ `cat $1` == "N" ] && echo "0";
 }
 
+minfreqindex() {
+ID=0;
+MAXID=8;
+while read FREQ TIME; do
+LABEL=$((FREQ / 1000))
+if [ $FREQ -gt "384000" ] && [ $ID -le $MAXID ]; then
+	MFIT="$MFIT $ID:\"${LABEL} MHz\", "
+fi
+ID=$((ID + 1))
+done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+
+echo $MFIT
+}
+
 cat << CTAG
 {
     name:MISC,
@@ -67,6 +81,22 @@ cat << CTAG
 					default:'$TEMP',
 					action:"generic /sys/module/msm_thermal/parameters/temp_max"
 				}},'
+			fi`
+			
+			`if [ -f "/sys/module/msm_thermal/parameters/min_freq_index" ]; then
+			MFI=\`cat /sys/module/msm_thermal/parameters/min_freq_index\`
+			
+				echo '{ SPane:{
+					title:"Temperature Limit Minimum Frequency"
+				}},
+					{ SSeekBar:{
+						description:"The minimum frequency used in throttle down before returning to max.",
+						default:'$MFI',
+						action:"generic /sys/module/msm_thermal/parameters/min_freq_index",
+						values:{'
+						minfreqindex
+						echo '}
+					}},'
 			fi`
 			
 			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
