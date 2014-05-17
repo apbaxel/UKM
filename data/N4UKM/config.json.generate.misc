@@ -198,6 +198,45 @@ cat << CTAG
 						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
 					}},'
 			fi`
+			
+			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ]; then
+			
+				echo '{ SPane:{
+					title:"Touchscreen Accuracy Filter",
+					description:"Allows you to set the accuracy & sensitivity of the touchscreen. First select your preferred settings and then enable."
+				}},'
+					for TOUCH in 1; do
+						echo '{ SCheckBox:{'
+							case $TOUCH in
+								1) 
+									echo 'label:"Enable Accuracy Filter", default:0' ;;
+							esac
+						echo ', action:"touch '${TOUCH}'",
+						}},'
+					done		
+
+					for TOUCH in 2 3 4 5 6 7; do
+						echo '{ SSeekBar:{'
+							case $TOUCH in
+								2)
+									echo 'title:"Ignore Pressure Gap", default:5' ;;
+								3)
+									echo 'title:"Delta Max", default:100' ;;
+								4)
+									echo 'title:"Touch Max Count", default:40' ;;
+								5)
+									echo 'title:"Max Pressure", default:255' ;;
+								6)
+									echo 'title:"Direction Count", default:13' ;;
+								7)
+									echo 'title:"Time To Max Pressure", default:4' ;;
+							esac
+							echo ', action:"touch '${TOUCH}'",
+							min:0,
+							max:255
+						}},'
+					done
+			fi`
 		]
 }
 CTAG
