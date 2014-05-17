@@ -103,4 +103,14 @@ case $1 in
 	cpuload)
 		echo "`cat /sys/module/msm_hotplug/current_load`";
 		;;
+	bootloader)
+		lockstate=`dd ibs=1 count=1 skip=16400 if=/dev/block/platform/msm_sdcc.1/by-name/misc 2> /dev/null | od -h | head -n 1 | cut -c 11-`;
+		if [ $lockstate == "00" ]; then
+			echo "Locked";
+		elif [ $lockstate == "01" ]; then
+			echo "Unlocked";
+		else
+			echo "Unknown";
+		fi;
+		;;
 esac;

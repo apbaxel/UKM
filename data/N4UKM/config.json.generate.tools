@@ -1,0 +1,51 @@
+cat << CTAG
+{
+	name:TOOLS,
+		elements:[
+			{ STitleBar:{
+				title:"Bootloader Status"
+			}},
+				{ SLiveLabel:{
+					refresh:3000,
+					action:"live bootloader"
+				}},
+				{ SDescription:{
+					description:"Use this button to lock/unlock your bootloader without fastboot and data wipe."
+				}},
+				{ SButton:{
+					label:"Toggle Bootloader Status",
+					action:"devtools bootloader"
+				}},
+			{ STitleBar:{
+				title:"Log Creation"
+			}},
+				{ SButton:{
+					label:"Save logcat",
+					action:"devtools logcat"
+				}},
+				{ SButton:{
+					label:"Save dmesg",
+					action:"devtools dmesg"
+				}},
+				{ SButton:{
+					label:"Save last_kmsg",
+					action:"devtools kmsg"
+				}},
+			{ STitleBar:{
+				title:"Reboot"
+			}},
+				{ SButton:{
+					label:"Reboot Device",
+					action:"devtools reboot"
+				}},
+				{ SButton:{
+					label:"Reboot to Recovery",
+					action:"devtools reboot recovery"
+				}},
+				{ SButton:{
+					label:"Reboot to Bootloader",
+					action:"devtools reboot bootloader"
+				}}
+		]
+}
+CTAG
