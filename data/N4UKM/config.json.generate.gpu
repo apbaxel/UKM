@@ -31,10 +31,8 @@ cat << CTAG
 				{ SOptionList:{
 					default:
 						`POLICY=\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy\`
-						GOV=\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor\`
-						
 						if [ "$POLICY" = "trustzone" ]; then
-							echo $GOV
+							echo "\`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor\`"
 						else
 							echo $POLICY
 						fi`,
