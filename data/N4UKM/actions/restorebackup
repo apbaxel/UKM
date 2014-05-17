@@ -21,7 +21,7 @@ reset_uci() {
 
 case "$1" in
   listboot)
-    echo `ls "$SYNAPSE_BOOT_DIR"`
+    echo `ls "$SYNAPSE_BOOT_DIR"`;
   ;;
 
   pickboot)
@@ -73,10 +73,12 @@ case "$1" in
   ;;
 
   applyconfig)
+	OWNER=`stat -c %u /data/data/com.af.synapse`;
     if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
-      rm -f $SYNAPSE_DATA/*
-      cd $SYNAPSE_DATA
+      rm -f $SYNAPSE_DATA/*;
+      cd $SYNAPSE_DATA;
       tar -xz -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+	  chown $OWNER:$OWNER *;
       echo "$SYNAPSE_CONFIG_PROFILE restored. Restart Synapse to refresh.";
       reset_uci;
     elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
@@ -87,11 +89,18 @@ case "$1" in
   ;;
 
   keepconfig)
-    timestamp=`date +%Y-%m-%d.%H.%M.%S`;
-    cd $SYNAPSE_DATA
-    tar -cz -f "$SYNAPSE_CONFIG_DIR/config-$timestamp.tgz" *;
-    echo "config-$timestamp.tgz created. Restart Synapse to see updated list.";
-    reset_uci;
+    BCK_PROF=`cat /data/N4UKM/files/bck_prof`
+	BCK_PROF=`echo ${BCK_PROF// /_}`
+	
+	if [ "$BCK_PROF" == "None" ]; then
+		echo "Enter a backup name first and then apply."
+	else
+		cd $SYNAPSE_DATA;
+		tar -cz -f "$SYNAPSE_CONFIG_DIR/$BCK_PROF.tgz" *;
+		echo "None" > /data/N4UKM/files/bck_prof
+		echo "$BCK_PROF.tgz created. Restart Synapse to see updated list.";
+		reset_uci;
+	fi
   ;;
 
   delconfig)
@@ -113,11 +122,5 @@ case "$1" in
     sleep 1;
     am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
   ;;
-
-  reboot)
-    sleep 1;
-    reboot;
-  ;;
-
 esac;
 
