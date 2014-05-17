@@ -28,29 +28,33 @@ cat << CTAG
 					}},'
 			fi`
 			
-			`if [ -f "/sys/module/intelli_plug/parameters/intelli_plug_active" ]; then
-			INTELLIPLUG=\`cat /sys/module/intelli_plug/parameters/intelli_plug_active\`
+			`if [ -d "/sys/module/intelli_plug/parameters" ]; then
 			
 				echo '{ SPane:{
 					title:"Intelliplug"
-				}},
-					{ SCheckBox:{
+				}},'
+			
+				if [ -f "/sys/module/intelli_plug/parameters/intelli_plug_active" ]; then
+				INTELLIPLUG=\`cat /sys/module/intelli_plug/parameters/intelli_plug_active\`
+
+					echo '{ SCheckBox:{
 						label:"Enable",
 						description:"An in kernel replacement for Qualcomms MPDecision. Developed by faux123.",
 						default:'$INTELLIPLUG',
 						action:"generic /sys/module/intelli_plug/parameters/intelli_plug_active"
 					}},'
-			fi`
+				fi
 			
-			`if [ -f "/sys/module/intelli_plug/parameters/eco_mode_active" ]; then
-			ECOMODE=\`cat /sys/module/intelli_plug/parameters/eco_mode_active\`
+				if [ -f "/sys/module/intelli_plug/parameters/eco_mode_active" ]; then
+				ECOMODE=\`cat /sys/module/intelli_plug/parameters/eco_mode_active\`
 			
-				echo '{ SCheckBox:{
+					echo '{ SCheckBox:{
 						label:"Eco Mode",
 						description:"Special power savings mode where the kernel automatically reconfigures its decisions in real time and optimizes to use only 2 out of 4 cores.",
 						default:'$ECOMODE',
 						action:"generic /sys/module/intelli_plug/parameters/eco_mode_active"
 					}},'
+				fi
 			fi`
 			
 			`if [ -f "/sys/kernel/msm_cpufreq_limit/cpufreq_limit" ]; then
@@ -192,18 +196,22 @@ cat << CTAG
 				fi
 			fi`
 
-			`if [ -f "/sys/module/msm_hotplug/enabled" ]; then
-			MSMHOT=\`cat /sys/module/msm_hotplug/enabled\`
-
+			`if [ -d "/sys/module/msm_hotplug" ]; then
+			
 				echo '{ SPane:{
-					title:"MSM Hotplug"
-				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"An in kernel replacement for Qualcomms MPDecision. Developed by myfluxi.",
-						default:'$MSMHOT',
-						action:"generic /sys/module/msm_hotplug/enabled"
+						title:"MSM Hotplug"
 					}},'
+
+				if [ -f "/sys/module/msm_hotplug/enabled" ]; then
+				MSMHOT=\`cat /sys/module/msm_hotplug/enabled\`
+				
+						echo '{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by myfluxi.",
+							default:'$MSMHOT',
+							action:"generic /sys/module/msm_hotplug/enabled"
+						}},'
+				fi
 				
 				if [ -f "/sys/module/msm_hotplug/min_cpus_online" ]; then
 				MINCPU=\`cat /sys/module/msm_hotplug/min_cpus_online\`
@@ -239,7 +247,7 @@ cat << CTAG
 					echo '{ SSeekBar:{
 							title:"Max CPUs Boosted",
 							description:"Maximum number of CPUs boosted at the same time.",
-							min:1,
+							min:0,
 							max:4,
 							step:1,
 							default:'$BOOST',
@@ -282,7 +290,7 @@ cat << CTAG
 
 					echo '{ SSeekBar:{
 							title:"History Size",
-							description:"Number of samples taken in consideration for avarage load across CPUs. Lower means quicker/more erratic.",
+							description:"Number of samples taken in consideration for average load across CPUs. Lower means quicker/more erratic.",
 							min:1,
 							max:60,
 							step:1,
@@ -298,7 +306,7 @@ cat << CTAG
 							title:"Update Rate",
 							description:"Interval between taking samples of load across CPUs. Lower means quicker/more erratic.",
 							unit:" ms",
-							min:1,
+							min:0,
 							max:60,
 							step:1,
 							default:'$UPDATERATE',
@@ -334,7 +342,7 @@ cat << CTAG
 					}},'
 				fi
 				
-				if [ -f "/sys/module/msm_hotplug/suspend_freq" ]; then
+				if [ -f "/sys/module/msm_hotplug/suspend_freq" ] && [ ! -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
 				SUSPFREQ=\`cat /sys/module/msm_hotplug/suspend_freq\`
 				
 					echo '{ SSeekBar:{
@@ -353,7 +361,6 @@ cat << CTAG
 			fi`
 			
 			`if [ -d "/sys/module/auto_hotplug/parameters" ]; then
-			MSMHOT=\`cat /sys/module/msm_hotplug/enabled\`
 			
 				echo '{ SPane:{
 					title:"Auto Hotplug",
@@ -456,6 +463,63 @@ cat << CTAG
 							step:1,
 							default:'$MAXCPU',
 							action:"generic /sys/module/auto_hotplug/parameters/max_online_cpus"
+					}},'
+				fi
+			fi`
+			
+			`if [ -f "/sys/module/dyn_hotplug/parameters/enabled" ]; then
+			DYNHOT=\`bool /sys/module/dyn_hotplug/parameters/enabled\`
+
+				echo '{ SPane:{
+					title:"Dynamic Hotplug"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by stratosk.",
+						default:'$DYNHOT',
+						action:"boolean /sys/module/dyn_hotplug/parameters/enabled"
+					}},'
+					
+				if [ -f "/sys/module/dyn_hotplug/parameters/min_online" ]; then
+				MINCPU=\`cat /sys/module/dyn_hotplug/parameters/min_online\`
+				
+					echo '{ SSeekBar:{
+							title:"Minimum Online CPU",
+							description:"Minimum number of CPUs that will be always online.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MINCPU',
+							action:"generic /sys/module/dyn_hotplug/parameters/min_online"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/dyn_hotplug/parameters/max_online" ]; then
+				MAXCPU=\`cat /sys/module/dyn_hotplug/parameters/max_online\`
+				
+					echo '{ SSeekBar:{
+							title:"Maximum Online CPU",
+							description:"Maximum number of CPUs that will be always online.",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/dyn_hotplug/parameters/max_online"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/dyn_hotplug/parameters/up_threshold" ]; then
+				MAXCPU=\`cat /sys/module/dyn_hotplug/parameters/up_threshold\`
+				
+					echo '{ SSeekBar:{
+							title:"Up Threshold",
+							description:"Over this threshold the driver will put one more CPU online.",
+							unit:"%",
+							min:0,
+							max:100,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/dyn_hotplug/parameters/up_threshold"
 					}},'
 				fi
 			fi`
