@@ -1,3 +1,8 @@
+bool() {
+  [ `cat $1` == "Y" ] && echo "1";
+  [ `cat $1` == "N" ] && echo "0";
+}
+
 cat << CTAG
 {
 	name:CPU VOLT,
@@ -92,6 +97,70 @@ cat << CTAG
 						}},
 						';
 							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+			fi`
+			
+			`if [ -f "/sys/module/acpuclock_krait/parameters/boost" ] && [ -f "/sys/module/acpuclock_krait/parameters/higher_khz_thres" ]; then
+			GBOOST=\`bool /sys/module/acpuclock_krait/parameters/boost\`
+				
+				echo '{ SPane:{
+					title:"Boost Voltage",
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If this is enabled, a 25 mV over-volt will be applied.",
+						default:'$GBOOST',
+						action:"boolean /sys/module/acpuclock_krait/parameters/boost"
+					}},'
+				
+				if [ -f "/sys/module/acpuclock_krait/parameters/higher_khz_thres" ]; then
+				HTHRES=\`cat /sys/module/acpuclock_krait/parameters/higher_khz_thres\`
+				
+					echo '{ SPane:{
+						title:"Settings",
+					}},
+					{ SSeekBar:{
+						title:"Higher Frequency UV",
+						description:"Above this frequency the Higher uV will be used, else Lower uV will be used.",
+						default:'$HTHRES',
+						action:"generic /sys/module/acpuclock_krait/parameters/higher_khz_thres",
+						values:{'
+							for CPUMIN in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPUMIN / 1000))
+							echo "$CPUMIN:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "/sys/module/acpuclock_krait/parameters/lower_uV" ]; then
+				LUV=\`cat /sys/module/acpuclock_krait/parameters/lower_uV\`
+				
+					echo '{ SSeekBar:{
+						title:"Lower uV",
+						description:"Undervolting value for lower frequencies.",
+							unit:" uV",
+							min:0,
+							max:300000,
+							step:25000,
+						default:'$LUV',
+						action:"generic /sys/module/acpuclock_krait/parameters/lower_uV",
+					}},'
+				fi
+				
+				if [ -f "/sys/module/acpuclock_krait/parameters/higher_uV" ]; then
+				HUV=\`cat /sys/module/acpuclock_krait/parameters/higher_uV\`
+				
+					echo '{ SSeekBar:{
+						title:"Higher uV",
+						description:"Undervolting value for higher frequencies.",
+							unit:" uV",
+							min:0,
+							max:300000,
+							step:25000,
+						default:'$HUV',
+						action:"generic /sys/module/acpuclock_krait/parameters/higher_uV",
+					}},'
+				fi
 			fi`
 		]
 }
