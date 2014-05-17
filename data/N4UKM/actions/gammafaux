@@ -22,6 +22,48 @@ if [ -f $1 ]; then
 				echo "383 114 21 118 0 0 0 80 48 2" > $kgamma_r;
 				;;
 			
+			Bundi22_iPhone5)
+				echo "255 255 255" > $kcal;
+				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_b;
+				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_g;
+				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_r;
+				;;
+			
+			KelGhu_Gamma22)
+				echo "255 255 255" > $kcal;
+				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_b;
+				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_g;
+				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_r;
+				;;
+			
+			MohitGalaxy3_KelGhu_Mod)
+				echo "255 255 255" > $kcal;
+				echo "158 0 0 70 0 3 0 67 16 2" > $kgamma_b;
+				echo "158 0 0 70 0 3 0 67 16 2" > $kgamma_g;
+				echo "158 0 0 70 0 3 0 67 16 2" > $kgamma_r;
+				;;
+			
+			MohitGalaxy3_Old)
+				echo "255 255 255" > $kcal;
+				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_b;
+				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_g;
+				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_r;
+				;;
+			
+			MohitGalaxy3_NewStock)
+				echo "255 255 255" > $kcal;
+				echo "180 0 17 70 0 5 3 67 16 2" > $kgamma_b;
+				echo "191 0 33 70 0 0 3 67 16 2" > $kgamma_g;
+				echo "191 0 33 70 0 0 3 67 16 2" > $kgamma_r;
+				;;
+			
+			MohitGalaxy3_Nexus5)
+				echo "255 255 255" > $kcal;
+				echo "275 0 0 70 0 20 3 84 96 2" > $kgamma_b;
+				echo "271 0 0 70 0 16 3 84 96 2" > $kgamma_g;
+				echo "268 0 0 70 0 16 0 84 96 2" > $kgamma_r;
+				;;
+			
 			Obsanity_Amoled)
 				echo "255 255 255" > $kcal;
 				echo "366 0 119 119 0 0 0 119 7 2" > $kgamma_b;
@@ -29,11 +71,18 @@ if [ -f $1 ]; then
 				echo "366 0 119 119 0 0 0 119 7 2" > $kgamma_r;
 				;;
 			
-			Bundi22_iPhone5)
+			PA_Brighter)
 				echo "255 255 255" > $kcal;
-				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_b;
-				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_g;
-				echo "168 0 39 119 0 6 0 2 0 2" > $kgamma_r;
+				echo "342 49 21 118 0 31 9 64 48 2" > $kgamma_b;
+				echo "342 49 21 118 0 31 9 64 48 2" > $kgamma_g;
+				echo "342 49 21 118 0 31 9 64 48 2" > $kgamma_r;
+				;;
+			
+			PA_Contrast)
+				echo "255 255 255" > $kcal;
+				echo "390 64 68 118 0 26 0 64 48 2" > $kgamma_b;
+				echo "390 64 68 118 0 26 0 64 48 2" > $kgamma_g;
+				echo "390 64 68 118 0 26 0 64 48 2" > $kgamma_r;
 				;;
 			
 			PA_HalfBreed)
@@ -42,27 +91,7 @@ if [ -f $1 ]; then
 				echo "378 64 68 118 0 25 4 66 32 1" > $kgamma_g;
 				echo "378 64 68 118 0 25 4 66 32 1" > $kgamma_r;
 				;;
-			
-			MohitGalaxy3)
-				echo "255 255 255" > $kcal;
-				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_b;
-				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_g;
-				echo "161 0 0 70 0 4 2 67 16 2" > $kgamma_r;
-				;;
-			
-			Kel_Ghu)
-				echo "255 255 255" > $kcal;
-				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_b;
-				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_g;
-				echo "147 0 0 71 0 3 0 71 0 2" > $kgamma_r;
-				;;
-			
-			Mohit_NewStock)
-				echo "255 255 255" > $kcal;
-				echo "180 0 17 70 0 5 3 67 16 2" > $kgamma_b;
-				echo "191 0 33 70 0 0 3 67 16 2" > $kgamma_g;
-				echo "191 0 33 70 0 0 3 67 16 2" > $kgamma_r;
-				;;
+
 		esac;
 	fi
 
