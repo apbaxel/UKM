@@ -1,3 +1,5 @@
+BB=/data/N4UKM/busybox;
+
 case $1 in
 	battemp)
 		BAT_C=`cat /sys/class/power_supply/battery/temp`
@@ -25,18 +27,28 @@ case $1 in
 		done < /proc/meminfo;
 		
 		FREE="$((FREE + CACHED)) MB"
-		
 		echo "Total: $TOTAL@nFree: $FREE"
 		;;
 	uptime)
-		UPTIME=`uptime`;
-		echo "${UPTIME//, /@n}";
+		TOTAL=`awk '{ print $1 }' /proc/uptime`;
+		AWAKE=$((`awk '{s+=$2} END {print s}' /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state` / 100));
+		SLEEP=`awk "BEGIN { print ($TOTAL - $AWAKE) }"`;
+		
+		PERC_A=`awk "BEGIN { print ( ($AWAKE / $TOTAL) * 100) }"`
+		PERC_A="`printf "%0.1f\n" $PERC_A`%"
+		PERC_S=`awk "BEGIN { print ( ($SLEEP / $TOTAL) * 100) }"`
+		PERC_S="`printf "%0.1f\n" $PERC_S`%"
+		
+		TOTAL=`echo - | awk -v "S=$TOTAL" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`
+		AWAKE=`echo - | awk -v "S=$AWAKE" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`
+		SLEEP=`echo - | awk -v "S=$SLEEP" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`
+		echo "Total: $TOTAL (100.0%)@nSleep: $SLEEP ($PERC_S)@nAwake: $AWAKE ($PERC_A)"
 		;;
 	unused)
 		UNUSED="";
 		while read FREQ TIME; do
 			FREQ="$((FREQ / 1000)) MHz"
-			if [ $TIME -eq "0" ]; then
+			if [ $TIME -lt "100" ]; then
 				UNUSED="$UNUSED$FREQ, "
 			fi
 		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
@@ -52,7 +64,7 @@ case $1 in
 		while read FREQ TIME; do
 			if [ "$CNT" -ge $2 ] && [ "$CNT" -le $3 ]; then
 				FREQ="$((FREQ / 1000)) MHz"
-				if [ $TIME -gt "0" ]; then
+				if [ $TIME -ge "100" ]; then
 					PERC=`awk "BEGIN { print ( ($TIME / $SUM) * 100) }"`
 					PERC="`printf "%0.1f\n" $PERC`%"
 					TIME=$((TIME / 100))
@@ -66,51 +78,49 @@ case $1 in
 		echo "$STATE"
 		;;
 	cpufreq)
-	
-		if [ -e "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU0="$((`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` / 1000)) MHz";
-		else
-			CPU0="Offline"
-		fi
+		CPU0=`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU1=`cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU2=`cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq 2> /dev/null`
+		CPU3=`cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq 2> /dev/null`
 		
-		if [ -e "/sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU1="$((`cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq` / 1000)) MHz";
-		else
-			CPU1="Offline"
-		fi
+		$BB test -z $CPU0 && CPU0="Offline";
+		$BB test -z $CPU1 && CPU1="Offline";
+		$BB test -z $CPU2 && CPU2="Offline";
+		$BB test -z $CPU3 && CPU3="Offline";
 		
-		if [ -e "/sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU2="$((`cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq` / 1000)) MHz";
-		else
-			CPU2="Offline"
-		fi
-		
-		if [ -e "/sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_cur_freq" ]; then
-			CPU3="$((`cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq` / 1000)) MHz";
-		else
-			CPU3="Offline"
-		fi
+		$BB test $CPU0 != "Offline" && CPU0="$((CPU0 / 1000)) MHz";
+		$BB test $CPU1 != "Offline" && CPU1="$((CPU1 / 1000)) MHz";
+		$BB test $CPU2 != "Offline" && CPU2="$((CPU2 / 1000)) MHz";
+		$BB test $CPU3 != "Offline" && CPU3="$((CPU3 / 1000)) MHz";
 		
 		echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
-		;;
-	entropy)
-		echo "`cat /proc/sys/kernel/random/entropy_avail`";
 		;;
 	gpufreq)
 		GPUFREQ="$((`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
 		echo "$GPUFREQ";
 		;;
-	cpuload)
-		echo "`cat /sys/module/msm_hotplug/current_load`";
-		;;
 	bootloader)
-		lockstate=`dd ibs=1 count=1 skip=16400 if=/dev/block/platform/msm_sdcc.1/by-name/misc 2> /dev/null | od -h | head -n 1 | cut -c 11-`;
+		version=`getprop ro.bootloader`;
+		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
+		lockstate=`$BB dd ibs=1 count=1 skip=16400 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
+		tamperstate=`$BB dd ibs=1 count=1 skip=16404 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
+		
 		if [ $lockstate == "00" ]; then
-			echo "Locked";
+			state="Locked";
 		elif [ $lockstate == "01" ]; then
-			echo "Unlocked";
+			state="Unlocked";
 		else
-			echo "Unknown";
+			state="Unknown";
 		fi;
+		
+		if [ $tamperstate == "00" ]; then
+			tamper="False";
+		elif [ $tamperstate == "01" ]; then
+			tamper="True";
+		else
+			tamper="Unknown";
+		fi;
+		
+		echo "Version: $version@nState: $state@nTamper: $tamper"
 		;;
 esac;
