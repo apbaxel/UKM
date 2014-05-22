@@ -26,6 +26,12 @@ cat << CTAG
 					default:512,
 					action:"buildprop dalvik.vm.heapsize",
 				}},
+				{ SCheckBox:{
+					label:"Allow purging of assets",
+					description:"Purging of bitmap memory assets allows the freeing of more RAM when needed.",
+					default:0,
+					action:"buildprop persist.sys.purgeable_assets",
+				}},
 			{ SPane:{
 				title:"DNS Tweaks",
 				description:"Allows you to set the default DNS (Domain Name System) for Wifi & 3G connections. Use this to speed up your browsing experience and improve your security.",

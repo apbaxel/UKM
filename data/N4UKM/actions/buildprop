@@ -1,5 +1,5 @@
 if [[ ! -z "$2" ]]; then
-	if [[ "$1" != *"net."* ]]; then
+	if [[ "$1" != *".dns"* ]]; then
 		if [ "$2" -ne "-1" ]; then
 			if [ $1 == "dalvik.vm.heapsize" ]; then
 				VMHS="$2"
@@ -22,7 +22,9 @@ if [ $1 == "dalvik.vm.heapsize" ]; then
 	echo $VMHS
 else
 	if [ "`getprop $1`" == "" ]; then
-		if [[ "$1" != *"net."* ]]; then
+		if [[ "$1" == "persist.sys.purgeable_assets" ]]; then
+			echo "0"
+		elif [[ "$1" != *".dns"* ]]; then
 			echo "-1"
 		else
 			echo "0.0.0.0"
