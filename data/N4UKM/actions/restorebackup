@@ -1,3 +1,5 @@
+BB=/data/N4UKM/busybox;
+
 if [ -d /data/data/com.af.synapse ]; then
   SYNAPSE_SD_DIR=/sdcard/Synapse;
   SYNAPSE_BOOT_DIR=$SYNAPSE_SD_DIR/kernel_backups;
@@ -5,9 +7,9 @@ if [ -d /data/data/com.af.synapse ]; then
 
   SYNAPSE_DATA=/data/data/com.af.synapse/databases;
 
-  [ ! -d "$SYNAPSE_BOOT_DIR" ] && mkdir -p "$SYNAPSE_BOOT_DIR";
+  [ ! -d "$SYNAPSE_BOOT_DIR" ] && $BB mkdir -p "$SYNAPSE_BOOT_DIR";
   [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"` ] && echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
-  [ ! -d "$SYNAPSE_CONFIG_DIR" ] && mkdir -p "$SYNAPSE_CONFIG_DIR";
+  [ ! -d "$SYNAPSE_CONFIG_DIR" ] && $BB mkdir -p "$SYNAPSE_CONFIG_DIR";
   [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"` ] && echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
 
   SYNAPSE_BOOT_IMG=`cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
@@ -62,7 +64,7 @@ case "$1" in
   ;;
 
   listconfig)
-    echo `ls "$SYNAPSE_CONFIG_DIR"`
+    echo `$BB ls "$SYNAPSE_CONFIG_DIR"`
   ;;
 
   pickconfig)
@@ -73,12 +75,12 @@ case "$1" in
   ;;
 
   applyconfig)
-	OWNER=`stat -c %u /data/data/com.af.synapse`;
+	OWNER=`$BB stat -c %u /data/data/com.af.synapse`;
     if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
-      rm -f $SYNAPSE_DATA/*;
+      $BB rm -f $SYNAPSE_DATA/*;
       cd $SYNAPSE_DATA;
       tar -xz -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
-	  chown $OWNER:$OWNER *;
+	  $BB chown $OWNER:$OWNER *;
       echo "$SYNAPSE_CONFIG_PROFILE restored. Restart Synapse to refresh.";
       reset_uci;
     elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
@@ -105,7 +107,7 @@ case "$1" in
 
   delconfig)
     if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
-      rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+      $BB rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
       echo "$SYNAPSE_CONFIG_PROFILE removed. Restart Synapse to see updated list.";
       reset_uci;
     elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
@@ -117,10 +119,9 @@ case "$1" in
 
   restart)
     reset_uci;
-    sleep 1;
+    $BB sleep 1;
     am force-stop com.af.synapse 2> /dev/null;
-    sleep 1;
+    $BB sleep 1;
     am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
   ;;
 esac;
-

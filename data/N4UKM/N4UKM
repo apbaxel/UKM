@@ -4,6 +4,7 @@
 # Add Synapse support
 # **************************************************************
 
+BB=/data/N4UKM/busybox;
 UCI_PATH=/data/N4UKM
 UCI_CONFIG=$UCI_PATH/config.json;
 DEBUG=$UCI_PATH/debug;
@@ -13,18 +14,18 @@ UCI_XBIN=/system/xbin/uci;
 # Delete known files that re-create uci config
 
 if [ -e "/data/ak/ak-post-boot.sh" ]; then
-	rm -f /data/ak/ak-post-boot.sh #ak
+	$BB rm -f /data/ak/ak-post-boot.sh #ak
 fi
 
 # Delete default uci config in case kernel has one already to avoid duplicates.
 
 if [ -e "/sbin/uci" ]; then
-	rm -f /sbin/uci
+	$BB rm -f /sbin/uci
 fi
 
 # Delete all debug files so it can be re-created on boot.
 
-rm -f $DEBUG/*
+$BB rm -f $DEBUG/*
 
 # Reset profiles to default
 
@@ -35,29 +36,29 @@ echo "LG_Stock" > /data/N4UKM/files/speaker_prof
 # Symlink uci file to xbin in case it's not found.
 
 if [ ! -e $UCI_XBIN ]; then
-	mount -o remount,rw /system
-	mount -t rootfs -o remount,rw rootfs
+	$BB mount -o remount,rw /system
+	$BB mount -t rootfs -o remount,rw rootfs
 	
-	chmod 755 $UCI_FILE
-	ln -s $UCI_FILE $UCI_XBIN
-	chmod 755 $UCI_XBIN
+	$BB chmod 755 $UCI_FILE
+	$BB ln -s $UCI_FILE $UCI_XBIN
+	$BB chmod 755 $UCI_XBIN
 	
-	mount -t rootfs -o remount,ro rootfs
-	mount -o remount,ro /system
+	$BB mount -t rootfs -o remount,ro rootfs
+	$BB mount -o remount,ro /system
 fi
 
 # If uci files does not have 755 permissions, set permissions.
 
-if [ `stat -c %a $UCI_FILE` -lt "755" ]; then
-	chmod 755 $UCI_FILE
+if [ `$BB stat -c %a $UCI_FILE` -lt "755" ]; then
+	$BB chmod 755 $UCI_FILE
 fi
 
-if [ `stat -c %a $UCI_XBIN` -lt "755" ]; then
-	mount -o remount,rw /system
-	mount -t rootfs -o remount,rw rootfs
-	chmod 755 $UCI_XBIN
-	mount -t rootfs -o remount,ro rootfs
-	mount -o remount,ro /system
+if [ `$BB stat -c %a $UCI_XBIN` -lt "755" ]; then
+	$BB mount -o remount,rw /system
+	$BB mount -t rootfs -o remount,rw rootfs
+	$BB chmod 755 $UCI_XBIN
+	$BB mount -t rootfs -o remount,ro rootfs
+	$BB mount -o remount,ro /system
 fi
 
 # Reset uci config so it can be re-created on boot.
