@@ -1,27 +1,67 @@
+BB=/data/N4UKM/busybox;
 TIMESTAMP=`date +%Y-%m-%d.%H.%M.%S`;
 LOGS=/sdcard/logs;
 
-[ ! -d "$LOGS" ] && mkdir -p "$LOGS";
-chmod 755 $LOGS
+[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
+$BB chmod 755 $LOGS;
 
 case $1 in
-	bootloader)
+	bootloader)	
 		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
 		locked=00;
 		unlocked=01;
 
-		lockstate=`dd ibs=1 count=1 skip=16400 obs=1 if=$block 2> /dev/null | od -h | head -n 1 | cut -c 11-`;
+		lockstate=`$BB dd ibs=1 count=1 skip=16400 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
 
 		if [ $lockstate == $locked ]; then
-			echo "Unlocking...";
+			echo "Setting State to Unlocked...";
 			setstate=$unlocked;
 		elif [ $lockstate == $unlocked ]; then
-			echo "Locking...";
+			echo "Setting State to Locked...";
 			setstate=$locked;
+		else
+			echo "State is Unknown. No changes were made.";
 		fi;
-		echo -ne "\x$setstate" | dd obs=1 count=1 seek=16400 of=$block 2> /dev/null;
+		
+		if [ -n "$setstate" ]; then
+			echo -ne "\x$setstate" | $BB dd obs=1 count=1 seek=16400 of=$block 2> /dev/null;
+		fi;
 	;;
+	
+	tamper)	
+		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
+		false=00;
+		true=01;
 
+		tamperstate=`$BB dd ibs=1 count=1 skip=16404 obs=1 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
+
+		if [ $tamperstate == $true ]; then
+			echo "Setting Tamper to False...";
+			setstate=$false;
+		elif [ $tamperstate == $false ]; then
+			echo "Setting Tamper to True...";
+			setstate=$true;
+		else
+			"Tamper is Unknown. No changes were made.";
+		fi;
+		
+		if [ -n "$setstate" ]; then
+			echo -ne "\x$setstate" | $BB dd obs=1 count=1 seek=16404 of=$block 2> /dev/null;
+		fi;
+	;;
+	
+	selinux)	
+		if [[ ! -z $2 ]]; then
+			if [ $2 = "Enforcing" ]; then
+				setenforce 1;
+			elif [ $2 = "Permissive" ]; then
+				setenforce 0;
+			fi;
+		fi
+
+		echo `getenforce`
+	;;
+	
 	logcat)
 		saved="$LOGS/logcat-$TIMESTAMP.txt";
 		logcat -d > $saved;
@@ -29,21 +69,21 @@ case $1 in
 
 	dmesg)
 		saved="$LOGS/dmesg-$TIMESTAMP.txt";
-		dmesg > $saved;
+		$BB dmesg > $saved;
 	;;
 
 	kmsg)
 		kmsg=/proc/last_kmsg;
 		if [ -f $kmsg ]; then
 			saved="$LOGS/last_kmsg-$TIMESTAMP.txt";
-			cp -f $kmsg $saved;
+			$BB cp -f $kmsg $saved;
 		else
 			echo "$kmsg not found.";
 		fi;
 	;;
 
 	reboot)
-		sleep 1;
+		$BB sleep 1;
 		reboot $2;
 	;;
 esac;

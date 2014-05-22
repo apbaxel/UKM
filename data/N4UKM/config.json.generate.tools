@@ -16,8 +16,26 @@ cat << CTAG
 					label:"Toggle Bootloader Status",
 					action:"devtools bootloader"
 				}},
-			{ STitleBar:{
-				title:"Log Creation"
+				{ SDescription:{
+					description:"The bootloader sets a tamper flag if it has ever been unlocked/altered. The button below allows you to change this state."
+				}},
+				{ SButton:{
+					label:"Toggle Tamper Flag",
+					action:"devtools tamper"
+				}},
+			{ SPane:{
+				title:"SELinux Status",
+				description:"Allows you to change your SELinux (Security-Enhanced Linux) Status from Enforcing (policy is enforced) to Permissive (prints warnings instead of enforcing).",
+			}},
+				{ SOptionList:{
+					default:`getenforce`,
+					action:"devtools selinux",
+					values:[ Enforcing, Permissive
+					],
+				}},
+			{ SPane:{
+				title:"Log Creation",
+				description:"Save the logcat (App/system debug), dmesg (active kernel output) and last_ksmg (same as dmesg but from the last shutdown).",
 			}},
 				{ SButton:{
 					label:"Save logcat",
