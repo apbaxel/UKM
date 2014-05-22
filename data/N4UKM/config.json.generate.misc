@@ -141,19 +141,23 @@ cat << CTAG
 					}},'
 			fi`
 
-			{ SPane:{
-				title:"Vibrator Strength"
-			}},
-				{ SSeekBar:{
-					description:"Allows to set the intensity of the vibrator.",
-					unit:"%",
-					step:1,
-					min:0,
-					max:100,
-					default:`cat /sys/class/timed_output/vibrator/amp`,
-					action:"generic /sys/class/timed_output/vibrator/amp"
+			`if [ -f "/sys/class/timed_output/vibrator/amp" ]; then
+			VIBRATOR=\`cat /sys/class/timed_output/vibrator/amp\`
+
+				echo '{ SPane:{
+					title:"Vibrator Strength"
 				}},
-			
+					{ SSeekBar:{
+						description:"Allows to set the intensity of the vibrator.",
+						unit:" %",
+						step:1,
+						min:0,
+						max:100,
+						default:'$VIBRATOR',
+						action:"generic /sys/class/timed_output/vibrator/amp"
+					}},'
+			fi`
+
 			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ]; then
 			FC=\`cat /sys/kernel/fast_charge/force_fast_charge\`
 			
