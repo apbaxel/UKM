@@ -12,7 +12,7 @@ cat << CTAG
 				
 				echo '{ SPane:{
 						title:"Gamma Profiles",
-						description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=6'>HERE</a>"
+						description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=5'>HERE</a>"
 					}},
 						{ SOptionList:{
 							default:Google_Stock,
