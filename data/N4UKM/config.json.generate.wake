@@ -89,7 +89,18 @@ cat << CTAG
 						action:"generic /sys/android_touch/sweep2wake"
 					}},'
 			fi`
-			
+
+			`if [ -f "/sys/android_touch/shortsweep" ]; then
+			SSWEEP=\`cat /sys/android_touch/shortsweep\`
+
+				echo '{ SCheckBox:{
+						label:"Enable Shortsweep",
+						description:"Enabling this makes sweep2wake work with a shorter sweep distance.",
+						default:'$SSWEEP',
+						action:"generic /sys/android_touch/shortsweep"
+					}},'
+			fi`
+
 			`if [ -f "/sys/android_touch/s2w_s2sonly" ]; then
 			S2S=\`cat /sys/android_touch/s2w_s2sonly\`
 
@@ -115,6 +126,34 @@ cat << CTAG
 						description:"If enabled, disables screen wake controls when scren is turned off by power key.",
 						default:'$PKS',
 						action:"boolean /sys/module/input_core/parameters/pwrkey_suspend"
+					}},'
+			fi`
+
+			`if [ -f "/sys/android_touch/pwrkey_suspend" ]; then
+			PKSFLO=\`cat /sys/android_touch/pwrkey_suspend\`
+
+				echo '{ SPane:{
+					title:"Power Key Suspend"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, disables screen wake controls when screen is turned off by power key.",
+						default:'$PKSFLO',
+						action:"generic /sys/android_touch/pwrkey_suspend"
+					}},'
+			fi`
+
+			`if [ -f "/sys/android_touch/lid_suspend" ]; then
+			LIDSFLO=\`cat /sys/android_touch/lid_suspend\`
+
+				echo '{ SPane:{
+					title:"Lid Closed Suspend"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, disables screen wake controls when lid is closed.",
+						default:'$LIDSFLO',
+						action:"generic /sys/android_touch/lid_suspend"
 					}},'
 			fi`
 		]
