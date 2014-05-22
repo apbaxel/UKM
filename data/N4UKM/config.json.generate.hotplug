@@ -263,7 +263,7 @@ cat << CTAG
 							description:"Minimum interval a CPU is boosted.",
 							unit:" ms",
 							min:1,
-							max:10000,
+							max:5000,
 							step:1,
 							default:'$BOOSTLOCK',
 							action:"generic /sys/module/msm_hotplug/boost_lock_duration"
@@ -278,7 +278,7 @@ cat << CTAG
 							description:"Minimum interval a CPU is kept online.",
 							unit:" ms",
 							min:1,
-							max:10000,
+							max:5000,
 							step:1,
 							default:'$DOWNLOCK',
 							action:"generic /sys/module/msm_hotplug/down_lock_duration"
@@ -520,6 +520,427 @@ cat << CTAG
 							step:1,
 							default:'$MAXCPU',
 							action:"generic /sys/module/dyn_hotplug/parameters/up_threshold"
+					}},'
+				fi
+			fi`
+			
+			`if [ -d "sys/kernel/alucard_hotplug" ]; then
+			
+				echo '{ SPane:{
+					title:"Alucard"
+				}},'
+			
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_enable" ]; then
+				HOTENABLE=\`cat sys/kernel/alucard_hotplug/hotplug_enable\`
+
+					echo '{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by Alucard.",
+						default:'$HOTENABLE',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_enable"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_sampling_rate" ]; then
+				SR=\`cat sys/kernel/alucard_hotplug/hotplug_sampling_rate\`
+					
+					echo '{ SSeekBar:{
+							title:"Sampling Rate",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$SR',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_sampling_rate"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/maxcoreslimit" ]; then
+				MCL=\`cat sys/kernel/alucard_hotplug/maxcoreslimit\`
+					
+					echo '{ SSeekBar:{
+							title:"Max Cores Limit",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MCL',
+							action:"generic sys/kernel/alucard_hotplug/maxcoreslimit"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/maxcoreslimit_sleep" ]; then
+				MCLS=\`cat sys/kernel/alucard_hotplug/maxcoreslimit_sleep\`
+					
+					echo '{ SSeekBar:{
+							title:"Max Cores Limit Sleep",
+							min:1,
+							max:4,
+							step:1,
+							default:'$MCLS',
+							action:"generic sys/kernel/alucard_hotplug/maxcoreslimit_sleep"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/cpu_down_rate" ]; then
+				CPUDR=\`cat sys/kernel/alucard_hotplug/cpu_down_rate\`
+					
+					echo '{ SSeekBar:{
+							title:"CPU Down Rate",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$CPUDR',
+							action:"generic sys/kernel/alucard_hotplug/cpu_down_rate"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/cpu_up_rate" ]; then
+				CPUUR=\`cat sys/kernel/alucard_hotplug/cpu_up_rate\`
+					
+					echo '{ SSeekBar:{
+							title:"CPU Up Rate",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$CPUUR',
+							action:"generic sys/kernel/alucard_hotplug/cpu_up_rate"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_1_1" ]; then
+				HL11=\`cat sys/kernel/alucard_hotplug/hotplug_load_1_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 1_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL11',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_1_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_2_0" ]; then
+				HL20=\`cat sys/kernel/alucard_hotplug/hotplug_load_2_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 2_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL20',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_2_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_2_1" ]; then
+				HL21=\`cat sys/kernel/alucard_hotplug/hotplug_load_2_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 2_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL21',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_2_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_3_0" ]; then
+				HL30=\`cat sys/kernel/alucard_hotplug/hotplug_load_3_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 3_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL30',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_3_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_3_1" ]; then
+				HL31=\`cat sys/kernel/alucard_hotplug/hotplug_load_3_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 3_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL31',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_3_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_load_4_0" ]; then
+				HL40=\`cat sys/kernel/alucard_hotplug/hotplug_load_4_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug Load 4_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HL40',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_load_4_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_1_1" ]; then
+				HR11=\`cat sys/kernel/alucard_hotplug/hotplug_rq_1_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 1_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR11',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_1_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_2_0" ]; then
+				HR20=\`cat sys/kernel/alucard_hotplug/hotplug_rq_2_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 2_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR20',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_2_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_2_1" ]; then
+				HR21=\`cat sys/kernel/alucard_hotplug/hotplug_rq_2_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 2_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR21',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_2_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_3_0" ]; then
+				HR30=\`cat sys/kernel/alucard_hotplug/hotplug_rq_3_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 3_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR30',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_3_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_3_1" ]; then
+				HR31=\`cat sys/kernel/alucard_hotplug/hotplug_rq_3_1\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 3_1",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR31',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_3_1"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_rq_4_0" ]; then
+				HR40=\`cat sys/kernel/alucard_hotplug/hotplug_rq_4_0\`
+					
+					echo '{ SSeekBar:{
+							title:"Hotplug RQ 4_0",
+							unit:"%",
+							min:1,
+							max:100,
+							step:1,
+							default:'$HR40',
+							action:"generic sys/kernel/alucard_hotplug/hotplug_rq_4_0"
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_1_1" ]; then
+				HF11=\`cat sys/kernel/alucard_hotplug/hotplug_freq_1_1\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 1_1",
+						default:'$HF11',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_1_1",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_2_0" ]; then
+				HF20=\`cat sys/kernel/alucard_hotplug/hotplug_freq_2_0\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 2_0",
+						default:'$HF20',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_2_0",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_2_1" ]; then
+				HF21=\`cat sys/kernel/alucard_hotplug/hotplug_freq_2_1\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 2_1",
+						default:'$HF21',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_2_1",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_3_0" ]; then
+				HF30=\`cat sys/kernel/alucard_hotplug/hotplug_freq_3_0\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 3_0",
+						default:'$HF30',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_3_0",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_3_1" ]; then
+				HF31=\`cat sys/kernel/alucard_hotplug/hotplug_freq_3_1\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 3_1",
+						default:'$HF31',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_3_1",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "sys/kernel/alucard_hotplug/hotplug_freq_4_0" ]; then
+				HF40=\`cat sys/kernel/alucard_hotplug/hotplug_freq_4_0\`
+				
+					echo '{ SSeekBar:{
+						title:"Frequency 4_0",
+						default:'$HF40',
+						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_4_0",
+						values:{'
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+			fi`
+			
+			`if [ -d "/sys/module/cpu_boost/parameters" ]; then
+			
+				echo '{ SPane:{
+						title:"CPU Boost Driver"
+					}},'
+			
+				if [ -f "/sys/module/cpu_boost/parameters/boost_ms" ]; then
+				BOOSTMS=\`cat /sys/module/cpu_boost/parameters/boost_ms\`
+					
+					echo '{ SSeekBar:{
+							title:"Boost",
+							description:"Minimum interval a CPU is boosted.",
+							unit:" ms",
+							min:0,
+							max:5000,
+							step:1,
+							default:'$BOOSTMS',
+							action:"generic /sys/module/cpu_boost/parameters/boost_ms"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/cpu_boost/parameters/sync_threshold" ]; then
+				SYNCT=\`cat /sys/module/cpu_boost/parameters/sync_threshold\`
+				
+					echo '{ SSeekBar:{
+						title:"Sync Threshold",
+						description:"When CPU loading crosses the preset threshold, the current CPU is raised to this frequency.",
+						default:'$SYNCT',
+						action:"generic /sys/module/cpu_boost/parameters/sync_threshold",
+						values:{ 0:"Disabled", '
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
+					}},'
+				fi
+				
+				if [ -f "/sys/module/cpu_boost/parameters/input_boost_ms" ]; then
+				SYNCT=\`cat /sys/module/cpu_boost/parameters/input_boost_ms\`
+				
+					echo '{ SSeekBar:{
+							title:"Input Boost",
+							description:"Minimum interval a CPU is boosted when input is detected.",
+							unit:" ms",
+							min:0,
+							max:5000,
+							step:1,
+							default:'$SYNCT',
+							action:"generic /sys/module/cpu_boost/parameters/input_boost_ms"
+					}},'
+				fi
+				
+				if [ -f "/sys/module/cpu_boost/parameters/input_boost_freq" ]; then
+				IBF=\`cat /sys/module/cpu_boost/parameters/input_boost_freq\`
+				
+					echo '{ SSeekBar:{
+						title:"Input Boost Frequency",
+						description:"This will boost your minimum CPU speed to the selected frequency when you touch the screen or press a button.",
+						default:'$IBF',
+						action:"generic /sys/module/cpu_boost/parameters/input_boost_freq",
+						values:{ 0:"Disabled", '
+							for CPU in \`cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies\` ; do
+							LABEL=$((CPU / 1000))
+								echo "$CPU:\"${LABEL} MHz\", "
+							done
+						echo '}
 					}},'
 				fi
 			fi`
