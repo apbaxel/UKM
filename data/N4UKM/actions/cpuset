@@ -1,54 +1,55 @@
+BB=/data/N4UKM/busybox;
 CPU=/sys/devices/system/cpu;
 
-if [ -r $1 ]; then
+if [ -f $1 ]; then
+	PERM=`$BB stat -c %a $1`;
+	$BB test $PERM -lt "664" && $BB chmod 664 $1;
+	
 	if [[ ! -z $2 ]]; then
-		echo $2 > $1
+		echo $2 > $1;
 		
 		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_min_freq" ]; then
 			if [ -f "$CPU/cpu1/cpufreq/scaling_min_freq" ]; then
-				echo $2 > $CPU/cpu1/cpufreq/scaling_min_freq
+				echo $2 > $CPU/cpu1/cpufreq/scaling_min_freq;
 			fi
 			
 			if [ -f "$CPU/cpu2/cpufreq/scaling_min_freq" ]; then
-				echo $2 > $CPU/cpu2/cpufreq/scaling_min_freq
+				echo $2 > $CPU/cpu2/cpufreq/scaling_min_freq;
 			fi
 			
 			if [ -f "$CPU/cpu3/cpufreq/scaling_min_freq" ]; then
-				echo $2 > $CPU/cpu3/cpufreq/scaling_min_freq
+				echo $2 > $CPU/cpu3/cpufreq/scaling_min_freq;
 			fi
 		fi
 		
 		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_max_freq" ]; then
 			if [ -f "$CPU/cpu1/cpufreq/scaling_max_freq" ]; then
-				echo $2 > $CPU/cpu1/cpufreq/scaling_max_freq
+				echo $2 > $CPU/cpu1/cpufreq/scaling_max_freq;
 			fi
 			
 			if [ -f "$CPU/cpu2/cpufreq/scaling_max_freq" ]; then
-				echo $2 > $CPU/cpu2/cpufreq/scaling_max_freq
+				echo $2 > $CPU/cpu2/cpufreq/scaling_max_freq;
 			fi
 			
 			if [ -f "$CPU/cpu3/cpufreq/scaling_max_freq" ]; then
-				echo $2 > $CPU/cpu3/cpufreq/scaling_max_freq
+				echo $2 > $CPU/cpu3/cpufreq/scaling_max_freq;
 			fi
 		fi
 		
 		if [ "$1" = "$CPU/cpu0/cpufreq/scaling_governor" ]; then
 			if [ -f "$CPU/cpu1/cpufreq/scaling_governor" ]; then
-				echo $2 > $CPU/cpu1/cpufreq/scaling_governor
+				echo $2 > $CPU/cpu1/cpufreq/scaling_governor;
 			fi
 			
 			if [ -f "$CPU/cpu2/cpufreq/scaling_governor" ]; then
-				echo $2 > $CPU/cpu2/cpufreq/scaling_governor
+				echo $2 > $CPU/cpu2/cpufreq/scaling_governor;
 			fi
 			
 			if [ -f "$CPU/cpu3/cpufreq/scaling_governor" ]; then
-				echo $2 > $CPU/cpu3/cpufreq/scaling_governor
+				echo $2 > $CPU/cpu3/cpufreq/scaling_governor;
 			fi
 		fi
 	fi
 
-	echo `cat $1`
-else
-	chmod 664 $1;
-	echo `cat $1`
+	echo `cat $1`;
 fi;
