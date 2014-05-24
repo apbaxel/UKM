@@ -141,6 +141,23 @@ cat << CTAG
 					}},'
 				fi					
 			fi`
+
+			`if [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ]; then
+			BLKD=\`cat /sys/module/msm_fb/parameters/backlight_dimmer\`
+
+				echo '{ SPane:{
+					title:"Backlite Dimmer Control"
+				}},
+					{ SSeekBar:{
+						description:"Backlight dimmer allows you to adjust the LCD screen brightness lower than is possible with stock. Be careful, you can lower the brightness so much you can barely see it.",
+						step:1,
+						min:0,
+						max:100,
+						default:'$BLKD',
+						action:"generic /sys/module/msm_fb/parameters/backlight_dimmer"
+					}},'
+			fi`
 		]
 }
 CTAG
+
