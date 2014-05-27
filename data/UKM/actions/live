@@ -1,0 +1,37 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+DEVICE=`getprop ro.product.device`;
+CONFIG=$UKM/device/$DEVICE.sh;
+
+case $1 in
+	BatteryTemperature)
+		echo `sh $CONFIG LiveBatteryTemperature`;
+	;;
+	Bootloader)
+		echo `sh $CONFIG LiveBootloader`;
+	;;
+	CPUFrequency)
+		echo `sh $CONFIG LiveCPUFrequency`;
+	;;
+	CPUTemperature)
+		echo `sh $CONFIG LiveCPUTemperature`;
+	;;
+	GPUFrequency)
+		echo `sh $CONFIG LiveGPUFrequency`;
+	;;
+	Memory)
+		echo `sh $CONFIG LiveMemory`;
+	;;
+	Time)
+		echo `sh $CONFIG LiveTime $2 $3`;
+	;;
+	UpTime)
+		echo `sh $CONFIG LiveUpTime`;
+	;;
+	UnUsed)
+		echo `sh $CONFIG LiveUnUsed`;
+	;;
+	WakelocksKernel)
+		echo `sh $CONFIG LiveWakelocksKernel`;
+	;;
+esac;

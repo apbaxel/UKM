@@ -1,0 +1,135 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -d /data/data/com.af.synapse ]; then
+  SYNAPSE_SD_DIR=/sdcard/Synapse;
+  SYNAPSE_BOOT_DIR=$SYNAPSE_SD_DIR/kernel_backups;
+  SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_profiles;
+
+  SYNAPSE_DATA=/data/data/com.af.synapse/databases;
+
+  [ ! -d "$SYNAPSE_BOOT_DIR" ] && $BB mkdir -p "$SYNAPSE_BOOT_DIR";
+  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"` ] && $BB echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+  [ ! -d "$SYNAPSE_CONFIG_DIR" ] && $BB mkdir -p "$SYNAPSE_CONFIG_DIR";
+  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"` ] && $BB echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+
+  SYNAPSE_BOOT_IMG=`$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+  SYNAPSE_CONFIG_PROFILE=`$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+fi;
+
+reset_uci() {
+  /system/xbin/uci reset;
+  /system/xbin/uci;
+}
+
+case "$1" in
+	listboot)
+		$BB echo `$BB ls "$SYNAPSE_BOOT_DIR"`;
+	;;
+
+	pickboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$2" -o "$2" == "None" ]; then
+			$BB echo "$2" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+		fi;
+		$BB echo `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+	;;
+
+	flashboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+			$BB dd if="$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" of="$2" 2> /dev/null;
+			reboot;
+		elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	keepboot)
+		BCK_PROF=`$BB cat $UKM/files/bck_prof`;
+		BCK_PROF=`$BB echo ${BCK_PROF// /_}`;
+	
+		if [ "$BCK_PROF" == "None" ]; then
+			$BB echo "Enter a kernel name first and then apply.";
+		else
+			$BB dd if="$2" of="$SYNAPSE_BOOT_DIR/$BCK_PROF.img" 2> /dev/null;
+			$BB echo "None" > $UKM/files/bck_prof;
+			$BB echo "$BCK_PROF.img created. Press the Restart Synapse button below to see updated list.";
+			reset_uci;
+		fi;
+	;;
+
+	delboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+			$BB rm -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG";
+			$BB echo "$SYNAPSE_BOOT_IMG removed. Press the Restart Synapse button below to see updated list.";
+			reset_uci;
+		elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	listconfig)
+		$BB echo `$BB ls "$SYNAPSE_CONFIG_DIR"`;
+	;;
+
+	pickconfig)
+		if [ -f "$SYNAPSE_CONFIG_DIR/$2" -o "$2" == "None" ]; then
+			$BB echo "$2" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+		fi;
+		$BB echo `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+	;;
+
+	applyconfig)
+		OWNER=`$BB stat -c %u /data/data/com.af.synapse`;
+		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+			$BB rm -f $SYNAPSE_DATA/*;
+			cd $SYNAPSE_DATA;
+			$BB tar -x -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+			$BB chown $OWNER:$OWNER *;
+			$BB echo "$SYNAPSE_CONFIG_PROFILE restored. Press the Restart Synapse button below to see updated list.";
+			reset_uci;
+		elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	keepconfig)
+		BCK_PROF=`$BB cat $UKM/files/bck_prof`;
+		BCK_PROF=`$BB echo ${BCK_PROF// /_}`;
+	
+		if [ "$BCK_PROF" == "None" ]; then
+			$BB echo "Enter a profile name first and then apply.";
+		else
+			cd $SYNAPSE_DATA;
+			$BB tar -cZ  -f "$SYNAPSE_CONFIG_DIR/$BCK_PROF.tgz" *;
+			$BB echo "None" > $UKM/files/bck_prof;
+			$BB echo "$BCK_PROF.tgz created. Press the Restart Synapse button below to see updated list.";
+			reset_uci;
+		fi;
+	;;
+
+	delconfig)
+		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+			$BB rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+			$BB echo "$SYNAPSE_CONFIG_PROFILE removed. Press the Restart Synapse button below to see updated list.";
+			reset_uci;
+		elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	restart)
+		reset_uci;
+		$BB sleep 1;
+		am force-stop com.af.synapse 2> /dev/null;
+		$BB sleep 1;
+		am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+	;;
+esac;

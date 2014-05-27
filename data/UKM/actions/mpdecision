@@ -1,0 +1,18 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		if [ $2 == 1 ]; then
+			start mpdecision;
+		elif [ $2 == 0 ]; then
+			stop mpdecision;
+		fi;
+	fi;
+
+	if [ "`ps | $BB grep mpdecision`" ]; then
+		$BB echo "1";
+	else
+		$BB echo "0";
+	fi;
+fi;

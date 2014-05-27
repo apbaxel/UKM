@@ -1,0 +1,122 @@
+cat << CTAG
+{
+	name:ADV,
+		elements:[
+			{ SPane:{
+				title:"Krait C-States Settings"
+			}},
+				{ SCheckBox:{
+					description:"Shallowest Sleep with instant wake up.",
+					label:"C0 (WFI)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled" ]; then
+							$BB cat /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled
+						else
+							$BB echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Slightly deeper sleep with slight latency when waking up. (Disable this if you encounter screen flickering)",
+					label:"C1 (Retention)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/retention/idle_enabled" ]; then
+							$BB cat /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled
+						else
+							$BB echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Deeper sleep with longer latency when waking up.",
+					label:"C2 (Stand Alone Power Collapse)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled" ]; then
+							$BB cat /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled
+						else
+							$BB echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled"
+				}},
+				{ SCheckBox:{
+					description:"Really deep sleep with longest latency when waking up.",
+					label:"C3 (Power Collapse)",
+					default:
+						`if [ -f "/sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled" ]; then
+							$BB cat /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled
+						else
+							$BB echo "0"
+						fi`,
+					action:"socset /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled"
+				}},
+			`if [ -f "/sys/kernel/mm/ksm/run" ]; then
+			KSM=\`$BB cat /sys/kernel/mm/ksm/run\`
+			PTS=\`$BB cat /sys/kernel/mm/ksm/pages_to_scan\`
+			SLEEP=\`$BB cat /sys/kernel/mm/ksm/sleep_millisecs\`
+				$BB echo '{ SPane:{
+					title:"Kernel Samepage Merging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests.",
+						default:'$KSM',
+						action:"generic /sys/kernel/mm/ksm/run"
+					}},
+					{ SSeekBar:{
+						title:"Pages To Scan",
+						unit:" pages",
+						step:10,
+						min:0,
+						max:500,
+						default:'$PTS',
+						action:"generic /sys/kernel/mm/ksm/pages_to_scan"
+					}},
+					{ SSeekBar:{
+						title:"Scan Delay Interval",
+						unit:" ms",
+						step:10,
+						min:0,
+						max:500,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/sched/gentle_fair_sleepers" ]; then
+			GFS=\`$BB cat /sys/kernel/sched/gentle_fair_sleepers\`
+			
+				$BB echo '{ SPane:{
+					title:"Gentle Fair Sleepers"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Sleeper Fairness is a concept used by CFS which treat sleeping/waiting tasks as if they were in a run queue. This implies tasks which spend most of the time waiting for an user input and such will get a fair share of CPU when they need it. Disabling Gentle Fair Sleepers could improve UI responsiveness.",
+						default:'$GFS',
+						action:"generic /sys/kernel/sched/gentle_fair_sleepers"
+					}},'
+			fi`
+			{ SPane:{
+				title:"Low Memory Killer",
+				description:"LMK Minfree controls how much memory each app type can hold, and is responsible for memory management for multitasking."
+			}},
+				`for LMK in 1 2 3 4 5 6; do
+					$BB echo '{ SSeekBar:{ '
+						case $LMK in
+							1)
+								$BB echo 'title:"Foreground App", description:"The application currenty on the screen and running."' ;;
+							2)
+								$BB echo 'title:"Visible App", description:"The application that is open and running in background."' ;;
+							3)
+								$BB echo 'title:"Secondary Server", description:"This is a service an application needs that is alive and ready."' ;;
+							4)
+								$BB echo 'title:"Hidden App", description:"An idle process that wakes up on application request."' ;;
+							5)
+								$BB echo 'title:"Content Provider", description:"Apps that provide data (content) to the system."' ;;
+							6)
+								$BB echo 'title:"Empty App", description:"Apps closed by the user but ready to run."' ;;
+						esac
+					echo ', action:"lmk '${LMK}'",
+					unit:"MB", min:10, max:200 }},'
+				done`
+		]
+}
+CTAG

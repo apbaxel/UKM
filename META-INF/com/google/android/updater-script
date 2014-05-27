@@ -1,5 +1,6 @@
 ui_print("***********************************************");
-ui_print("* Welcome to the N4 Universal Kernel Manager. *");
+ui_print("*               Welcome to the                *");
+ui_print("*          Universal Kernel Manager           *");
 ui_print("*             Created by apb_axel             *");
 ui_print("*      Don't forget to install Synapse!       *");
 ui_print("***********************************************");
@@ -13,19 +14,19 @@ run_program("/sbin/busybox", "mount", "/system");
 set_progress(0.100000);
 
 ui_print("Deleting old files...");
-delete_recursive("/data/N4UKM");
-delete("/system/etc/init.d/N4UKM", "/system/xbin/uci");
+delete_recursive("/data/N4UKM", "/data/UKM");
+delete("/system/etc/init.d/N4UKM", "/system/etc/init.d/UKM", "/system/xbin/uci");
 set_progress(0.300000);
 
 ui_print("Extracting files...");
 package_extract_dir("data", "/data");
-package_extract_file("data/N4UKM/N4UKM", "/system/etc/init.d/N4UKM");
-package_extract_file("data/N4UKM/uci", "/system/xbin/uci");
+package_extract_file("data/UKM/UKM", "/system/etc/init.d/UKM");
+package_extract_file("data/UKM/uci", "/system/xbin/uci");
 set_progress(0.500000);
 
 ui_print("Setting permissions...");
-set_perm_recursive(0, 0, 0755, 0755, "/data/N4UKM");
-set_perm(0, 0, 0755, "/system/etc/init.d/N4UKM");
+set_perm_recursive(0, 0, 0755, 0755, "/data/UKM");
+set_perm(0, 0, 0755, "/system/etc/init.d/UKM");
 set_perm(0, 0, 0755, "/system/xbin/uci");
 set_progress(0.700000);
 

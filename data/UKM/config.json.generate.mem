@@ -1,0 +1,63 @@
+cat << CTAG
+{
+    name:MEMORY,
+		elements:[
+			`if [ -f "/sys/devices/virtual/block/zram0/disksize" ]; then
+			ZRAM=\`$BB cat /sys/devices/virtual/block/zram0/disksize\`;
+			ZRAM=$((ZRAM / 1024 / 1024));
+			$BB echo '{ SPane:{
+				title:"Z-RAM",
+				description:"Attempts to increase performance by avoiding paging on physical storage, instead using a compressed virtual device in RAM. Paging takes place in RAM until it is necessary to use the swap space on physical storage."
+			}},
+				{ SSeekBar:{
+					unit:" MB",
+					step:1,
+					min:0,
+					max:1024, 
+					default:'$ZRAM',
+					action:"zram /sys/devices/virtual/block/zram0/disksize"
+				}},'
+			fi`
+			{ SPane:{
+				title:"Virtual Memory",
+				description:"Tune the operation of the VM subsystem of the Linux kernel and the writeout of dirty data to disk. Swappiness also affects Z-RAM operation on kernels which support swaps."
+			}},
+				{ SSeekBar:{
+					title:"Dirty Background Ratio",
+					unit:"%",
+					step:1,
+					min:0,
+					max:100,
+					default:`$BB cat /proc/sys/vm/dirty_background_ratio`,
+					action:"generic /proc/sys/vm/dirty_background_ratio"
+				}},
+				{ SSeekBar:{
+					title:"Dirty Ratio",
+					unit:"%",
+					step:1,
+					min:0,
+					max:100,
+					default:`$BB cat /proc/sys/vm/dirty_ratio`,
+					action:"generic /proc/sys/vm/dirty_ratio"
+				}},
+				{ SSeekBar:{
+					title:"Swappiness",
+					unit:"%",
+					step:1,
+					min:0,
+					max:100,
+					default:`$BB cat /proc/sys/vm/swappiness`,
+					action:"generic /proc/sys/vm/swappiness"
+				}},
+				{ SSeekBar:{
+					title:"VFS Cache Pressure",
+					unit:"%",
+					step:1,
+					min:0,
+					max:150,
+					default:`$BB cat /proc/sys/vm/vfs_cache_pressure`,
+					action:"generic /proc/sys/vm/vfs_cache_pressure"
+				}},
+		]
+}
+CTAG

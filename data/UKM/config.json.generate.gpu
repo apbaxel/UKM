@@ -1,0 +1,79 @@
+cat << CTAG
+{
+	name:GPU,
+		elements:[
+			{ SPane:{
+				title:"Current GPU Frequency:"
+			}},
+				{ SLiveLabel:{
+					refresh:3000,
+					style:italic,
+					action:"live GPUFrequency"
+				}},
+			{ SPane:{
+				title:"GPU Max Frequency",
+				description:"Set the maximum frequency the GPU scales up to."
+			}},
+				{ SSeekBar:{
+					default:`$BB cat \`sh $DEVICE DirGPUMaxFrequency\``,
+					action:"generic `sh $DEVICE DirGPUMaxFrequency`",
+					values:{
+						`sh $DEVICE GPUFrequencyList`
+					}
+				}},
+			{ SPane:{
+				title:"GPU Governor",
+				description:"The GPU Governor makes scaling decisions based on specific algorithm for 2D/3D scenarios."
+			}},
+				{ SOptionList:{
+					default:`sh $DEVICE DefaultGPUGovernor`,
+					action:"gpugov `sh $DEVICE DirGPUGovernor`",
+					values:[
+						`sh $DEVICE GPUGovernorList`
+					]
+				}},
+				`if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+					$BB echo '{ SPane:{
+					title:"Simple Governor Tunables"
+					}},'
+					if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
+						LAZ=\`$BB cat /sys/module/msm_kgsl_core/parameters/simple_laziness\`
+						$BB echo '{ SSeekBar:{
+						title:"Laziness",
+						description:"Adjusts the number of times the governor skips ramp down requests. Higher = better performance (more battery drain).",
+						default:'$LAZ',
+						action:"generic /sys/module/msm_kgsl_core/parameters/simple_laziness",
+						min:0,
+						max:10,
+						step:1
+						}},'
+					fi
+					if [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+						RAMP=\`$BB cat /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold\`
+						$BB echo '{ SSeekBar:{
+						title:"Ramp Threshold",
+						description:"Adjusts the threshold to ramp up or down GPU frequencies. Lower = better performance (more battery drain).",
+						default:'$RAMP',
+						action:"generic /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold",
+						min:0,
+						max:10000,
+						step:1000
+						}},'
+					fi
+				fi`
+				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table" ]; then
+					$BB echo '{ SPane:{
+					title:"GPU Voltages"
+					}},'
+						while read UVOLT UNIT; do
+						VOLTAGE=$(($VOLTAGE+1));
+							$BB echo '{ SSeekBar:{
+								default:'$UVOLT',
+								title:"Voltage '${VOLTAGE}'",
+								action:"voltage gpuvolt '${VOLTAGE}'",
+								unit:"' ${UNIT}'", min:900, max:1200, step:5 }},'
+						done < /sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table
+				fi`
+		]
+}
+CTAG

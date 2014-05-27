@@ -1,0 +1,24 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+SWAP=/dev/block/zram0;
+RESET=/sys/devices/virtual/block/zram0/reset;
+ZRAM=$2;
+
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		$BB swapoff $SWAP > /dev/null 2>&1;
+		$BB echo "1" > $RESET;
+		
+		if [ $ZRAM -gt 0 ]; then
+			$BB echo $((ZRAM * 1024 * 1024)) > $1;
+			$BB mkswap $SWAP > /dev/null 2>&1;
+			$BB swapon $SWAP > /dev/null 2>&1;
+		fi;
+	fi;
+	
+	ZRAM=`$BB cat $1`;
+	$BB echo $((ZRAM / 1024 / 1024));
+else
+	$BB echo "0";
+fi;

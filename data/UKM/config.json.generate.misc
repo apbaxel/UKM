@@ -1,0 +1,200 @@
+cat << CTAG
+{
+    name:MISC,
+		elements:[
+			{ STitleBar:{
+				title:"TCP Congestion Control"
+			}},
+				{ SOptionList:{
+					description:"Set the algorithm of internet congestion avoidance, to possibly improve speeds and load times. More info: <a href='https://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm'>HERE</a>",
+					default:`$BB cat \`sh $DEVICE DirTCPCongestion\``,
+					action:"generic `sh $DEVICE DirTCPCongestion`",
+					values:[
+						`sh $DEVICE TCPCongestionList`
+					]
+				}},
+			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ ! -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
+			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
+				$BB echo '{ SPane:{
+					title:"Temperature Throttle"
+				}},
+					{ SCheckBox:{
+						description:"SOC temperature limit toggle.",
+						label:"Enable",
+						default:'$THERMAL',
+						action:"boolean /sys/module/msm_thermal/parameters/enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/throttle_temp" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/throttle_temp\`
+				$BB echo '{ SPane:{
+					title:"Throttle Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/throttle_temp"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/temp_max" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/temp_max\`
+				$BB echo '{ SPane:{
+					title:"Maximum Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/temp_max"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/min_freq_index" ]; then
+			MFI=\`$BB cat /sys/module/msm_thermal/parameters/min_freq_index\`
+				$BB echo '{ SPane:{
+					title:"Temperature Limit Minimum Frequency"
+				}},
+					{ SSeekBar:{
+						description:"The minimum frequency used in throttle down before returning to max.",
+						default:'$MFI',
+						action:"generic /sys/module/msm_thermal/parameters/min_freq_index",
+						values:{'
+						sh $DEVICE MinFreqIndex
+						echo '}
+					}},'
+			fi`
+			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
+			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
+				$BB echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"boolean /sys/module/sync/parameters/fsync_enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/class/misc/fsynccontrol/fsync_enabled" ]; then
+			FSYNC=\`$BB cat /sys/class/misc/fsynccontrol/fsync_enabled\`
+				$BB echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/dyn_fsync/Dyn_fsync_active" ]; then
+			FSYNC=\`$BB cat /sys/kernel/dyn_fsync/Dyn_fsync_active\`
+				$BB echo '{ SPane:{
+					title:"Dynamic FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"While screen is on, file sync is temporarily deferred. When screen is off, a flush is called to synchronize all outstanding writes.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active"
+					}},'
+			fi`
+			`if [ -f "/sys/class/timed_output/vibrator/amp" ]; then
+			VIBRATOR=\`$BB cat /sys/class/timed_output/vibrator/amp\`
+				$BB echo '{ SPane:{
+					title:"Vibrator Strength"
+				}},
+					{ SSeekBar:{
+						description:"Allows to set the intensity of the vibrator.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:100,
+						default:'$VIBRATOR',
+						action:"generic /sys/class/timed_output/vibrator/amp"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ]; then
+			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
+				$BB echo '{ SPane:{
+				title:"USB Fast Charge"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, device will charge faster when connected through USB. NOTE: Enabling this will disable access to phone storage via USB.",
+						default:'$FC',
+						action:"generic /sys/kernel/fast_charge/force_fast_charge"
+					}},'
+			fi`
+			`if [ -f "/sys/module/msm_otg/parameters/otg_hack_enable" ]; then
+			OTG=\`$BB cat /sys/module/msm_otg/parameters/otg_hack_enable\`
+				$BB echo '{ SPane:{
+					title:"USB OTG (On-The-Go)"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Enabling this allows for OTG operation. More info: <a href='http://forum.xda-developers.com/nexus-4/orig-development/usb-otg-externally-powered-usb-otg-t2181820'>HERE</a>",
+						default:'$OTG',
+						action:"generic /sys/module/msm_otg/parameters/otg_hack_enable"
+					}},'
+			fi`
+			`if [ -f "/sys/class/misc/batterylifeextender/charging_limit" ]; then
+				BLX=\`$BB cat /sys/class/misc/batterylifeextender/charging_limit\`
+				$BB echo '{ SPane:{
+					title:"Battery Life Extender (BLX)"
+				}},
+					{ SSeekBar:{
+						description:"Limit the capacity to which the battery will be charged.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:100,
+						default:'$BLX',
+						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
+					}},'
+			fi`
+			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ]; then
+				$BB echo '{ SPane:{
+					title:"Touchscreen Accuracy Filter",
+					description:"Allows you to set the accuracy & sensitivity of the touchscreen. First select your preferred settings and then enable."
+				}},'
+					for TOUCH in 1; do
+						$BB echo '{ SCheckBox:{'
+							case $TOUCH in
+								1) 
+									$BB echo 'label:"Enable Accuracy Filter", default:0' ;;
+							esac
+						$BB echo ', action:"touch '${TOUCH}'",
+						}},'
+					done;	
+					for TOUCH in 2 3 4 5 6 7; do
+						$BB echo '{ SSeekBar:{'
+							case $TOUCH in
+								2)
+									$BB echo 'title:"Ignore Pressure Gap", default:5' ;;
+								3)
+									$BB echo 'title:"Delta Max", default:100' ;;
+								4)
+									$BB echo 'title:"Touch Max Count", default:40' ;;
+								5)
+									$BB echo 'title:"Max Pressure", default:255' ;;
+								6)
+									$BB echo 'title:"Direction Count", default:13' ;;
+								7)
+									$BB echo 'title:"Time To Max Pressure", default:4' ;;
+							esac
+							$BB echo ', action:"touch '${TOUCH}'",
+							min:0,
+							max:255
+						}},'
+					done;
+			fi`
+		]
+}
+CTAG

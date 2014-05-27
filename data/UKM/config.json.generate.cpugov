@@ -1,0 +1,50 @@
+cat << CTAG
+{
+	name:CPU GOV,
+		elements:[
+			{ SPane:{
+				title:"CPU Governor",
+				description:"The CPU governor determines how the CPU behaves in response to changes in workload. More info: <a href='http://timos.me/tm/wiki/cpugovernors'>HERE</a>"
+			}},
+				{ SOptionList:{
+					default:`$BB cat \`sh $DEVICE DirCPUGovernor\``,
+					action:"cpuset `sh $DEVICE DirCPUGovernor`",
+					values:[
+						`sh $DEVICE CPUGovernorList`
+					],
+					notify:[
+						{
+							on:APPLY,
+							do:[ REFRESH, CANCEL ],
+							to:"`sh $DEVICE DirCPUGovernorTree`"
+						},
+						{
+							on:REFRESH,
+							do:REFRESH,
+							to:"`sh $DEVICE DirCPUGovernorTree`"
+						}
+					]
+				}},
+			{ SPane:{
+				title:"CPU Governor Tunables"
+			}},
+				{ STreeDescriptor:{
+					path:"`sh $DEVICE DirCPUGovernorTree`",
+					generic: {
+						directory: {
+							STreeDescriptor:{
+								generic: {
+									directory: {},
+									element: {
+										SGeneric: { title:"@BASENAME" }
+									}
+								},
+								exclude: [ "boostpulse", "sampling_rate_min" ]
+							},
+						}
+					},
+					exclude: [ "overall_stats", "vdd_table" ]
+				}},
+		]
+}
+CTAG

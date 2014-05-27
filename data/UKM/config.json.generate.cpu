@@ -1,0 +1,61 @@
+cat << CTAG
+{
+	name:CPU,
+		elements:[
+			{ SPane:{
+				title:"Current CPU Frequency:"
+			}},
+			{ SLiveLabel:{
+				refresh:3000,
+				style:italic,
+				action:"live CPUFrequency"
+			}},
+			{ STitleBar:{
+				title:"CPU Frequency Scaling"
+			}},
+				{ SSeekBar:{
+					title:"CPU Min Frequency",
+					description:"Set the minimum frequency the CPU scales down to.",
+					default:`sh $DEVICE DefaultCPUMinFrequency`,
+					action:"cpuset `sh $DEVICE DirCPUMinFrequency`",
+					values:{
+						`sh $DEVICE CPUFrequencyList`
+					}
+				}},
+				{ SSeekBar:{
+					title:"CPU Max Frequency",
+					description:"Set the maximum frequency the CPU scales up to.",
+					default:`sh $DEVICE DefaultCPUMaxFrequency`,
+					action:"cpuset `sh $DEVICE DirCPUMaxFrequency`",
+					values:{
+						`sh $DEVICE CPUFrequencyList`
+					}
+				}},
+				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
+				SOMF=\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq\`
+					$BB echo '{ SSeekBar:{
+						title:"CPU Max Screen Off Frequency",
+						description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+						default:'$SOMF',
+						action:"generic /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi`
+				`if [ -f "/sys/devices/system/cpu/sched_mc_power_savings" ]; then
+				SMPS=\`$BB cat /sys/devices/system/cpu/sched_mc_power_savings\`
+					$BB echo '{ SPane:{
+						title:"CPU Multicore Power Saving",
+						description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive the grouping."
+					}},
+					{ SSeekBar:{
+						default:'$SMPS',
+						action:"generic /sys/devices/system/cpu/sched_mc_power_savings",
+						values:{ 0:"0: Disabled", 1:"1: Enabled", 2:"2: Aggressive"
+						}
+					}},'
+				fi`
+		]
+}
+CTAG

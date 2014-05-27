@@ -1,0 +1,46 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+T=/sys/devices/virtual/input/lge_touch/accuracy;
+
+read() {
+	VALUE=0;
+	NOW=`$BB cat $T`;
+	for TOUCH in $NOW; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" == $1 ]; then
+			$BB echo $TOUCH;
+			return
+		fi;
+	done;
+}
+
+write() {
+	SET=$2;
+	TOUCHARR="";
+	VALUE=0;
+	NOW=`$BB cat $T`;
+	for TOUCH in $NOW; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" == $1 ]; then
+			if [ "$VALUE" == 1 ]; then
+				TOUCHARR="$SET";
+			else
+				TOUCHARR="$TOUCHARR $SET";
+			fi;
+		else
+			if [ "$VALUE" == 1 ]; then
+				TOUCHARR="$TOUCH";
+			else
+				TOUCHARR="$TOUCHARR $TOUCH";
+			fi;
+		fi;
+	done;
+	$BB echo $TOUCHARR > $T;
+}
+
+if [[ ! -z $2 ]]; then
+	write $1 $2;
+fi;
+
+$BB echo $(read $1);

@@ -1,0 +1,143 @@
+cat << CTAG
+{
+	name:CPU VOLT,
+		elements:[
+			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
+				$BB echo '{ STitleBar:{
+					title:"CPU Global Voltage"
+				}},
+					{ SSeekBar:{
+						default:0,
+						action:"cpuvolt global",
+						unit:" uV",
+						min:-300000,
+						max:300000,
+						step:25000,
+						notify:['
+							while read CPUFREQ VOLT; do
+							CPUFREQ=\`$BB echo $CPUFREQ | $BB sed "s/://"\`
+							LABEL=$((CPUFREQ / 1000))
+								$BB echo '{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"cpuvolt '$CPUFREQ'"
+								},'
+							done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels
+						$BB echo ']
+					}},'
+			fi`
+			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
+				$BB echo '{ SPane:{
+					title:"CPU Frequency Voltage",
+					description:"Decreasing voltages will lower heat and power consumption of the CPU. Increasing it on overclocked frequencies improves stability. Too low voltages may cause instability and freezes."
+				}},'
+					while read CPUFREQ VOLT; do
+					CPUFREQ=\`$BB echo $CPUFREQ | $BB sed "s/://"\`
+					LABEL=$((CPUFREQ / 1000))
+						$BB echo '{ SSeekBar:{
+								title:"'${LABEL}' MHz",
+								default:'$VOLT',
+								action:"cpuvolt '$CPUFREQ'",
+								unit:" uV",
+								min:600000,
+								max:1400000,
+								step:500
+							}},'
+						done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels
+			fi`
+			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
+				$BB echo '{ STitleBar:{
+					title:"CPU Global Voltage"
+				}},
+					{ SSeekBar:{
+						default:0,
+						action:"voltage cpuvoltglobal global",
+						unit:" mV",
+						min:-300,
+						max:300,
+						step:25,
+						notify:['
+							while read CPUFREQ VOLT UNIT; do
+								$BB echo '{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"voltage cpuvolt '${CPUFREQ}'"
+								},'
+							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+						$BB echo ']
+					}},'
+			fi`
+			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
+				$BB echo '{ SPane:{
+					title:"CPU Frequency Voltage",
+					description:"Decreasing voltages will lower heat and power consumption of the CPU. Increasing it on overclocked frequencies improves stability. Too low voltages may cause instability and freezes."
+				}},'
+					while read CPUFREQ VOLT UNIT; do
+						$BB echo '{ SSeekBar:{
+							title:"'${CPUFREQ//mhz\:/}' MHz",
+							unit:"' ${UNIT}'",
+							min:600,
+							max:1400,
+							step:1,
+							default:'$VOLT',
+							action:"voltage cpuvolt '${CPUFREQ}'"
+						}},
+						';
+							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+			fi`
+			`if [ -f "/sys/module/acpuclock_krait/parameters/boost" ] && [ -f "/sys/module/acpuclock_krait/parameters/higher_khz_thres" ]; then
+			GBOOST=\`bool /sys/module/acpuclock_krait/parameters/boost\`
+				$BB echo '{ SPane:{
+					title:"Boost Voltage",
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If this is enabled, a 25 mV over-volt will be applied.",
+						default:'$GBOOST',
+						action:"boolean /sys/module/acpuclock_krait/parameters/boost"
+					}},'
+				if [ -f "/sys/module/acpuclock_krait/parameters/higher_khz_thres" ]; then
+				HTHRES=\`$BB cat /sys/module/acpuclock_krait/parameters/higher_khz_thres\`
+					$BB echo '{ SPane:{
+						title:"Settings",
+					}},
+					{ SSeekBar:{
+						title:"Higher Frequency UV",
+						description:"Above this frequency the Higher uV will be used, else Lower uV will be used.",
+						default:'$HTHRES',
+						action:"generic /sys/module/acpuclock_krait/parameters/higher_khz_thres",
+						values:{'
+							sh $CONFIG CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+				if [ -f "/sys/module/acpuclock_krait/parameters/lower_uV" ]; then
+				LUV=\`$BB cat /sys/module/acpuclock_krait/parameters/lower_uV\`
+					$BB echo '{ SSeekBar:{
+						title:"Lower uV",
+						description:"Undervolting value for lower frequencies.",
+							unit:" uV",
+							min:0,
+							max:300000,
+							step:25000,
+						default:'$LUV',
+						action:"generic /sys/module/acpuclock_krait/parameters/lower_uV",
+					}},'
+				fi
+				if [ -f "/sys/module/acpuclock_krait/parameters/higher_uV" ]; then
+				HUV=\`$BB cat /sys/module/acpuclock_krait/parameters/higher_uV\`
+					$BB echo '{ SSeekBar:{
+						title:"Higher uV",
+						description:"Undervolting value for higher frequencies.",
+							unit:" uV",
+							min:0,
+							max:300000,
+							step:25000,
+						default:'$HUV',
+						action:"generic /sys/module/acpuclock_krait/parameters/higher_uV",
+					}},'
+				fi
+			fi`
+		]
+}
+CTAG

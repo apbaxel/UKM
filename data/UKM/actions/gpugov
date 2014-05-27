@@ -1,0 +1,30 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+POLICY=/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy;
+
+if [[ ! -z $2 ]]; then
+	case $2 in
+		ondemand)
+			$BB echo "trustzone" > $POLICY;
+			$BB echo $2 > $1;
+		;;
+		performance)
+			$BB echo "trustzone" > $POLICY;
+			$BB echo $2 > $1;
+		;;
+		simple)
+			$BB echo "trustzone" > $POLICY;
+			$BB echo $2 > $1;
+		;;
+		conservative)
+			$BB echo $2 > $POLICY;
+		;;
+	esac;
+fi;
+
+if [ `$BB cat $POLICY` = "trustzone" ]; then
+	echo `$BB cat $1`;
+else
+	echo `$BB cat $POLICY`;
+fi;

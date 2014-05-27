@@ -1,0 +1,39 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
+bool() {
+  [ `$BB cat $1` == "Y" ] && $BB echo "1";
+  [ `$BB cat $1` == "N" ] && $BB echo "0";
+}
+
+cat << CTAG
+{
+    sections: [
+		`. $UKM/config.json.generate.info`,
+		`. $UKM/config.json.generate.status`,
+		`. $UKM/config.json.generate.cpu`,
+		`. $UKM/config.json.generate.cpugov`,
+		`. $UKM/config.json.generate.hotplug`,
+		`. $UKM/config.json.generate.cpuvolt`,
+		`. $UKM/config.json.generate.io`,
+		`. $UKM/config.json.generate.gpu`,
+		`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -d "/sys/class/misc/gamma_control" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ]; then
+			. $UKM/config.json.generate.gamma
+		fi`,
+		`if [ -d "/sys/kernel/sound_control_3" ]; then
+			. $UKM/config.json.generate.sound
+		fi`,
+		`if [ -d "/sys/bus/i2c/devices/0-0058" ]; then
+			. $UKM/config.json.generate.speaker
+		fi`,
+		`. $UKM/config.json.generate.mem`,
+		`. $UKM/config.json.generate.wake`,
+		`. $UKM/config.json.generate.misc`,
+		`. $UKM/config.json.generate.adv`,
+		`. $UKM/config.json.generate.bprop`,
+		`. $UKM/config.json.generate.tools`,
+		`. $UKM/config.json.generate.profile`
+    ]
+}
+CTAG

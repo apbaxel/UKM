@@ -1,0 +1,106 @@
+cat << CTAG
+{
+	name:INFO,
+		elements:[
+			{ SPane:{
+				title:{
+					en:"General",
+					es:"General"
+				},
+			}},	
+				{ SDescription:{
+					description:"Welcome to the Nexus Universal Kernel Manager."
+				}},
+				{ SDescription:{
+					description:"Created by <a href='http://forum.xda-developers.com/member.php?u=5658634'>apb_axel</a>."
+				}},
+				{ SDescription:{
+					description:"Version 2.0"
+				}},
+				{ SDescription:{
+					description:"XDA Link: <a href='http://forum.xda-developers.com/nexus-4/general/zip-synapse-script-n4-universal-kernel-t2736986'>HERE</a>"
+				}},
+				{ SPane:{
+					title:"Special thanks to"
+				}},
+					{ SDescription:{
+						description:"> <a href='http://forum.xda-developers.com/member.php?u=3685904'>ak</a>"
+					}},
+					{ SDescription:{
+						description:"> <a href='http://forum.xda-developers.com/member.php?u=4167023'>AndreiLux</a>"
+					}},
+					{ SDescription:{
+						description:"> <a href='http://forum.xda-developers.com/member.php?u=4544860'>osm0sis</a>"
+					}},
+			{ SPane:{
+				title:{
+					en:"Device",
+					es:"Dispositivo"
+				},
+				description:"`getprop ro.product.model` (`getprop ro.product.device`)"
+			}},
+			{ SPane:{
+				title:{
+					en:"Android Version",
+					es:"Versión de Android"
+				},
+				description:"`getprop ro.build.version.release`"
+			}},
+			{ SPane:{
+				title:{
+					en:"Kernel Version",
+					es:"Versión del Núcleo"
+				},
+				description:"`$BB cat /proc/version`"
+			}},
+			{ SPane:{
+				title:{
+					en:"ROM Description",
+					es:"Descripción del ROM"
+				},
+				description:"`getprop ro.build.host | $BB awk '{print toupper($0)}'`"
+			}},
+			{ SPane:{
+				title:{
+					en:"ROM Version",
+					es:"Versión del ROM"
+				},
+				description:"`getprop ro.modversion`"
+			}},
+			{ SPane:{
+				title:{
+					en:"Build Date",
+					es:"Fecha del ROM"
+				},
+				description:"`getprop ro.build.date`"
+			}},
+			{ STitleBar:{
+				title:{
+					en:"SOC Binning",
+					es:"SOC Binning"
+				}
+			}},
+				{ SDescription:{
+					description:"ACPU PVS:`$BB cat $UKM/debug/pvs_bin`"
+				}},
+				{ SDescription:{
+					description:"Values: 1 (Slow), 2 (Nominal), 3 (Fast), 4 (Faster). The higher the binning, the lower voltages your device can run."
+				}},
+				{ SDescription:{
+					description:"SPEED BIN:`$BB cat $UKM/debug/speed_bin`"
+				}},
+				{ SDescription:{
+					description:"Values: from 0 (Lowest) to 14 (Higher). The higher the speed, the higher frequencies your device can run (greater than 1512 MHz)."
+				}},
+			{ STitleBar:{
+				title:{
+					en:"Last KMSG",
+					es:"Ultimo KMSG"
+				}
+			}},
+				{ SDescription:{
+					description:"`$BB cat $UKM/debug/last_kmsg`"
+				}},
+		]
+}
+CTAG
