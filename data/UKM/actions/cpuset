@@ -9,10 +9,10 @@ if [ -f $1 ]; then
 	if [[ ! -z $2 ]]; then
 		$BB echo $2 > $1;
 		
-		test "$1" = "`sh $DEVICE DirCPUMinFrequency`" && sh $DEVICE SetCPUMinFrequency $2 2> /dev/null;
-		test "$1" = "`sh $DEVICE DirCPUMaxFrequency`" && sh $DEVICE SetCPUMaxFrequency $2 2> /dev/null;
-		test "$1" = "`sh $DEVICE DirCPUGovernor`" && sh $DEVICE SetCPUGovernor $2 2> /dev/null;
+		$BB test "$1" = "`sh $DEVICE DirCPUMinFrequency`" && sh $DEVICE SetCPUMinFrequency $2 2> /dev/null;
+		$BB test "$1" = "`sh $DEVICE DirCPUMaxFrequency`" && sh $DEVICE SetCPUMaxFrequency $2 2> /dev/null;
+		$BB test "$1" = "`sh $DEVICE DirCPUGovernor`" && sh $DEVICE SetCPUGovernor $2 2> /dev/null;
 	fi;
 
-	echo `$BB cat $1`;
+	$BB echo `$BB cat $1`;
 fi;
