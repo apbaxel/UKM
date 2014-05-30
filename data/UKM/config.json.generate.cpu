@@ -6,7 +6,7 @@ cat << CTAG
 				title:"Current CPU Frequency:"
 			}},
 			{ SLiveLabel:{
-				refresh:3000,
+				refresh:500,
 				style:italic,
 				action:"live CPUFrequency"
 			}},
