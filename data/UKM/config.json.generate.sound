@@ -79,6 +79,51 @@ cat << CTAG
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",
 						}},'
 			fi`
+			`if [ -d "/sys/class/misc/soundcontrol" ]; then
+				HB=\`cat /sys/class/misc/soundcontrol/headset_boost\`;
+				MB=\`cat /sys/class/misc/soundcontrol/mic_boost\`;
+				MG=\`cat /sys/class/misc/soundcontrol/mic_gain\`;
+				SB=\`cat /sys/class/misc/soundcontrol/speaker_boost\`;
+				VB=\`cat /sys/class/misc/soundcontrol/volume_boost\`;
+				$BB echo '{ SPane:{
+						title:"Sound Control",
+					}},
+						{ SSeekBar:{
+							title:"Headset Boost",
+							min:-11,
+							max:11,
+							default:'$HB',
+							action:"generic /sys/class/misc/soundcontrol/headset_boost",
+						}},
+						{ SSeekBar:{
+							title:"Microphone Boost",
+							min:-11,
+							max:11,
+							default:'$MB',
+							action:"generic /sys/class/misc/soundcontrol/mic_boost",
+						}},
+						{ SSeekBar:{
+							title:"Microphone Gain",
+							min:0,
+							max:10,
+							default:'$MG',
+							action:"generic /sys/class/misc/soundcontrol/mic_gain",
+						}},
+						{ SSeekBar:{
+							title:"Speaker Boost",
+							min:-11,
+							max:11,
+							default:'$SB',
+							action:"generic /sys/class/misc/soundcontrol/speaker_boost",
+						}},
+						{ SSeekBar:{
+							title:"Volume Boost",
+							min:0,
+							max:20,
+							default:'$VB',
+							action:"generic /sys/class/misc/soundcontrol/volume_boost",
+						}},'
+			fi`
 		]
 }
 CTAG

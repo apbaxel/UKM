@@ -18,10 +18,10 @@ cat << CTAG
 		`. $UKM/config.json.generate.cpuvolt`,
 		`. $UKM/config.json.generate.io`,
 		`. $UKM/config.json.generate.gpu`,
-		`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -d "/sys/class/misc/gamma_control" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ]; then
+		`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ]; then
 			. $UKM/config.json.generate.gamma
 		fi`,
-		`if [ -d "/sys/kernel/sound_control_3" ]; then
+		`if [ -d "/sys/kernel/sound_control_3" ] || [ -d "/sys/class/misc/soundcontrol" ]; then
 			. $UKM/config.json.generate.sound
 		fi`,
 		`if [ -d "/sys/bus/i2c/devices/0-0058" ]; then
