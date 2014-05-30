@@ -16,10 +16,24 @@ case "$1" in
 		done;
 	;;
 	DefaultCPUMaxFrequency)
-		$BB echo "1512000";
+		while read FREQ TIME; do
+			if [ $FREQ -le "1512000" ]; then
+				MAXCPU=$FREQ;
+			fi;
+		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+
+		$BB echo $MAXCPU;
 	;;
 	DefaultCPUMinFrequency)
-		$BB echo "384000";
+		S=0;
+		while read FREQ TIME; do
+			if [ $FREQ -ge "384000" ] && [ $S -eq "0" ]; then
+				S=1;
+				MINCPU=$FREQ;
+			fi;
+		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
+
+		$BB echo $MINCPU;
 	;;
 	DefaultGPUGovernor)
 		POLICY=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy`
@@ -69,7 +83,7 @@ case "$1" in
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance"
+		GOV="ondemand, performance, interactive"
 		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
 			GOV="$GOV, simple";
 		fi;
@@ -132,7 +146,7 @@ case "$1" in
 		$BB echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
 	;;
 	LiveCPUTemperature)
-		CPU_C=`$BB cat /sys/class/thermal/thermal_zone7/temp`;
+		CPU_C=`$BB cat /sys/class/thermal/thermal_zone0/temp`;
 		CPU_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
 
 		$BB echo "$CPU_C°C | $CPU_F°F";
@@ -253,9 +267,9 @@ case "$1" in
 	;;
 	SetCPUMinFrequency)
 		/sys/devices/system/cpu;
-		$BB echo $2 2> $CPU/cpu1/cpufreq/scaling_min_freq;
-		$BB echo $2 2> $CPU/cpu2/cpufreq/scaling_min_freq;
-		$BB echo $2 2> $CPU/cpu3/cpufreq/scaling_min_freq;
+		$BB echo $2 > $CPU/cpu1/cpufreq/scaling_min_freq;
+		$BB echo $2 > $CPU/cpu2/cpufreq/scaling_min_freq;
+		$BB echo $2 > $CPU/cpu3/cpufreq/scaling_min_freq;
 	;;
 	TCPCongestionList)
 		for TCPCC in `$BB cat /proc/sys/net/ipv4/tcp_available_congestion_control` ; do
