@@ -69,6 +69,18 @@ cat << CTAG
 						echo '}
 					}},'
 			fi`
+			`if [ -f "/sys/kernel/power_suspend/power_suspend_state" ]; then
+			PSS=\`cat /sys/kernel/power_suspend/power_suspend_state\`
+				$BB echo '{ SPane:{
+					title:"Power Suspend State"
+				}},
+					{ SCheckBox:{
+						description:"Kernel power management driver when screen is off. Better battery savings if enabled.",
+						label:"Enable",
+						default:'$PSS',
+						action:"generic /sys/kernel/power_suspend/power_suspend_state"
+					}},'
+			fi`
 			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
 			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
 				$BB echo '{ SPane:{
