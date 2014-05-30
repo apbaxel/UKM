@@ -21,7 +21,14 @@ cat << CTAG
 		}},
 			{ SButton:{
 				label:"Restore Selected Profile",
-				action:"restorebackup applyconfig"
+				action:"restorebackup applyconfig",
+				notify:[
+					{
+						on:APPLY,
+						do:[ REFRESH, APPLY ],
+						to:"restorebackup pickconfig"
+					}
+				]
 			}},
 			{ SButton:{
 				label:"Delete Selected Profile",
@@ -29,7 +36,7 @@ cat << CTAG
 				notify:[
 					{
 						on:APPLY,
-						do:[ RESET, REFRESH ],
+						do:[ REFRESH, APPLY ],
 						to:"restorebackup pickconfig"
 					}
 				]

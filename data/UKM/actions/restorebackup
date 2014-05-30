@@ -83,18 +83,34 @@ case "$1" in
 	;;
 
 	applyconfig)
-		OWNER=`$BB stat -c %u /data/data/com.af.synapse`;
-		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
-			$BB rm -f $SYNAPSE_DATA/*;
-			cd $SYNAPSE_DATA;
-			$BB tar -x -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
-			$BB chown $OWNER:$OWNER *;
-			$BB echo "$SYNAPSE_CONFIG_PROFILE restored. Press the Restart Synapse button below to see updated list.";
-			reset_uci;
-		elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
-			$BB echo "None selected.";
+		CNT=0;
+		for FILE in `$BB tar -t -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" 2> /dev/null`; do
+			if [ "$FILE" = "actionValueStore" -o "$FILE" = "actionValueStore-journal" ]; then
+				CNT=$((CNT + 1));
+			else
+				CNT=$((CNT + 99));
+			fi;
+		done;
+		
+		if [ $CNT -eq "2" ]; then
+			OWNER=`$BB stat -c %u $SYNAPSE_DATA`;
+			PERM=`$BB stat -c %a $SYNAPSE_DATA`;
+			if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+				$BB rm -f $SYNAPSE_DATA/*;
+				cd $SYNAPSE_DATA;
+				$BB tar -x -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+				$BB chown $OWNER:$OWNER *;
+				$BB chmod $PERM *;
+				$BB echo "None" > $SYNAPSE_CONFIG_DIR/.selected_config_profile;
+				$BB echo "$SYNAPSE_CONFIG_PROFILE restored. Press the Restart Synapse button below to see updated list.";
+				reset_uci;
+			elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+				$BB echo "None selected.";
+			else
+				$BB echo "File not found.";
+			fi;
 		else
-			$BB echo "File not found.";
+			$BB echo "Unable to restore profile. Invalid file."
 		fi;
 	;;
 
@@ -106,8 +122,8 @@ case "$1" in
 			$BB echo "Enter a profile name first and then apply.";
 		else
 			cd $SYNAPSE_DATA;
-			$BB tar -cZ  -f "$SYNAPSE_CONFIG_DIR/$BCK_PROF.tgz" *;
 			$BB echo "None" > $UKM/files/bck_prof;
+			$BB tar -cZ -f "$SYNAPSE_CONFIG_DIR/$BCK_PROF.tgz" *;
 			$BB echo "$BCK_PROF.tgz created. Press the Restart Synapse button below to see updated list.";
 			reset_uci;
 		fi;
@@ -116,6 +132,7 @@ case "$1" in
 	delconfig)
 		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
 			$BB rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+			$BB echo "None" > $SYNAPSE_CONFIG_DIR/.selected_config_profile;
 			$BB echo "$SYNAPSE_CONFIG_PROFILE removed. Press the Restart Synapse button below to see updated list.";
 			reset_uci;
 		elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
