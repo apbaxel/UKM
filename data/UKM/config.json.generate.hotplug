@@ -2,7 +2,7 @@ cat << CTAG
 {
 	name:HOTPLUG,
 		elements:[
-			`if [ -f "/system/bin/mpdecision" ] && [ ! -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
+			`if [ -f "/system/bin/mpdecision" ] && [ ! -d "/sys/kernel/msm_mpdecision/conf" ]; then
 			MPDEC=\`ps | $BB grep mpdecision\`
 				if [ -n "$MPDEC" ]; then 
 					MPDEC=1
@@ -89,17 +89,19 @@ cat << CTAG
 					action:"generic /sys/module/msm_thermal/parameters/core_limit_temp_degC"
 				}},'
 			fi`
-			`if [ -f "/system/bin/mpdecision" ] && [ -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
-			MSMMPD=\`$BB cat /sys/kernel/msm_mpdecision/conf/enabled\`
-				$BB echo '{ SPane:{
-					title:"MSM MPDecision"
-				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"An in kernel replacement for Qualcomms MPDecision. Developed by show-p1984.",
-						default:'$MSMMPD',
-						action:"generic /sys/kernel/msm_mpdecision/conf/enabled"
-					}},'
+			`if [ -d "/sys/kernel/msm_mpdecision/conf" ]; then
+				if [ -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
+				MSMMPD=\`$BB cat /sys/kernel/msm_mpdecision/conf/enabled\`
+					$BB echo '{ SPane:{
+						title:"MSM MPDecision"
+					}},
+						{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by show-p1984.",
+							default:'$MSMMPD',
+							action:"generic /sys/kernel/msm_mpdecision/conf/enabled"
+						}},'
+				fi
 				if [ -f "/sys/kernel/msm_mpdecision/conf/scroff_single_core" ]; then
 				SOSC=\`$BB cat /sys/kernel/msm_mpdecision/conf/scroff_single_core\`
 					$BB echo '{ SCheckBox:{
@@ -397,17 +399,19 @@ cat << CTAG
 					}},'
 				fi
 			fi`
-			`if [ -f "/sys/module/dyn_hotplug/parameters/enabled" ]; then
-			DYNHOT=\`bool /sys/module/dyn_hotplug/parameters/enabled\`
-				$BB echo '{ SPane:{
-					title:"Dynamic Hotplug"
-				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"An in kernel replacement for Qualcomms MPDecision. Developed by stratosk.",
-						default:'$DYNHOT',
-						action:"boolean /sys/module/dyn_hotplug/parameters/enabled"
-					}},'
+			`if [ -d "/sys/module/dyn_hotplug/parameters" ]; then
+				if [ -f "/sys/module/dyn_hotplug/parameters/enabled" ]; then
+				DYNHOT=\`bool /sys/module/dyn_hotplug/parameters/enabled\`
+					$BB echo '{ SPane:{
+						title:"Dynamic Hotplug"
+					}},
+						{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by stratosk.",
+							default:'$DYNHOT',
+							action:"boolean /sys/module/dyn_hotplug/parameters/enabled"
+						}},'
+				fi
 				if [ -f "/sys/module/dyn_hotplug/parameters/min_online" ]; then
 				MINCPU=\`$BB cat /sys/module/dyn_hotplug/parameters/min_online\`
 					$BB echo '{ SSeekBar:{
