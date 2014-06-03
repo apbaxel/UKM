@@ -55,14 +55,16 @@ cat << CTAG
 					style:italic,
 					action:"live Time 10 19"
 				}},
-			{ SPane:{
-				title:"Kernel Wakelocks (Top 10):"
-			}},
-				{ SLiveLabel:{
-					refresh:0,
-					style:italic,
-					action:"live WakelocksKernel"
+			`if [ -f "/proc/wakelocks" ]; then
+				$BB echo '{ SPane:{
+					title:"Kernel Wakelocks (Top 10):"
 				}},
+					{ SLiveLabel:{
+						refresh:0,
+						style:italic,
+						action:"live WakelocksKernel"
+					}},'
+			fi`
 		]
 }
 CTAG
