@@ -37,6 +37,22 @@ cat << CTAG
 					values:[ Enforcing, Permissive
 					],
 				}},
+			`DB=/data/data/com.android.providers.settings/databases;
+			cd $DB;
+			VALUE=\`sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"\`
+			if [ -n $VALUE ]; then
+				$BB echo '{ SPane:{
+					title:"Preferred Network Mode",
+					description:"Use GSM_auto or CDMA_auto to reduce the msm_hsic_host wakelock and save battery. After applying you need to reboot your device for the setting to take effect. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
+				}},
+					{ SOptionList:{
+						default:WCDMA_preferred,
+						action:"sqlite preferred_network_mode",
+						values:[ WCDMA_preferred, GSM_only, WCDMA_only, GSM_auto, CDMA_auto, CDMA_only, EvDo_only, GSM_CDMA_auto, LTE_CDMA_auto, LTE_GSM_auto,
+							LTE_GSM_CDMA_auto, LTE_only, LTE_WDCMA,
+						],
+					}},'
+			fi`
 			{ SPane:{
 				title:"Log Creation",
 				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_ksmg (same as dmesg but from the last shutdown).",
