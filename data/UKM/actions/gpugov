@@ -1,7 +1,8 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
 
-POLICY=/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy;
+POLICY=`sh $DEVICE DirGPUPolicy`;
 
 if [[ ! -z $2 ]]; then
 	case $2 in
@@ -14,6 +15,10 @@ if [[ ! -z $2 ]]; then
 			$BB echo $2 > $1;
 		;;
 		simple)
+			$BB echo "trustzone" > $POLICY;
+			$BB echo $2 > $1;
+		;;
+		interactive)
 			$BB echo "trustzone" > $POLICY;
 			$BB echo $2 > $1;
 		;;

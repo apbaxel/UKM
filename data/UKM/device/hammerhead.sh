@@ -36,9 +36,9 @@ case "$1" in
 		$BB echo $MINCPU;
 	;;
 	DefaultGPUGovernor)
-		POLICY=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy`
+		POLICY=`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/policy`
 		if [ "$POLICY" = "trustzone" ]; then
-			$BB echo "`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
+			$BB echo "`cat /sys/class/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
 		else
 			$BB echo $POLICY;
 		fi;
@@ -59,11 +59,14 @@ case "$1" in
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
 	;;
 	DirGPUGovernor)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
 	;;
 	DirGPUMaxFrequency)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/max_gpuclk";
 	;;
+	DirGPUPolicy)
+		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy";
+	;;	
 	DirIOReadAheadSize)
 		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
@@ -77,18 +80,22 @@ case "$1" in
 		$BB echo "/proc/sys/net/ipv4/tcp_congestion_control";
 	;;
 	GPUFrequencyList)
-		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies` ; do
+		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies` ; do
 		LABEL=$((GPUFREQ / 1000000));
 			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance, interactive"
-		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
+		GOV="ondemand, performance";
+		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
 			GOV="$GOV, simple";
 		fi;
+
+		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
+			GOV="GOV, interactive";
+		fi;
 		
-		if [ "`$BB grep 'conservative' /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
+		if [ "`$BB grep 'conservative' /sys/class/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
 			GOV="$GOV, conservative";
 		fi;
 		
@@ -164,7 +171,7 @@ case "$1" in
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		GPUFREQ="$((`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
+		GPUFREQ="$((`$BB cat /sys/class/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
 		$BB echo "$GPUFREQ";
 	;;
 	LiveMemory)
@@ -237,10 +244,10 @@ case "$1" in
 		
 		while read NAME COUNT EXPIRE_COUNT WAKE_COUNT ACTIVE_SINCE TOTAL_TIME SLEEP_TIME MAX_TIME LAST_CHANGE; do
 			if [ $CNT -lt 10 ]; then
-				NAME=`$BB echo $NAME | $BB sed "s/PowerManagerService./PMS./"`
+				NAME=`$BB echo $NAME | $BB sed 's/PowerManagerService./PMS./;s/"//g'`
 				TIME=`$BB awk "BEGIN { print ( $SLEEP_TIME / 1000000000 ) }"`;
 				TIME=`$BB echo - | $BB awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`;
-				WL="$WL$NAME $TIME@n";
+				WL="$WL$NAME: $TIME@n";
 			fi;
 			CNT=$((CNT+1));
 		done < $PATH;

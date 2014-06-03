@@ -64,6 +64,9 @@ case "$1" in
 	DirGPUMaxFrequency)
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk";
 	;;
+	DirGPUPolicy)
+		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy";
+	;;
 	DirIOReadAheadSize)
 		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
@@ -83,10 +86,14 @@ case "$1" in
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance, interactive"
-		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
+		GOV="ondemand, performance";
+		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
 			GOV="$GOV, simple";
 		fi;
+		
+		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
+			GOV="GOV, interactive";
+		fi;		
 		
 		if [ "`$BB grep 'conservative' /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
 			GOV="$GOV, conservative";
@@ -225,10 +232,10 @@ case "$1" in
 		
 		while read NAME COUNT EXPIRE_COUNT WAKE_COUNT ACTIVE_SINCE TOTAL_TIME SLEEP_TIME MAX_TIME LAST_CHANGE; do
 			if [ $CNT -lt 10 ]; then
-				NAME=`$BB echo $NAME | $BB sed "s/PowerManagerService./PMS./"`
+				NAME=`$BB echo $NAME | $BB sed 's/PowerManagerService./PMS./;s/"//g'`
 				TIME=`$BB awk "BEGIN { print ( $SLEEP_TIME / 1000000000 ) }"`;
 				TIME=`$BB echo - | $BB awk -v "S=$TIME" '{printf "%dh:%dm:%ds",S/(60*60),S%(60*60)/60,S%60}'`;
-				WL="$WL$NAME $TIME@n";
+				WL="$WL$NAME: $TIME@n";
 			fi;
 			CNT=$((CNT+1));
 		done < $PATH;
