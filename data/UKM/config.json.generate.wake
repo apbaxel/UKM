@@ -2,6 +2,15 @@ cat << CTAG
 {
 	name:WAKE,
 		elements:[
+			{ SPane:{
+				title:"Apply from init.d"
+			}},
+				{ SCheckBox:{
+					label:"Enable",
+					description:"This creates a init.d script for any of the following wake options. This resolves the unresponsive screen when the setting is enabled on boot and before the user interacts with the device. NOTE: Enable this option first then enable which wake option you want to apply on init.d script below.",
+					default:0,
+					action:"wake $UKM/files/wake_prof",
+				}},
 			`if [ -f "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ]; then
 			DT2W=\`$BB cat /sys/devices/virtual/input/lge_touch/dt_wake_enabled\`
 				$BB echo '{ SPane:{
