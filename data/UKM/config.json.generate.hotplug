@@ -453,6 +453,32 @@ cat << CTAG
 							action:"generic /sys/module/dyn_hotplug/parameters/up_threshold"
 					}},'
 				fi
+				if [ -f "/sys/module/dyn_hotplug/parameters/up_timer_cnt" ]; then
+				UT=\`$BB cat /sys/module/dyn_hotplug/parameters/up_timer_cnt\`
+					$BB echo '{ SSeekBar:{
+							title:"Up Timer Control",
+							description:"Control timer for up CPUs.",
+							min:0,
+							max:20,
+							step:1,
+							weight:0.5,
+							default:'$UT',
+							action:"generic /sys/module/dyn_hotplug/parameters/up_timer_cnt"
+					}},'
+				fi
+				if [ -f "/sys/module/dyn_hotplug/parameters/down_timer_cnt" ]; then
+				DT=\`$BB cat /sys/module/dyn_hotplug/parameters/down_timer_cnt\`
+					$BB echo '{ SSeekBar:{
+							title:"Down Timer Control",
+							description:"Control timer for down CPUs.",
+							min:0,
+							max:20,
+							step:1,
+							weight:0.5,
+							default:'$DT',
+							action:"generic /sys/module/dyn_hotplug/parameters/down_timer_cnt"
+					}},'
+				fi
 			fi`
 			`if [ -d "sys/kernel/alucard_hotplug" ]; then
 				$BB echo '{ SPane:{
@@ -734,6 +760,51 @@ cat << CTAG
 						title:"Frequency 4_0",
 						default:'$HF40',
 						action:"generic sys/kernel/alucard_hotplug/hotplug_freq_4_0",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+			fi`
+			`if [ -d "/sys/class/misc/mako_hotplug_control" ]; then
+				$BB echo '{ SPane:{
+					title:"Mako Hotplug Control"
+					description:"An in kernel replacement for Qualcomms MPDecision. Developed by franciscofranco.",
+				}},'
+				if [ -f "/sys/class/misc/mako_hotplug_control/cores_on_touch" ]; then
+				CT=\`$BB cat /sys/class/misc/mako_hotplug_control/cores_on_touch\`
+					$BB echo '{ SSeekBar:{
+						title:"Cores on touch",
+						description:"Number of CPUs online when touching screen or pressing button.",
+						min:1,
+						max:'
+							sh $DEVICE MaxCPU
+						$BB echo ',
+						step:1,
+						default:'$CT',
+						action:"generic /sys/class/misc/mako_hotplug_control/cores_on_touch"
+					}},'
+				fi
+				if [ -f "/sys/class/misc/mako_hotplug_control/first_level" ]; then
+				FL=\`$BB cat /sys/class/misc/mako_hotplug_control/first_level\`
+					$BB echo '{ SSeekBar:{
+						title:"First Level",
+						description:"The threshold to online all CPUs.",
+						unit:"%",
+						min:0,
+						max:100,
+						step:1,
+						default:'$FL',
+						action:"generic /sys/class/misc/mako_hotplug_control/first_level"
+					}},'
+				fi
+				if [ -f "/sys/class/misc/mako_hotplug_control/suspend_frequency" ]; then
+				SF=\`$BB cat /sys/class/misc/mako_hotplug_control/suspend_frequency\`
+					$BB echo '{ SSeekBar:{
+						title:"Suspend Frequency",
+						description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+						default:'$SF',
+						action:"generic /sys/class/misc/mako_hotplug_control/suspend_frequency",
 						values:{'
 							sh $DEVICE CPUFrequencyList
 						$BB echo '}
