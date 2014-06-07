@@ -39,7 +39,7 @@ cat << CTAG
 				}},
 			`DB=/data/data/com.android.providers.settings/databases;
 			cd $DB;
-			VALUE=\`sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"\`
+			VALUE=\`$UKM/sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"\`
 			if [ -n $VALUE ]; then
 				$BB echo '{ SPane:{
 					title:"Preferred Network Mode",
@@ -48,8 +48,8 @@ cat << CTAG
 					{ SOptionList:{
 						default:WCDMA_preferred,
 						action:"sqlite preferred_network_mode",
-						values:[ WCDMA_preferred, GSM_only, WCDMA_only, GSM_auto, CDMA_auto, CDMA_only, EvDo_only, GSM_CDMA_auto, LTE_CDMA_auto, LTE_GSM_auto,
-							LTE_GSM_CDMA_auto, LTE_only, LTE_WDCMA,
+						values:[ WCDMA_preferred, GSM_only, WCDMA_only, GSM_auto, CDMA_auto, CDMA_only, EvDo_only, GSM_CDMA_auto, LTE_CDMA_auto, 
+							LTE_GSM_auto, LTE_GSM_CDMA_auto, LTE_only, LTE_WDCMA,
 						],
 					}},'
 			fi`

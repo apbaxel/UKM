@@ -1,5 +1,6 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
+SQL3=$UKM/sqlite3;
 
 DB=/data/data/com.android.providers.settings/databases;
 
@@ -39,31 +40,31 @@ cd $DB;
 
 case "$1" in
 	WCDMA_preferred)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 0);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 0);";;
 	GSM_only)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 1);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 1);";;
 	WCDMA_only)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 2);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 2);";;
 	GSM_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 3);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 3);";;
 	CDMA_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 4);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 4);";;
 	CDMA_only)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 5);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 5);";;
 	EvDo_only)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 6);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 6);";;
 	GSM_CDMA_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 7);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 7);";;
 	LTE_CDMA_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 8);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 8);";;
 	LTE_GSM_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 9);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 9);";;
 	LTE_GSM_CDMA_auto)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 10);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 10);";;
 	LTE_only)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 11);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 11);";;
 	LTE_WDCMA)
-		sqlite3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 12);";;
+		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 12);";;
 esac;
 }
 
@@ -72,6 +73,6 @@ if [[ ! -z $2 ]]; then
 fi;
 
 cd $DB;
-VALUE=`sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
+VALUE=`$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
 
 $BB echo `read_pnm $VALUE`;
