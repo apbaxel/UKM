@@ -92,8 +92,8 @@ case "$1" in
 		fi;
 		
 		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
-			GOV="GOV, interactive";
-		fi;		
+			GOV="$GOV, interactive";
+		fi;
 		
 		if [ "`$BB grep 'conservative' /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
 			GOV="$GOV, conservative";

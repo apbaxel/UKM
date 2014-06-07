@@ -69,7 +69,7 @@ cat << CTAG
 					UT=\`$BB cat /sys/module/msm_kgsl_core/parameters/up_threshold\`
 					$BB echo '{ SSeekBar:{
 						title:"Up Threshold",
-						description:"When GPU load reaches this point, governor will scale GPU up",
+						description:"When the GPU load is above this level, it ramps up the frequency one level.",
 						default:'$UT',
 						action:"generic /sys/module/msm_kgsl_core/parameters/up_threshold",
 						min:0,
@@ -81,7 +81,7 @@ cat << CTAG
 					DT=\`$BB cat /sys/module/msm_kgsl_core/parameters/down_threshold\`
 					$BB echo '{ SSeekBar:{
 						title:"Down Threshold",
-						description:"When GPU load is beneath this point, governor will scale GPU down",
+						description:"When the GPU load is lower than this level, it ramps down the frequency one level.",
 						default:'$DT',
 						action:"generic /sys/module/msm_kgsl_core/parameters/down_threshold",
 						min:0,
@@ -93,7 +93,7 @@ cat << CTAG
 					ST=\`$BB cat /sys/module/msm_kgsl_core/parameters/sample_time_ms\`
 					$BB echo '{ SSeekBar:{
 						title:"Sample Time",
-						description:"Sample time to ramp up or down GPU",
+						description:"Sample time to ramp up or down GPU.",
 						unit:" ms",
 						default:'$ST',
 						action:"generic /sys/module/msm_kgsl_core/parameters/sample_time_ms",
