@@ -207,6 +207,72 @@ cat << CTAG
 						}},'
 					done;
 			fi`
+			`if [ -d "/sys/class/leds" ]; then
+				$BB echo '{ SPane:{
+					title:"LED Control",
+					description:"Kernel trigger for LEDs. Using this might interfere with OS level LED management and vice versa.",
+				}},'
+				if [ -f "/sys/class/leds/blue/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Blue",
+						default:none,
+						action:"bracket-option /sys/class/leds/blue/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/blue/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/green/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Green",
+						default:none,
+						action:"bracket-option /sys/class/leds/green/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/green/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/red/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Red",
+						default:none,
+						action:"bracket-option /sys/class/leds/red/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/red/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/lcd-backlight/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"LCD Backlight",
+						default:none,
+						action:"bracket-option /sys/class/leds/lcd-backlight/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/lcd-backlight/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/spotlight/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Spotlight",
+						default:none,
+						action:"bracket-option /sys/class/leds/spotlight/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/spotlight/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+			fi`
 		]
 }
 CTAG
