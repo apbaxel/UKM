@@ -81,6 +81,59 @@ cat << CTAG
 						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
 					}},'
 			fi`
+			`if [ -f "/sys/kernel/mm/uksm/run" ]; then
+			UKSM=\`$BB cat /sys/kernel/mm/uksm/run\`
+			SLEEP=\`$BB cat /sys/kernel/mm/uksm/sleep_millisecs\`
+			UKSMGOV=\`$BB echo $($UKM/actions/bracket-option /sys/kernel/mm/uksm/cpu_governor)\`
+			MAXCPU=\`$BB cat /sys/kernel/mm/uksm/max_cpu_percentage\`
+				$BB echo '{ SPane:{
+					title:"Ultra Kernel Samepage Merging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"UKSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. UKSM has a better algorithm than KSM.",
+						default:'$UKSM',
+						action:"generic /sys/kernel/mm/uksm/run"
+					}},
+					{ SSeekBar:{
+						title:"Sleep",
+						description:"How long will the daemon sleep before it wakes up and starts scanning memory pages.",
+						unit:" ms",
+						step:50,
+						min:0,
+						max:1000,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/uksm/sleep_millisecs"
+					}},
+					{ SOptionList:{
+						title:"CPU Governor",
+						description:"Controls how aggressively the daemon uses CPU power. This sets a preset for the maximum CPU consumption below.",
+						default:'$UKSMGOV',
+						action:"bracket-option /sys/kernel/mm/uksm/cpu_governor",
+						values:['
+							for UGOV in \`$BB cat /sys/kernel/mm/uksm/cpu_governor | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$UGOV\",";
+							done;
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:"generic /sys/kernel/mm/uksm/max_cpu_percentage"
+							},
+						]
+					}},
+					{ SSeekBar:{
+						title:"Max CPU Consumption",
+						description:"The maximum CPU consumption the daemon will use while scanning. Higher = better scanning (more battery drain).",
+						unit:"%",
+						step:1,
+						min:10,
+						max:99,
+						default:'$MAXCPU',
+						action:"generic /sys/kernel/mm/uksm/max_cpu_percentage"
+					}},'
+			fi`
 			`if [ -f "/sys/kernel/sched/gentle_fair_sleepers" ]; then
 			GFS=\`$BB cat /sys/kernel/sched/gentle_fair_sleepers\`
 			
