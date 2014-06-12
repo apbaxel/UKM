@@ -55,6 +55,21 @@ cat << CTAG
 					action:"generic /sys/module/msm_thermal/parameters/temp_max"
 				}},'
 			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/temp_threshold" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/temp_threshold\`
+				$BB echo '{ SPane:{
+					title:"Temperature Threshold"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/temp_threshold"
+				}},'
+			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/min_freq_index" ]; then
 			MFI=\`$BB cat /sys/module/msm_thermal/parameters/min_freq_index\`
 				$BB echo '{ SPane:{
@@ -132,7 +147,7 @@ cat << CTAG
 						action:"generic /sys/class/timed_output/vibrator/amp"
 					}},'
 			fi`
-			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ]; then
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ] && [ ! -f "/sys/kernel/fast_charge/fast_charge_level" ]; then
 			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
 				$BB echo '{ SPane:{
 				title:"USB Fast Charge"
@@ -142,6 +157,31 @@ cat << CTAG
 						description:"If enabled, device will charge faster when connected through USB. NOTE: Enabling this will disable access to phone storage via USB.",
 						default:'$FC',
 						action:"generic /sys/kernel/fast_charge/force_fast_charge"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ] && [ -f "/sys/kernel/fast_charge/fast_charge_level" ]; then
+			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
+			FCL=\`$BB cat /sys/kernel/fast_charge/fast_charge_level\`
+				$BB echo '{ SPane:{
+				title:"USB Fast Charge"
+				}},
+					{ SSeekBar:{
+						title:"Enable",
+						description:"If enabled, device will charge faster when connected through USB, use custom for different voltage below. NOTE: Enabling this will disable access to phone storage via USB.",
+						default:'$FC',
+						action:"generic /sys/kernel/fast_charge/force_fast_charge",
+						values:{
+							0:"0: Disabled", 1:"1: Enable", 2:"2: Custom"
+						}
+					}},
+					{ SSeekBar:{
+						title:"Fast Charge Level",
+						description:"Fast charge voltage configuration. For USB 2.0 use 500mA as MAX, for USB 3.0 use 900mA as MAX, For wallcharger use 1500mA as MAX. WARNING: Incorrect use of voltage could damage your phone or USB ports.",
+						default:'$FCL',
+						action:"generic /sys/kernel/fast_charge/fast_charge_level",
+						values:{
+							500:"500mA", 900:"900mA", 1200:"1200mA", 1500:"1500mA", 2000:"2000mA"
+						}
 					}},'
 			fi`
 			`if [ -f "/sys/module/msm_otg/parameters/otg_hack_enable" ]; then
