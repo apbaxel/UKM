@@ -5,13 +5,15 @@ if [ -d /data/data/com.af.synapse ]; then
   SYNAPSE_SD_DIR=/sdcard/Synapse;
   SYNAPSE_BOOT_DIR=$SYNAPSE_SD_DIR/kernel_backups;
   SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_profiles;
+  SYNAPSE_GAMMA_DIR=$SYNAPSE_SD_DIR/gamma_profiles;
 
   SYNAPSE_DATA=/data/data/com.af.synapse/databases;
 
   [ ! -d "$SYNAPSE_BOOT_DIR" ] && $BB mkdir -p "$SYNAPSE_BOOT_DIR";
-  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"` ] && $BB echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img" 2> /dev/null` ] && $BB echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
   [ ! -d "$SYNAPSE_CONFIG_DIR" ] && $BB mkdir -p "$SYNAPSE_CONFIG_DIR";
-  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"` ] && $BB echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile" 2> /dev/null` ] && $BB echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+  [ ! -d "SYNAPSE_GAMMA_DIR" ] && $BB mkdir -p "$SYNAPSE_GAMMA_DIR";
 
   SYNAPSE_BOOT_IMG=`$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
   SYNAPSE_CONFIG_PROFILE=`$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
@@ -141,7 +143,183 @@ case "$1" in
 			$BB echo "File not found.";
 		fi;
 	;;
-
+	
+	listgammafaux)
+		if [ ! -f "$SYNAPSE_GAMMA_DIR/faux" ]; then
+			cp $UKM/files/gammafaux_prof $SYNAPSE_GAMMA_DIR/faux;
+		fi;
+		
+		$BB echo `$BB awk '{ print $1 }' $SYNAPSE_GAMMA_DIR/faux`;
+	;;
+	
+	applygammafaux)
+		PATH=$UKM/files/gamma_prof;
+		
+		if [[ ! -z $2 ]]; then
+			$BB echo $2 > $PATH;
+			
+			FAUX_PROFILE=$2;
+			gamma=$SYNAPSE_GAMMA_DIR/faux;
+			kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
+			kgamma_b=/sys/devices/platform/mipi_lgit.1537/kgamma_b;
+			kgamma_g=/sys/devices/platform/mipi_lgit.1537/kgamma_g;
+			kgamma_r=/sys/devices/platform/mipi_lgit.1537/kgamma_r;
+			
+			cal=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=2 -v t=4 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+			blue=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=5 -v t=14 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+			green=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=15 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+			red=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=25 -v t=34 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+			
+			$BB echo "$cal" > $kcal;
+			$BB echo "$blue" > $kgamma_b;
+			$BB echo "$green" > $kgamma_g;
+			$BB echo "$red" > $kgamma_r;
+			
+			$BB echo "$FAUX_PROFILE restored. Turn screen Off/On to update.";
+		fi;
+		
+		echo `$BB cat $PATH`;
+	;;
+	
+	deletegammafaux)
+		FAUX_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		$BB sed -i "/$FAUX_PROFILE/d" $SYNAPSE_GAMMA_DIR/faux;
+		
+		$BB echo "$FAUX_PROFILE deleted. Press the Restart Synapse button below to see updated list.";
+	;;
+	
+	keepgammafaux)
+		FAUX_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		FAUX_PROFILE=`$BB echo ${FAUX_PROFILE// /_}`;
+		gamma=$SYNAPSE_GAMMA_DIR/faux;
+		
+		if [ -z "$FAUX_PROFILE" ]; then
+			$BB echo "Enter a profile name first and then apply."
+		elif [ "`$BB grep $FAUX_PROFILE $gamma`" ]; then
+			$BB echo "Profile name already exists.";
+		else
+			kcal=`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal`;
+			kgamma_b=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_b`;
+			kgamma_g=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_g`;
+			kgamma_r=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_r`;
+			
+			$BB echo "$FAUX_PROFILE $kcal $kgamma_b $kgamma_g $kgamma_r" >> $gamma;
+			$BB echo "$FAUX_PROFILE created. Press the Restart Synapse button below to see updated list.";
+		fi;
+	;;
+	
+	listgammafranco)
+		if [ ! -f "$SYNAPSE_GAMMA_DIR/franco" ]; then
+			cp $UKM/files/gammafranco_prof $SYNAPSE_GAMMA_DIR/franco;
+		fi;
+		
+		$BB echo `$BB awk '{ print $1 }' $SYNAPSE_GAMMA_DIR/franco`;
+	;;
+	
+	applygammafranco)
+		PATH=$UKM/files/gamma_prof;
+		
+		if [[ ! -z $2 ]]; then
+			$BB echo $2 > $PATH;
+			
+			FRANCO_PROFILE=$2;
+			gamma=$SYNAPSE_GAMMA_DIR/franco;
+			kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
+			kred_greys=/sys/class/misc/gammacontrol/red_greys;
+			kred_mids=/sys/class/misc/gammacontrol/red_mids;
+			kred_blacks=/sys/class/misc/gammacontrol/red_blacks;
+			kred_whites=/sys/class/misc/gammacontrol/red_whites;
+			kgreen_greys=/sys/class/misc/gammacontrol/green_greys;
+			kgreen_mids=/sys/class/misc/gammacontrol/green_mids;
+			kgreen_blacks=/sys/class/misc/gammacontrol/green_blacks;
+			kgreen_whites=/sys/class/misc/gammacontrol/green_whites;
+			kblue_greys=/sys/class/misc/gammacontrol/blue_greys;
+			kblue_mids=/sys/class/misc/gammacontrol/blue_mids;
+			kblue_blacks=/sys/class/misc/gammacontrol/blue_blacks;
+			kblue_whites=/sys/class/misc/gammacontrol/blue_whites;
+			kcontrast=/sys/class/misc/gammacontrol/contrast;
+			kbrightness=/sys/class/misc/gammacontrol/brightness;
+			ksaturation=/sys/class/misc/gammacontrol/saturation;
+			
+			cal=`$BB grep $FRANCO_PROFILE $gamma | $BB awk -v f=2 -v t=4 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+			red_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $5 }'`;
+			red_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $6 }'`;
+			red_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $7 }'`;
+			red_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $8 }'`;
+			green_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $9 }'`;
+			green_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $10 }'`;
+			green_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $11 }'`;
+			green_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $12 }'`;
+			blue_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $13 }'`;
+			blue_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $14 }'`;
+			blue_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $15 }'`;
+			blue_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $16 }'`;
+			contrast=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $17 }'`;
+			brightness=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $18 }'`;
+			saturation=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $19 }'`;
+			
+			$BB echo "$cal" > $kcal;
+			$BB echo "$red_greys" > $kred_greys;
+			$BB echo "$red_mids" > $kred_mids;
+			$BB echo "$red_blacks" > $kred_blacks;
+			$BB echo "$red_whites" > $kred_whites;
+			$BB echo "$green_greys" > $kgreen_greys;
+			$BB echo "$green_mids" > $kgreen_mids;
+			$BB echo "$green_blacks" > $kgreen_blacks;
+			$BB echo "$green_whites" > $kgreen_whites;
+			$BB echo "$blue_greys" > $kblue_greys;
+			$BB echo "$blue_mids" > $kblue_mids;
+			$BB echo "$blue_blacks" > $kblue_blacks;
+			$BB echo "$blue_whites" > $kblue_whites;
+			$BB echo "$contrast" > $kcontrast;
+			$BB echo "$brightness" > $kbrightness;
+			$BB echo "$saturation" > $ksaturation;
+			
+			$BB echo "$FRANCO_PROFILE restored. Turn screen Off/On to update.";
+		fi;
+		
+		echo `$BB cat $PATH`;
+	;;
+	
+	deletegammafranco)
+		FRANCO_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		$BB sed -i "/$FRANCO_PROFILE/d" $SYNAPSE_GAMMA_DIR/franco;
+		
+		$BB echo "$FRANCO_PROFILE deleted. Press the Restart Synapse button below to see updated list.";
+	;;
+	
+	keepgammafranco)
+		FRANCO_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		FRANCO_PROFILE=`$BB echo ${FRANCO_PROFILE// /_}`;
+		gamma=$SYNAPSE_GAMMA_DIR/franco;
+		
+		if [ -z "$FRANCO_PROFILE" ]; then
+			$BB echo "Enter a profile name first and then apply."
+		elif [ "`$BB grep $FRANCO_PROFILE $gamma`" ]; then
+			$BB echo "Profile name already exists.";
+		else
+			kcal=`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal`;
+			kred_greys=`$BB cat /sys/class/misc/gammacontrol/red_greys`;
+			kred_mids=`$BB cat /sys/class/misc/gammacontrol/red_mids`;
+			kred_blacks=`$BB cat /sys/class/misc/gammacontrol/red_blacks`;
+			kred_whites=`$BB cat /sys/class/misc/gammacontrol/red_whites`;
+			kgreen_greys=`$BB cat /sys/class/misc/gammacontrol/green_greys`;
+			kgreen_mids=`$BB cat /sys/class/misc/gammacontrol/green_mids`;
+			kgreen_blacks=`$BB cat /sys/class/misc/gammacontrol/green_blacks`;
+			kgreen_whites=`$BB cat /sys/class/misc/gammacontrol/green_whites`;
+			kblue_greys=`$BB cat /sys/class/misc/gammacontrol/blue_greys`;
+			kblue_mids=`$BB cat /sys/class/misc/gammacontrol/blue_mids`;
+			kblue_blacks=`$BB cat /sys/class/misc/gammacontrol/blue_blacks`;
+			kblue_whites=`$BB cat /sys/class/misc/gammacontrol/blue_whites`;
+			kcontrast=`$BB cat /sys/class/misc/gammacontrol/contrast`;
+			kbrightness=`$BB cat /sys/class/misc/gammacontrol/brightness`;
+			ksaturation=`$BB cat /sys/class/misc/gammacontrol/saturation`;
+			
+			$BB echo "$FRANCO_PROFILE $kcal $kred_greys $kred_mids $kred_blacks $kred_whites $kgreen_greys $kgreen_mids $kgreen_blacks $kgreen_whites $kblue_greys $kblue_mids $kblue_blacks $kblue_whites $kcontrast $kbrightness $ksaturation" >> $gamma;
+			$BB echo "$FRANCO_PROFILE created. Press the Restart Synapse button below to see updated list.";
+		fi;
+	;;
+	
 	restart)
 		reset_uci;
 		$BB sleep 1;
