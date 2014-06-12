@@ -15,7 +15,7 @@ set_progress(0.100000);
 
 ui_print("Deleting old files...");
 delete_recursive("/data/N4UKM", "/data/UKM");
-delete("/system/etc/init.d/N4UKM", "/system/etc/init.d/UKM", "/system/xbin/uci");
+delete("/system/etc/init.d/N4UKM", "/system/etc/init.d/UKM", "/system/etc/init.d/UKM_WAKE", "/system/xbin/uci");
 set_progress(0.300000);
 
 ui_print("Extracting files...");
