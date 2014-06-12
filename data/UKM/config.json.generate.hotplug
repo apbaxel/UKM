@@ -272,8 +272,8 @@ cat << CTAG
 					$BB echo '{ SSeekBar:{
 							title:"Fast Lane Load",
 							description:"Improve latencies by instantly putting online all CPUs if current load on any CPU is above a certain threshold.",
-							min:1,
-							max:100,
+							min:0,
+							max:400,
 							step:1,
 							default:'$FASTLANE',
 							action:"generic /sys/module/msm_hotplug/fast_lane_load"
@@ -289,6 +289,15 @@ cat << CTAG
 							step:1,
 							default:'$OFFLINELOAD',
 							action:"generic /sys/module/msm_hotplug/offline_load"
+					}},'
+				fi
+				if [ -f "/sys/module/msm_hotplug/load_levels" ]; then
+				LOADLVL=\`$BB cat /sys/module/msm_hotplug/load_levels\`
+					$BB echo '{ SGeneric:{
+						title:"Load Levels",
+						description:"CPUOnline MaxLoad MinLoad...",
+						default:"'$LOADLVL'",
+						action:"generic /sys/module/msm_hotplug/load_levels"
 					}},'
 				fi
 				if [ -f "/sys/module/msm_hotplug/suspend_freq" ] && [ ! -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
