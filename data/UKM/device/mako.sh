@@ -64,6 +64,12 @@ case "$1" in
 	DirGPUMaxFrequency)
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk";
 	;;
+	DirGPUMinPwrLevel)
+		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/min_pwrlevel";
+	;;
+	DirGPUNumPwrLevels)
+		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels";
+	;;
 	DirGPUPolicy)
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy";
 	;;
@@ -100,6 +106,16 @@ case "$1" in
 		fi;
 		
 		$BB echo $GOV;
+	;;
+	GPUPowerLevel)
+		NUM_PWRLVL=`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
+		PWR_LEVEL=-1;
+		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies`; do
+		PWR_LEVEL=$((PWR_LEVEL + 1));
+		MIN_PWRLVL=$((NUM_PWRLVL - PWR_LEVEL));
+		LABEL=$((GPUFREQ / 1000000));
+			$BB echo "$MIN_PWRLVL:\"${LABEL} MHz\", ";
+		done;
 	;;
 	HasBootloader)
 		$BB echo "1";
@@ -273,22 +289,22 @@ case "$1" in
 		$BB echo $MFIT;
 	;;
 	SetCPUGovernor)
-		CPU=/sys/devices/system/cpu;
-		$BB echo $2 > $CPU/cpu1/cpufreq/scaling_governor;
-		$BB echo $2 > $CPU/cpu2/cpufreq/scaling_governor;
-		$BB echo $2 > $CPU/cpu3/cpufreq/scaling_governor;
+		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
+			$BB echo 1 > $CPU/online;
+			$BB echo $2 > $CPU/cpufreq/scaling_governor;
+		done;
 	;;
 	SetCPUMaxFrequency)
-		/sys/devices/system/cpu;
-		$BB echo $2 > $CPU/cpu1/cpufreq/scaling_max_freq;
-		$BB echo $2 > $CPU/cpu2/cpufreq/scaling_max_freq;
-		$BB echo $2 > $CPU/cpu3/cpufreq/scaling_max_freq;
+		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
+			$BB echo 1 > $CPU/online;
+			$BB echo $2 > $CPU/cpufreq/scaling_max_freq;
+		done;
 	;;
 	SetCPUMinFrequency)
-		/sys/devices/system/cpu;
-		$BB echo $2 > $CPU/cpu1/cpufreq/scaling_min_freq;
-		$BB echo $2 > $CPU/cpu2/cpufreq/scaling_min_freq;
-		$BB echo $2 > $CPU/cpu3/cpufreq/scaling_min_freq;
+		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
+			$BB echo 1 > $CPU/online;
+			$BB echo $2 > $CPU/cpufreq/scaling_min_freq;
+		done;
 	;;
 	TCPCongestionList)
 		for TCPCC in `$BB cat /proc/sys/net/ipv4/tcp_available_congestion_control` ; do

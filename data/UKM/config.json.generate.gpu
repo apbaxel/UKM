@@ -11,10 +11,20 @@ cat << CTAG
 					action:"live GPUFrequency"
 				}},
 			{ SPane:{
-				title:"GPU Max Frequency",
-				description:"Set the maximum frequency the GPU scales up to."
+				title:"GPU Frequency Scaling",
 			}},
 				{ SSeekBar:{
+					title:"GPU Min Frequency",
+					description:"Set the minimum frequency the GPU scales down to.",
+					default:1,
+					action:"gpuset `sh $DEVICE DirGPUMinPwrLevel`",
+					values:{
+						`sh $DEVICE GPUPowerLevel`
+					}
+				}},
+				{ SSeekBar:{
+					title:"GPU Max Frequency",
+					description:"Set the maximum frequency the GPU scales up to.",
 					default:`$BB cat \`sh $DEVICE DirGPUMaxFrequency\``,
 					action:"generic `sh $DEVICE DirGPUMaxFrequency`",
 					values:{
@@ -27,7 +37,7 @@ cat << CTAG
 			}},
 				{ SOptionList:{
 					default:`sh $DEVICE DefaultGPUGovernor`,
-					action:"gpugov `sh $DEVICE DirGPUGovernor`",
+					action:"gpuset `sh $DEVICE DirGPUGovernor`",
 					values:[
 						`sh $DEVICE GPUGovernorList`
 					]
