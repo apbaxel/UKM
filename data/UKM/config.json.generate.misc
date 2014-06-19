@@ -179,9 +179,11 @@ cat << CTAG
 						description:"Fast charge voltage configuration. For USB 2.0 use 500mA as MAX, for USB 3.0 use 900mA as MAX, For wallcharger use 1500mA as MAX. WARNING: Incorrect use of voltage could damage your phone or USB ports.",
 						default:'$FCL',
 						action:"generic /sys/kernel/fast_charge/fast_charge_level",
-						values:{
-							500:"500mA", 900:"900mA", 1200:"1200mA", 1500:"1500mA", 2000:"2000mA"
-						}
+						values:{ 0:"Disabled",'
+							for CHARGE in \`$BB cat /sys/kernel/fast_charge/available_charge_levels\`; do
+								$BB echo "$CHARGE:\"${CHARGE} mA\", ";
+							done;
+						$BB echo '}
 					}},'
 			fi`
 			`if [ -f "/sys/module/msm_otg/parameters/otg_hack_enable" ]; then
@@ -211,7 +213,7 @@ cat << CTAG
 						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
 					}},'
 			fi`
-			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ]; then
+			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ] && [ -n "\`cat /sys/devices/virtual/input/lge_touch/accuracy 2> /dev/null\`" ]; then
 				$BB echo '{ SPane:{
 					title:"Touchscreen Accuracy Filter",
 					description:"Allows you to set the accuracy & sensitivity of the touchscreen. First select your preferred settings and then enable."
