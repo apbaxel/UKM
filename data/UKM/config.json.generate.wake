@@ -161,15 +161,15 @@ cat << CTAG
 					}},'
 			fi`
 			`if [ -f "/sys/module/qpnp_power_on/parameters/pwrkey_suspend" ]; then
-			PKSFLO=\`$BB cat /sys/module/qpnp_power_on/parameters/pwrkey_suspend\`
+			PKS=\`$BB bool /sys/module/qpnp_power_on/parameters/pwrkey_suspend\`
 				$BB echo '{ SPane:{
 					title:"Power Key Suspend"
 				}},
 					{ SCheckBox:{
 						label:"Enable",
 						description:"If enabled, disables screen wake controls when screen is turned off by power key.",
-						default:'$PKSFLO',
-						action:"generic /sys/module/qpnp_power_on/parameters/pwrkey_suspend"
+						default:'$PKS',
+						action:"boolean /sys/module/qpnp_power_on/parameters/pwrkey_suspend"
 					}},'
 			fi`
 			`if [ -f "/sys/android_touch/lid_suspend" ]; then
