@@ -2,14 +2,16 @@ cat << CTAG
 {
 	name:CPU,
 		elements:[
-			{ SPane:{
-				title:"Current CPU Frequency:"
-			}},
-			{ SLiveLabel:{
-				refresh:1000,
-				style:italic,
-				action:"live CPUFrequency"
-			}},
+			`if [ 2 == 1 ]; then
+				$BB echo '{ SPane:{
+					title:"Current CPU Frequency:"
+				}},
+				{ SLiveLabel:{
+					refresh:500,
+					style:italic,
+					action:"live CPUFrequency"
+				}},'
+			fi`
 			{ STitleBar:{
 				title:"CPU Frequency Scaling"
 			}},
