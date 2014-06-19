@@ -24,7 +24,7 @@ cat << CTAG
 					title:"Intelliplug"
 				}},'
 				if [ -f "/sys/module/intelli_plug/parameters/intelli_plug_active" ]; then
-				INTELLIPLUG=\`$BB cat /sys/module/intelli_plug/parameters/intelli_plug_active\`
+				INTELLIPLUG=\`$BB cat /sys/module/intelli_plug/parameters/intelli_plug_active\`;
 					$BB echo '{ SCheckBox:{
 						label:"Enable",
 						description:"An in kernel replacement for Qualcomms MPDecision. Developed by faux123.",
@@ -33,7 +33,7 @@ cat << CTAG
 					}},'
 				fi
 				if [ -f "/sys/module/intelli_plug/parameters/eco_mode_active" ]; then
-				ECOMODE=\`$BB cat /sys/module/intelli_plug/parameters/eco_mode_active\`
+				ECOMODE=\`$BB cat /sys/module/intelli_plug/parameters/eco_mode_active\`;
 					$BB echo '{ SCheckBox:{
 						label:"Eco Mode",
 						description:"Special power savings mode where the kernel automatically reconfigures its decisions in real time and optimizes to use only 2 out of 4 cores.",
@@ -41,9 +41,40 @@ cat << CTAG
 						action:"generic /sys/module/intelli_plug/parameters/eco_mode_active"
 					}},'
 				fi
+				if [ -f "/sys/module/intelli_plug/parameters/touch_boost_active" ]; then
+				TBOOST=\`$BB cat /sys/module/intelli_plug/parameters/touch_boost_active\`;
+					$BB echo '{ SCheckBox:{
+						label:"Touch Boost",
+						description:"This will boost your minimum CPU speed if you touch the screen or press a button.",
+						default:'$TBOOST',
+						action:"generic /sys/module/intelli_plug/parameters/touch_boost_active"
+					}},'
+				fi
+				if [ -f "/sys/module/intelli_plug/parameters/screen_off_max" ]; then
+				$BB echo '{ SSeekBar:{
+						title:"CPU Max Screen Off Frequency",
+						description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+						default:0,
+						action:"numeric /sys/module/intelli_plug/parameters/screen_off_max",
+						values:{ 0:"Disabled", '
+							sh $DEVICE CPUFrequencyList
+					$BB echo '}
+				}},'
+				fi
+				if [ -f "/sys/module/intelli_plug/parameters/nr_run_hysteresis" ]; then
+				HV=\`$BB cat /sys/module/intelli_plug/parameters/nr_run_hysteresis\`;
+				$BB echo '{ SSeekBar:{
+						title:"Hysteresis Value",
+						min:0,
+						max:16,
+						step:1,
+						default:'$HV',
+						action:"generic /sys/module/intelli_plug/parameters/nr_run_hysteresis"
+				}},'
+				fi
 			fi`
 			`if [ -f "/sys/kernel/msm_cpufreq_limit/cpufreq_limit" ]; then
-			SC=\`$BB cat /sys/kernel/msm_cpufreq_limit/cpufreq_limit\`
+			SC=\`$BB cat /sys/kernel/msm_cpufreq_limit/cpufreq_limit\`;
 				$BB echo '{ SSeekBar:{
 						title:"CPU Frequency Limit (Snakecharmer)",
 						description:"Allows you to set a specific Max CPU frequency to ALL cores at the same time.",
@@ -55,7 +86,7 @@ cat << CTAG
 				}},'
 			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
-			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
+			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`;
 				$BB echo '{ SCheckBox:{
 						label:"Intellithermal",
 						description:"Temperature limit toggle.",
@@ -64,7 +95,7 @@ cat << CTAG
 					}},'
 			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/limit_temp_degC" ]; then
-			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/limit_temp_degC\`
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/limit_temp_degC\`;
 				$BB echo '{ SSeekBar:{
 					title:"Frequency Throttle Temperature",
 					description:"Temperature to start throttling frequencies.",
@@ -77,7 +108,7 @@ cat << CTAG
 				}},'
 			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
-			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/core_limit_temp_degC\`
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/core_limit_temp_degC\`;
 				$BB echo '{ SSeekBar:{
 					title:"Core Throttle Temperature",
 					description:"Temperature to start shutting down cores",
@@ -160,6 +191,206 @@ cat << CTAG
 							action:"generic /sys/kernel/msm_mpdecision/conf/boost_enabled"
 						}},'
 				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_0" ]; then
+				NWNS0=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_0\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Hotplug CPU1",
+							description:"If this threshold is reached, CPU1 will be hotplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS0',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_0"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_1" ]; then
+				NWNS1=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_1\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Unplug CPU0",
+							description:"If this threshold is reached, CPU0 will be unplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS1',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_1"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_2" ]; then
+				NWNS2=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_2\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Hotplug CPU2",
+							description:"If this threshold is reached, CPU2 will be hotplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS2',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_2"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_3" ]; then
+				NWNS3=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_3\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Unplug CPU1",
+							description:"If this threshold is reached, CPU1 will be unplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS3',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_3"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_4" ]; then
+				NWNS4=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_4\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Hotplug CPU3",
+							description:"If this threshold is reached, CPU3 will be hotplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS4',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_4"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_5" ]; then
+				NWNS5=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_5\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Unplug CPU2",
+							description:"If this threshold is reached, CPU2 will be unplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS5',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_5"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_6" ]; then
+				NWNS6=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_6\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Hotplug CPU4",
+							description:"If this threshold is reached, CPU4 will be hotplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS6',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_6"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_7" ]; then
+				NWNS7=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_7\`
+					$BB echo '{ SSeekBar:{
+							title:"Runqueue Threshold Unplug CPU3",
+							description:"If this threshold is reached, CPU3 will be unplugged.",
+							min:0,
+							max:100,
+							step:1,
+							default:'$NWNS7',
+							action:"generic /sys/kernel/msm_mpdecision/conf/nwns_threshold_7"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_0" ]; then
+				TWTS0=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_0\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Hotplug CPU1",
+							description:"This amount of time must have passed for CPU1 to be hotplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS0',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_0"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_1" ]; then
+				TWTS1=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_1\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Unplug CPU0",
+							description:"This amount of time must have passed for CPU0 to be unplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS1',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_1"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_2" ]; then
+				TWTS2=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_2\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Hotplug CPU2",
+							description:"This amount of time must have passed for CPU2 to be hotplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS2',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_2"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_3" ]; then
+				TWTS3=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_3\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Unplug CPU1",
+							description:"This amount of time must have passed for CPU1 to be unplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS3',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_3"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_4" ]; then
+				TWTS4=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_4\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Hotplug CPU3",
+							description:"This amount of time must have passed for CPU3 to be hotplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS4',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_4"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_5" ]; then
+				TWTS5=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_5\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Unplug CPU2",
+							description:"This amount of time must have passed for CPU2 to be unplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS5',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_5"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_6" ]; then
+				TWTS6=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_6\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Hotplug CPU4",
+							description:"This amount of time must have passed for CPU4 to be hotplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS6',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_6"
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/twts_threshold_7" ]; then
+				TWTS7=\`$BB cat /sys/kernel/msm_mpdecision/conf/twts_threshold_7\`
+					$BB echo '{ SSeekBar:{
+							title:"Time Threshold Unplug CPU3",
+							description:"This amount of time must have passed for CPU3 to be unplugged.",
+							unit:" ms",
+							min:0,
+							max:500,
+							step:1,
+							default:'$TWTS7',
+							action:"generic /sys/kernel/msm_mpdecision/conf/twts_threshold_7"
+					}},'
+				fi
 			fi`
 			`if [ -d "/sys/module/msm_hotplug" ]; then
 				$BB echo '{ SPane:{
@@ -173,6 +404,24 @@ cat << CTAG
 							default:'$MSMHOT',
 							action:"generic /sys/module/msm_hotplug/enabled"
 						}},'
+				fi
+				if [ -f "/sys/module/msm_hotplug/msm_enabled" ]; then
+				MSMEN=\`$BB cat /sys/module/msm_hotplug/msm_enabled\`
+						$BB echo '{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by myfluxi.",
+							default:'$MSMEN',
+							action:"generic /sys/module/msm_hotplug/msm_enabled"
+						}},'
+				fi
+				if [ -f "/sys/module/msm_hotplug/parameters/debug_mask" ]; then
+				MSMHOTDEBUG=\`cat /sys/module/msm_hotplug/parameters/debug_mask\`
+					echo '{ SCheckBox:{
+							label:"Debug Mask",
+							description:"Allows you to activate debug mask for hotplug operations.",
+							default:'$MSMHOTDEBUG',
+							action:"generic /sys/module/msm_hotplug/parameters/debug_mask"
+					}},'
 				fi
 				if [ -f "/sys/module/msm_hotplug/min_cpus_online" ]; then
 				MINCPU=\`$BB cat /sys/module/msm_hotplug/min_cpus_online\`
@@ -267,6 +516,15 @@ cat << CTAG
 							action:"generic /sys/module/msm_hotplug/update_rate"
 					}},'
 				fi
+				if [ -f "/sys/module/msm_hotplug/update_rates" ]; then
+				UPDATERATES=\`$BB cat /sys/module/msm_hotplug/update_rates\`
+					$BB echo '{ SGeneric:{
+							title:"Update Rates",
+							description:"Interval between taking samples of load across CPUs. Lower means quicker/more erratic.",
+							default:'$UPDATERATES',
+							action:"generic /sys/module/msm_hotplug/update_rates"
+					}},'
+				fi
 				if [ -f "/sys/module/msm_hotplug/fast_lane_load" ]; then
 				FASTLANE=\`$BB cat /sys/module/msm_hotplug/fast_lane_load\`
 					$BB echo '{ SSeekBar:{
@@ -300,6 +558,29 @@ cat << CTAG
 						action:"generic /sys/module/msm_hotplug/load_levels"
 					}},'
 				fi
+				if [ -f "/sys/module/msm_hotplug/io_is_busy" ]; then
+				IOBUSY=\`$BB cat /sys/module/msm_hotplug/io_is_busy\`
+						$BB echo '{ SCheckBox:{
+							label:"IO is Busy",
+							description:"Used to make the hotplug consider the I/O time as CPU load time",
+							default:'$IOBUSY',
+							action:"generic /sys/module/msm_hotplug/io_is_busy"
+						}},'
+				fi
+				if [ -f "/sys/module/msm_hotplug/suspend_max_cpus" ]; then
+				SMAXCPU=\`$BB cat /sys/module/msm_hotplug/suspend_max_cpus\`
+					$BB echo '{ SSeekBar:{
+							title:"Suspend Max CPUs",
+							description:"Maximum CPUs online when the screen is off.",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$SMAXCPU',
+							action:"generic /sys/module/msm_hotplug/suspend_max_cpus",
+					}},'
+				fi
 				if [ -f "/sys/module/msm_hotplug/suspend_freq" ] && [ ! -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
 				SUSPFREQ=\`$BB cat /sys/module/msm_hotplug/suspend_freq\`
 					$BB echo '{ SSeekBar:{
@@ -307,6 +588,18 @@ cat << CTAG
 							description:"Set the maximum frequency the CPU scales up to when the screen is off.",
 							default:'$SUSPFREQ',
 							action:"generic /sys/module/msm_hotplug/suspend_freq",
+							values:{'
+								sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+				if [ -f "/sys/module/msm_hotplug/suspend_max_freq" ]; then
+				SUSPFREQ=\`$BB cat /sys/module/msm_hotplug/suspend_max_freq\`
+					$BB echo '{ SSeekBar:{
+							title:"Suspend Frequency",
+							description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+							default:'$SUSPFREQ',
+							action:"generic /sys/module/msm_hotplug/suspend_max_freq",
 							values:{'
 								sh $DEVICE CPUFrequencyList
 						$BB echo '}
@@ -872,6 +1165,61 @@ cat << CTAG
 						values:{ 0:"Disabled", '
 							sh $DEVICE CPUFrequencyList
 						$BB echo '}
+					}},'
+				fi
+				if [ -f "/sys/module/cpu_boost/parameters/load_based_syncs" ]; then
+				LBS=\`$BB cat /sys/module/cpu_boost/parameters/load_based_syncs\`
+					$BB echo '{ SCheckBox:{
+						label:"Load Based Syncs",
+						description:"",
+						default:'$LBS',
+						action:"generic /sys/module/cpu_boost/parameters/load_based_syncs",
+					}},'
+				fi
+				if [ -f "/sys/module/cpu_boost/parameters/migration_load_threshold" ]; then
+				MLT=\`$BB cat /sys/module/cpu_boost/parameters/migration_load_threshold\`
+					$BB echo '{ SSeekBar:{
+							title:"Migration Load Threshold",
+							description:"",
+							min:0,
+							max:100,
+							step:1,
+							default:'$MLT',
+							action:"generic /sys/module/cpu_boost/parameters/migration_load_threshold"
+					}},'
+				fi
+				if [ -f "/sys/module/cpu_boost/parameters/hotplug_boost" ]; then
+				HB=\`$BB cat /sys/module/cpu_boost/parameters/hotplug_boost\`
+					$BB echo '{ SCheckBox:{
+						label:"Hotplug Boost",
+						description:"",
+						default:'$HB',
+						action:"generic /sys/module/cpu_boost/parameters/hotplug_boost",
+					}},'
+				fi
+				if [ -f "/sys/module/cpu_boost/parameters/plug_boost_freq" ]; then
+				PBF=\`$BB cat /sys/module/cpu_boost/parameters/plug_boost_freq\`
+					$BB echo '{ SSeekBar:{
+						title:"Plug Boost Frequency",
+						description:"",
+						default:'$PBF',
+						action:"generic /sys/module/cpu_boost/parameters/plug_boost_freq",
+						values:{ '
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+				if [ -f "/sys/module/cpu_boost/parameters/plug_boost_ms" ]; then
+				PB=\`$BB cat /sys/module/cpu_boost/parameters/plug_boost_ms\`
+					$BB echo '{ SSeekBar:{
+							title:"Plug Boost",
+							description:"",
+							unit:" ms",
+							min:1,
+							max:5000,
+							step:1,
+							default:'$PB',
+							action:"generic /sys/module/cpu_boost/parameters/plug_boost_ms"
 					}},'
 				fi
 			fi`
