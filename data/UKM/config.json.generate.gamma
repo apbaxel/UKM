@@ -47,27 +47,13 @@ cat << CTAG
 							{
 								on:APPLY,
 								do:[ REFRESH, APPLY ],
-								to:"generic '$UKM'/files/gamma_prof"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/devices/platform/kcal_ctrl.0/kcal"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r"
+								to:[
+									"generic '$UKM'/files/gamma_prof",
+									"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
+									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g",
+									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r"
+								]
 							}
 						]
 					}},
@@ -229,87 +215,25 @@ cat << CTAG
 							{
 								on:APPLY,
 								do:[ REFRESH, APPLY ],
-								to:"generic '$UKM'/files/gamma_prof"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/devices/platform/kcal_ctrl.0/kcal"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/red_greys"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/red_mids"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/red_blacks"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/red_whites"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/green_greys"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/green_mids"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/green_blacks"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/green_whites"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/blue_greys"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/blue_mids"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/blue_blacks"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/blue_whites"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/contrast"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/brightness"
-							},
-							{
-								on:APPLY,
-								do:[ REFRESH, APPLY ],
-								to:"generic /sys/class/misc/gammacontrol/saturation"
+								to:[
+									"generic '$UKM'/files/gamma_prof",
+									"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+									"generic /sys/class/misc/gammacontrol/red_greys",
+									"generic /sys/class/misc/gammacontrol/red_mids",
+									"generic /sys/class/misc/gammacontrol/red_blacks",
+									"generic /sys/class/misc/gammacontrol/red_whites",
+									"generic /sys/class/misc/gammacontrol/green_greys",
+									"generic /sys/class/misc/gammacontrol/green_mids",
+									"generic /sys/class/misc/gammacontrol/green_blacks",
+									"generic /sys/class/misc/gammacontrol/green_whites",
+									"generic /sys/class/misc/gammacontrol/blue_greys",
+									"generic /sys/class/misc/gammacontrol/blue_mids",
+									"generic /sys/class/misc/gammacontrol/blue_blacks",
+									"generic /sys/class/misc/gammacontrol/blue_whites",
+									"generic /sys/class/misc/gammacontrol/contrast",
+									"generic /sys/class/misc/gammacontrol/brightness",
+									"generic /sys/class/misc/gammacontrol/saturation"
+								]
 							}
 						]
 					}},
@@ -383,6 +307,129 @@ cat << CTAG
 							default:'$RED',
 							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_red",
 						}},'
+			fi`
+			`if [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
+			KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
+			KGAMMA_BN=\`$BB cat /sys/module/dsi_panel/kgamma_bn\`;
+			KGAMMA_BP=\`$BB cat /sys/module/dsi_panel/kgamma_bp\`;
+			KGAMMA_GN=\`$BB cat /sys/module/dsi_panel/kgamma_gn\`;
+			KGAMMA_GP=\`$BB cat /sys/module/dsi_panel/kgamma_gp\`;
+			KGAMMA_RN=\`$BB cat /sys/module/dsi_panel/kgamma_rn\`;
+			KGAMMA_RP=\`$BB cat /sys/module/dsi_panel/kgamma_rp\`;
+			KGAMMA_W=\`$BB cat /sys/module/dsi_panel/kgamma_w\`;
+				$BB echo '{ SPane:{
+					title:"Values",
+				}},
+					{ SGeneric:{
+						title:"Calibration",
+						default:'$KCAL',
+						action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+					}},
+					{ SGeneric:{
+						title:"Blue Negative",
+						default:'$KGAMMA_BN',
+						action:"generic /sys/module/dsi_panel/kgamma_bn",
+					}},
+					{ SGeneric:{
+						title:"Blue Positive",
+						default:'$KGAMMA_BP',
+						action:"generic /sys/module/dsi_panel/kgamma_bp",
+					}},
+					{ SGeneric:{
+						title:"Green Negative",
+						default:'$KGAMMA_GN',
+						action:"generic /sys/module/dsi_panel/kgamma_gn",
+					}},
+					{ SGeneric:{
+						title:"Green Positive",
+						default:'$KGAMMA_GP',
+						action:"generic /sys/module/dsi_panel/kgamma_gp",
+					}},
+					{ SGeneric:{
+						title:"Red Negative",
+						default:'$KGAMMA_RN',
+						action:"generic /sys/module/dsi_panel/kgamma_rn",
+					}},
+					{ SGeneric:{
+						title:"Red Positive",
+						default:'$KGAMMA_RP',
+						action:"generic /sys/module/dsi_panel/kgamma_rp",
+					}},
+					{ SGeneric:{
+						title:"White Point",
+						default:'$KGAMMA_W',
+						action:"generic /sys/module/dsi_panel/kgamma_w",
+					}},
+				{ SPane:{
+					title:"Gamma Profiles",
+					description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=5'>HERE</a>"
+				}},
+					{ SOptionList:{
+						default:Google_Stock,
+						action:"restorebackup applygammafrancoN5",
+						values:['
+							for FRANCON5 in \`$UKM/actions/restorebackup listgammafrancoN5\`; do
+								echo "\"$FRANCON5\","
+							done;
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:[
+									"generic '$UKM'/files/gamma_prof",
+									"generic /sys/module/dsi_panel/kgamma_bn",
+									"generic /sys/module/dsi_panel/kgamma_bp",
+									"generic /sys/module/dsi_panel/kgamma_gn",
+									"generic /sys/module/dsi_panel/kgamma_gp",
+									"generic /sys/module/dsi_panel/kgamma_rn",
+									"generic /sys/module/dsi_panel/kgamma_rp",
+									"generic /sys/module/dsi_panel/kgamma_w"
+								]
+							}
+						]
+					}},
+				{ SPane:{
+					title:"Gamma Actions",
+				}},
+					{ SButton:{
+						label:"Delete Selected Profile",
+						action:"restorebackup deletegammafrancoN5",
+						notify:[
+							{
+								on:APPLY,
+								do:[ RESET, APPLY ],
+								to:"generic '$UKM'/files/gamma_prof"
+							}
+						]
+					}},
+					{ SGeneric:{
+						title:"Profile Name",
+						default:"Google_Stock",
+						action:"generic '$UKM'/files/gamma_prof",
+					}},
+						{ SDescription:{
+							description:"First set a name above and apply. After this you can press the Backup Current Profile button below."
+						}},
+						{ SButton:{
+							label:"Backup Current Profile",
+							action:"restorebackup keepgammafrancoN5",
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic '$UKM'/files/gamma_prof"
+								}
+							]
+						}},
+				{ SPane:{
+					title:"General Actions",
+					description:"To update/refresh lists, select Restart Synapse below."
+				}},
+					{ SButton:{
+						label:"Restart Synapse",
+						action:"restorebackup restart"
+					}},'
 			fi`
 			`if [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ]; then
 				BRMOD=\`$BB cat /sys/devices/i2c-0/0-0038/lm3530_br_mode\`;
