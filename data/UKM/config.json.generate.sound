@@ -16,27 +16,13 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain"
+									to:[
+										"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
+										"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
+										"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
+										"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
+										"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain"
+									]
 								}
 							]
 						}},

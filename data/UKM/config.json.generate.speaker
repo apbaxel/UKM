@@ -16,47 +16,16 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/comp_rate"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/fixed_gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/ATK_time"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/ATK_time"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/REL_time"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/Hold_time"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/Output_limit_level"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/AGC_Max_Gain"
-								},
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"speakerfaux /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold"
+									to:[
+										"speakerfaux /sys/bus/i2c/devices/0-0058/comp_rate",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/fixed_gain",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/ATK_time",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/REL_time",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/Hold_time",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/Output_limit_level",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/AGC_Max_Gain",
+										"speakerfaux /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold"
+									]
 								}
 							]
 						}},

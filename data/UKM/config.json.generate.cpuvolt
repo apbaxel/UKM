@@ -13,17 +13,18 @@ cat << CTAG
 						min:-300000,
 						max:300000,
 						step:25000,
-						notify:['
-							while read CPUFREQ VOLT; do
-							CPUFREQ=\`$BB echo $CPUFREQ | $BB sed "s/://"\`
-							LABEL=$((CPUFREQ / 1000))
-								$BB echo '{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"cpuvolt '$CPUFREQ'"
-								},'
-							done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels
-						$BB echo ']
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:['
+									while read CPUFREQ VOLT; do
+									CPUFREQ=\`$BB echo $CPUFREQ | sed "s/://"\`;
+										echo '"cpuvolt '$CPUFREQ'",';
+									done < /sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels;
+								$BB echo ']
+							}
+						]
 					}},'
 			fi`
 			`if [ -f "/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels" ]; then
@@ -56,15 +57,17 @@ cat << CTAG
 						min:-300,
 						max:300,
 						step:25,
-						notify:['
-							while read CPUFREQ VOLT UNIT; do
-								$BB echo '{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"voltage cpuvolt '${CPUFREQ}'"
-								},'
-							done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
-						$BB echo ']
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:['
+									while read CPUFREQ VOLT UNIT; do
+										$BB echo '"voltage cpuvolt '$CPUFREQ'",';
+									done < /sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+								$BB echo ']
+							}
+						]
 					}},'
 			fi`
 			`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table" ]; then
