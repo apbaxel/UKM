@@ -33,6 +33,19 @@ cat << CTAG
 					action:"buildprop persist.sys.purgeable_assets",
 				}},
 			{ SPane:{
+				title:"ADB over WIFI"
+			}},
+				{ SGeneric:{
+					title:"Device HostName",
+					default:`getprop net.hostname`,
+					action:"buildprop net.hostname",
+				}},
+				{ SGeneric:{
+					title:"Wireless Port",
+					default:`getprop service.adb.tcp.port`,
+					action:"buildprop service.adb.tcp.port",
+				}},
+			{ SPane:{
 				title:"DNS Tweaks",
 				description:"Allows you to set the default DNS (Domain Name System) for 3G connections. Use this to speed up your browsing experience and improve your security.",
 			}},
