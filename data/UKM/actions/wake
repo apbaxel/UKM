@@ -19,33 +19,53 @@ if [ -f $1 ]; then
 		PATH=${PATH##*/};
 		
 		if [ $WAKE_PROF -eq 1 ] && [ ! -f "$INITD/UKM_WAKE" ]; then
+			OWNER=`$BB stat -c %u $INITD`;
+			PERM=`$BB stat -c %a $INITD`;
+			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB echo '#!/system/bin/sh' > $INITD/UKM_WAKE;
-			$BB echo '' >> $INITD/UKM_WAKE;
-			$BB echo '#This file was generated automaticaly from Synapse/UKM.' >> $INITD/UKM_WAKE;
-			$BB echo '#It contains wake options to be applied from init.d script.' >> $INITD/UKM_WAKE;
-			$BB echo '' >> $INITD/UKM_WAKE;
-			$BB chmod 755 $INITD/UKM_WAKE;
+			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
+			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB echo '#!/system/bin/sh' > $INITD/UKM_WAKE 2> /dev/null;
+			$BB echo '' >> $INITD/UKM_WAKE 2> /dev/null;
+			$BB echo '#This file was generated automaticaly from Synapse/UKM.' >> $INITD/UKM_WAKE 2> /dev/null;
+			$BB echo '#It contains wake options to be applied from init.d script.' >> $INITD/UKM_WAKE 2> /dev/null;
+			$BB echo '' >> $INITD/UKM_WAKE 2> /dev/null;
+			$BB chmod 755 $INITD/UKM_WAKE 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 		
 		if [ $WAKE_PROF -eq 1 ] && [ -f "$INITD/UKM_WAKE" ] && [ "$1" != "$UKM/files/wake_prof" ] && [ $2 -eq 1 ]; then
 			if [ ! "`$BB grep $PATH $INITD/UKM_WAKE`" ]; then
+				OWNER=`$BB stat -c %u $INITD`;
+				PERM=`$BB stat -c %a $INITD`;
+			
 				$BB mount -o remount,rw /system 2> /dev/null;
-				$BB echo 'echo '$2' > '$1 >> $INITD/UKM_WAKE;
+				$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
+				$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+				$BB echo 'echo '$2' > '$1 >> $INITD/UKM_WAKE 2> /dev/null;
 				$BB mount -o remount,ro /system 2> /dev/null;
 			fi;
 		fi;
 		
 		if [ $WAKE_PROF -eq 1 ] && [ -f "$INITD/UKM_WAKE" ] && [ "$1" != "$UKM/files/wake_prof" ] && [ $2 -eq 0 ]; then
+			OWNER=`$BB stat -c %u $INITD`;
+			PERM=`$BB stat -c %a $INITD`;
+			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB sed -i "/$PATH/d" $INITD/UKM_WAKE;
+			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
+			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB sed -i "/$PATH/d" $INITD/UKM_WAKE 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 		
 		if [ $WAKE_PROF -eq 0 ] && [ -f "$INITD/UKM_WAKE" ]; then
+			OWNER=`$BB stat -c %u $INITD`;
+			PERM=`$BB stat -c %a $INITD`;
+			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB rm -f $INITD/UKM_WAKE;
+			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
+			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB rm -f $INITD/UKM_WAKE 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 	fi;
