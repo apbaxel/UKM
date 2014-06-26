@@ -84,8 +84,8 @@ cat << CTAG
 						echo '}
 					}},'
 			fi`
-			`if [ -f "/sys/kernel/power_suspend/power_suspend_state" ]; then
-			PSS=\`cat /sys/kernel/power_suspend/power_suspend_state\`
+			`if [ -w "/sys/kernel/power_suspend/power_suspend_state" ]; then
+			PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
 				$BB echo '{ SPane:{
 					title:"Power Suspend State"
 				}},

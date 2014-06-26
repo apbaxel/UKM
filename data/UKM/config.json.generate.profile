@@ -14,6 +14,13 @@ cat << CTAG
 					`for BAK in \`$UKM/actions/restorebackup listconfig\`; do
 						echo "\"$BAK\","
 					done`
+				],
+				notify:[
+					{
+						on:APPLY,
+						do:[ REFRESH, APPLY ],
+						to:"generic $UKM/files/bck_prof"
+					}
 				]
 			}},
 		{ STitleBar:{

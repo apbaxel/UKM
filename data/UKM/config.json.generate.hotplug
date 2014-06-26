@@ -572,7 +572,7 @@ cat << CTAG
 					$BB echo '{ SSeekBar:{
 							title:"Suspend Max CPUs",
 							description:"Maximum CPUs online when the screen is off.",
-							min:1,
+							min:0,
 							max:'
 								sh $DEVICE MaxCPU
 							$BB echo ',
@@ -600,7 +600,7 @@ cat << CTAG
 							description:"Set the maximum frequency the CPU scales up to when the screen is off.",
 							default:'$SUSPFREQ',
 							action:"generic /sys/module/msm_hotplug/suspend_max_freq",
-							values:{'
+							values:{ 0:"Disabled", '
 								sh $DEVICE CPUFrequencyList
 						$BB echo '}
 					}},'
@@ -1168,12 +1168,12 @@ cat << CTAG
 					}},'
 				fi
 				if [ -f "/sys/module/cpu_boost/parameters/load_based_syncs" ]; then
-				LBS=\`$BB cat /sys/module/cpu_boost/parameters/load_based_syncs\`
+				LBS=\`bool /sys/module/cpu_boost/parameters/load_based_syncs\`
 					$BB echo '{ SCheckBox:{
 						label:"Load Based Syncs",
 						description:"",
 						default:'$LBS',
-						action:"generic /sys/module/cpu_boost/parameters/load_based_syncs",
+						action:"boolean /sys/module/cpu_boost/parameters/load_based_syncs",
 					}},'
 				fi
 				if [ -f "/sys/module/cpu_boost/parameters/migration_load_threshold" ]; then
@@ -1189,12 +1189,12 @@ cat << CTAG
 					}},'
 				fi
 				if [ -f "/sys/module/cpu_boost/parameters/hotplug_boost" ]; then
-				HB=\`$BB cat /sys/module/cpu_boost/parameters/hotplug_boost\`
+				HB=\`bool /sys/module/cpu_boost/parameters/hotplug_boost\`
 					$BB echo '{ SCheckBox:{
 						label:"Hotplug Boost",
 						description:"",
 						default:'$HB',
-						action:"generic /sys/module/cpu_boost/parameters/hotplug_boost",
+						action:"boolean /sys/module/cpu_boost/parameters/hotplug_boost",
 					}},'
 				fi
 				if [ -f "/sys/module/cpu_boost/parameters/plug_boost_freq" ]; then

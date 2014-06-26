@@ -475,9 +475,21 @@ cat << CTAG
  				}},
  					{ SCheckBox:{
 						label:"Enable",
- 						default:'$BLKD',
+ 						default:'$BLD',
  						action:"boolean /sys/module/lm3630_bl/parameters/backlight_dimmer"
  					}},'
+				if [ -f "/sys/module/lm3630_bl/parameters/min_brightness" ]; then
+				BLKD=\`$BB cat /sys/module/lm3630_bl/parameters/min_brightness\`;
+					$BB echo '{ SSeekBar:{
+						title:"Minimum Brightness",
+						description:"Allows you to adjust the LCD screen brightness lower than is possible with stock. Be careful, you can lower the brightness so much you can barely see it.",
+						step:1,
+						min:0,
+						max:50,
+						default:'$BLKD',
+						action:"generic /sys/module/lm3630_bl/parameters/min_brightness"
+					}},'
+				fi
  			fi`
 			`if [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ]; then
  			BLKD=\`$BB cat /sys/module/msm_fb/parameters/backlight_dimmer\`;
