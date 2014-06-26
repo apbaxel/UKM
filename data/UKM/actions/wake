@@ -23,14 +23,16 @@ if [ -f $1 ]; then
 			PERM=`$BB stat -c %a $INITD`;
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
-			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
+			$BB test $PERM -lt "755" && $BB chmod -R 755 $INITD;
 			$BB echo '#!/system/bin/sh' > $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '' >> $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '#This file was generated automaticaly from Synapse/UKM.' >> $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '#It contains wake options to be applied from init.d script.' >> $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '' >> $INITD/UKM_WAKE 2> /dev/null;
 			$BB chmod 755 $INITD/UKM_WAKE 2> /dev/null;
+			$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 		
@@ -40,9 +42,11 @@ if [ -f $1 ]; then
 				PERM=`$BB stat -c %a $INITD`;
 			
 				$BB mount -o remount,rw /system 2> /dev/null;
-				$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
-				$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+				$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
+				$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
+				$BB test $PERM -lt "755" && $BB chmod -R 755 $INITD;
 				$BB echo 'echo '$2' > '$1 >> $INITD/UKM_WAKE 2> /dev/null;
+				$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 				$BB mount -o remount,ro /system 2> /dev/null;
 			fi;
 		fi;
@@ -52,9 +56,11 @@ if [ -f $1 ]; then
 			PERM=`$BB stat -c %a $INITD`;
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
-			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
+			$BB test $PERM -lt "755" && $BB chmod -R 755 $INITD;
 			$BB sed -i "/$PATH/d" $INITD/UKM_WAKE 2> /dev/null;
+			$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 		
@@ -63,9 +69,11 @@ if [ -f $1 ]; then
 			PERM=`$BB stat -c %a $INITD`;
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown "0:0" $INITD;
-			$BB test $PERM -lt "755" && $BB chmod 755 $INITD;
+			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
+			$BB test $PERM -lt "755" && $BB chmod -R 755 $INITD;
 			$BB rm -f $INITD/UKM_WAKE 2> /dev/null;
+			$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
 		fi;
 	fi;
