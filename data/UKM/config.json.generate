@@ -13,7 +13,6 @@ cat << CTAG
 		`. $UKM/config.json.generate.info`,
 		`. $UKM/config.json.generate.status`,
 		`. $UKM/config.json.generate.cpu`,
-		`. $UKM/config.json.generate.cpugov`,
 		`. $UKM/config.json.generate.hotplug`,
 		`. $UKM/config.json.generate.cpuvolt`,
 		`. $UKM/config.json.generate.io`,
