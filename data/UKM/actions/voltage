@@ -51,19 +51,24 @@ corewrite() {
 
 case $1 in
 	cpuvoltglobal)
+		VOLT_PROF=$UKM/files/volt_prof;
 		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
 		
 		if [[ ! -z $3 ]]; then
-			V=$3;
+			VOLT=$3;
+			CURR_VOLT=`$BB cat $VOLT_PROF`;
+			NEW_VOLT=$((VOLT - CURR_VOLT));
+			$BB echo $VOLT > $VOLT_PROF;
+			
 			VOLTARR="";
 			while read FREQ UVOLT UNIT; do
-				VOLTARR="$VOLTARR $((UVOLT + V))";
+				VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
 			done < $P;
 
 			$BB echo $VOLTARR > $P;
 		fi;
 		
-		$BB echo "0";
+		$BB echo `$BB cat $VOLT_PROF`;
 	;;
 	cpuvolt)
 		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
