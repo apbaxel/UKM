@@ -19,13 +19,15 @@ if [[ ! -z "$2" ]]; then
 fi;
 
 if [ $1 == "dalvik.vm.heapsize" ]; then
-	VMHS="`getprop $1`";
+	VMHS="`getprop "$1" 2> /dev/null`";
 	VMHS=${VMHS%?};
 
 	$BB echo $VMHS;
 else
-	if [ "`getprop $1`" == "" ]; then
-		if [[ "$1" == "persist.sys.purgeable_assets" ]]; then
+	if [ "`getprop "$1" 2> /dev/null`" == "" ]; then
+		if [ "$1" == "net.hostname" ]; then
+			$BB echo "";
+		elif [ "$1" == "persist.sys.purgeable_assets" ] || [ "$1" == "service.adb.tcp.port" ]; then
 			$BB echo "0";
 		elif [[ "$1" != *".dns"* ]]; then
 			$BB echo "-1";
@@ -33,6 +35,6 @@ else
 			$BB echo "0.0.0.0";
 		fi
 	else
-		$BB echo "`getprop $1`";
+		$BB echo "`getprop "$1" 2> /dev/null`";
 	fi;
 fi;

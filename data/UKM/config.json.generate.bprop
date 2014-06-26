@@ -37,7 +37,7 @@ cat << CTAG
 			}},
 				{ SGeneric:{
 					title:"Device HostName",
-					default:`getprop net.hostname`,
+					default:`getprop net.hostname 2> /dev/null`,
 					action:"buildprop net.hostname",
 				}},
 				{ SGeneric:{
