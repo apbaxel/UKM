@@ -174,10 +174,10 @@ case "$1" in
 				green=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=15 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 				red=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=25 -v t=34 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 				
-				$BB echo "$cal" > $kcal;
-				$BB echo "$blue" > $kgamma_b;
-				$BB echo "$green" > $kgamma_g;
-				$BB echo "$red" > $kgamma_r;
+				$BB test -n "$cal" && $BB echo "$cal" > $kcal;
+				$BB test -n "$blue" && $BB echo "$blue" > $kgamma_b;
+				$BB test -n "$green" && $BB echo "$green" > $kgamma_g;
+				$BB test -n "$red" && $BB echo "$red" > $kgamma_r;
 			fi;
 			
 			$BB echo `$BB cat $PATH`;
@@ -285,22 +285,22 @@ case "$1" in
 				brightness=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $18 }'`;
 				saturation=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $19 }'`;
 				
-				$BB echo "$cal" > $kcal;
-				$BB echo "$red_greys" > $kred_greys;
-				$BB echo "$red_mids" > $kred_mids;
-				$BB echo "$red_blacks" > $kred_blacks;
-				$BB echo "$red_whites" > $kred_whites;
-				$BB echo "$green_greys" > $kgreen_greys;
-				$BB echo "$green_mids" > $kgreen_mids;
-				$BB echo "$green_blacks" > $kgreen_blacks;
-				$BB echo "$green_whites" > $kgreen_whites;
-				$BB echo "$blue_greys" > $kblue_greys;
-				$BB echo "$blue_mids" > $kblue_mids;
-				$BB echo "$blue_blacks" > $kblue_blacks;
-				$BB echo "$blue_whites" > $kblue_whites;
-				$BB echo "$contrast" > $kcontrast;
-				$BB echo "$brightness" > $kbrightness;
-				$BB echo "$saturation" > $ksaturation;
+				$BB test -n "$cal" && $BB echo "$cal" > $kcal;
+				$BB test -n "$red_greys" && $BB echo "$red_greys" > $kred_greys;
+				$BB test -n "$red_mids" && $BB echo "$red_mids" > $kred_mids;
+				$BB test -n "$red_blacks" && $BB echo "$red_blacks" > $kred_blacks;
+				$BB test -n "$red_whites" && $BB echo "$red_whites" > $kred_whites;
+				$BB test -n "$green_greys" && $BB echo "$green_greys" > $kgreen_greys;
+				$BB test -n "$green_mids" && $BB echo "$green_mids" > $kgreen_mids;
+				$BB test -n "$green_blacks" && $BB echo "$green_blacks" > $kgreen_blacks;
+				$BB test -n "$green_whites" && $BB echo "$green_whites" > $kgreen_whites;
+				$BB test -n "$blue_greys" && $BB echo "$blue_greys" > $kblue_greys;
+				$BB test -n "$blue_mids" && $BB echo "$blue_mids" > $kblue_mids;
+				$BB test -n "$blue_blacks" && $BB echo "$blue_blacks" > $kblue_blacks;
+				$BB test -n "$blue_whites" && $BB echo "$blue_whites" > $kblue_whites;
+				$BB test -n "$contrast" && $BB echo "$contrast" > $kcontrast;
+				$BB test -n "$brightness" && $BB echo "$brightness" > $kbrightness;
+				$BB test -n "$saturation" && $BB echo "$saturation" > $ksaturation;
 			fi;
 		
 			$BB echo `$BB cat $PATH`;
@@ -402,13 +402,13 @@ case "$1" in
 				rp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=117 -v t=139 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 				w=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk '{ print $140 }'`;
 				
-				$BB echo "$bn" > $kgamma_bn;
-				$BB echo "$bp" > $kgamma_bp;
-				$BB echo "$gn" > $kgamma_gn;
-				$BB echo "$gp" > $kgamma_gp;
-				$BB echo "$rn" > $kgamma_rn;
-				$BB echo "$rp" > $kgamma_rp;
-				$BB echo "$w" > $kgamma_w;
+				$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;
+				$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
+				$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
+				$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
+				$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn;
+				$BB test -n "$rp" && $BB echo "$rp" > $kgamma_rp;
+				$BB test -n "$w" && $BB echo "$w" > $kgamma_w;
 			fi;
 			
 			$BB echo `$BB cat $PATH`;
