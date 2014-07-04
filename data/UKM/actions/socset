@@ -1,136 +1,17 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
 
-SOC=/sys/module/pm_8x60/modes;
-
 if [ -f $1 ]; then
-	if [[ ! -z $2 ]]; then
-		$BB echo $2 > $1;
-		
-########C0
-		if [ "$1" = "$SOC/cpu0/wfi/idle_enabled" ]; then
-			if [ -f "$SOC/cpu1/wfi/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/wfi/idle_enabled;
+	if [[ ! -z $3 ]]; then
+		for CSTATE in /sys/module/pm_8x60/modes/cpu[0-3]/$2; do
+			if [ -f "$CSTATE/idle_enabled" ]; then
+				$BB echo $3 > $CSTATE/idle_enabled;
 			fi;
 			
-			if [ -f "$SOC/cpu2/wfi/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/wfi/idle_enabled;
+			if [ -f "$CSTATE/suspend_enabled" ]; then
+				$BB echo $3 > $CSTATE/suspend_enabled;
 			fi;
-			
-			if [ -f "$SOC/cpu3/wfi/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/wfi/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu0/wfi/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu0/wfi/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu1/wfi/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/wfi/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/wfi/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/wfi/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/wfi/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/wfi/suspend_enabled;
-			fi;
-		fi;
-		
-########C1
-		if [ "$1" = "$SOC/cpu0/retention/idle_enabled" ]; then
-			if [ -f "$SOC/cpu1/retention/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/retention/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/retention/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/retention/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/retention/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/retention/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu0/retention/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu0/retention/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu1/retention/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/retention/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/retention/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/retention/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/retention/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/retention/suspend_enabled;
-			fi;
-		fi;
-		
-#########C2
-		if [ "$1" = "$SOC/cpu0/standalone_power_collapse/idle_enabled" ]; then
-			if [ -f "$SOC/cpu1/standalone_power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/standalone_power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/standalone_power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/standalone_power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/standalone_power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/standalone_power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu0/standalone_power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu0/standalone_power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu1/standalone_power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/standalone_power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/standalone_power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/standalone_power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/standalone_power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/standalone_power_collapse/suspend_enabled;
-			fi;
-		fi;
-		
-########C3
-		if [ "$1" = "$SOC/cpu0/power_collapse/idle_enabled" ]; then
-			if [ -f "$SOC/cpu1/power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/power_collapse/idle_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/power_collapse/idle_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu0/power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu0/power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu1/power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu1/power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu2/power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu2/power_collapse/suspend_enabled;
-			fi;
-			
-			if [ -f "$SOC/cpu3/power_collapse/suspend_enabled" ]; then
-				$BB echo $2 > $SOC/cpu3/power_collapse/suspend_enabled;
-			fi;
-		fi;
-		
+		done;
 	fi;
 
 	$BB echo `$BB cat $1`;

@@ -51,10 +51,10 @@ cat << CTAG
 						title:"CPU Multicore Power Saving",
 						description:"Try to group tasks into the least cores possible. The higher the value, the more aggressive the grouping."
 					}},
-					{ SSeekBar:{
+					{ SOptionList:{
 						default:'$SMPS',
 						action:"generic /sys/devices/system/cpu/sched_mc_power_savings",
-						values:{ 0:"0: Disabled", 1:"1: Enabled", 2:"2: Aggressive"
+						values:{ 0:"Disabled", 1:"Enabled", 2:"Aggressive"
 						}
 					}},'
 				fi`

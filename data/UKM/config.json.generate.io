@@ -35,7 +35,7 @@ cat << CTAG
 							to:"`sh $DEVICE DirIOSchedulerTree`"
 						}
 					]
-				}}
+				}},
 			{ SPane:{
 				title:"General I/O Tunables",
 				description:"Set the internal storage general tunables"
@@ -58,24 +58,22 @@ cat << CTAG
 					default:`$BB cat /sys/block/mmcblk0/queue/rotational`,
 					action:"generic /sys/block/mmcblk0/queue/rotational"
 				}},				
-				{ SSeekBar:{
+				{ SOptionList:{
 					title:"No Merges",
 					description:"Types of merges (prioritization) the scheduler queue for this storage device allows.",
 					default:`$BB cat /sys/block/mmcblk0/queue/nomerges`,
 					action:"generic /sys/block/mmcblk0/queue/nomerges",
 					values:{
-						`NM='0:"0: All", 1:"1: Simple Only", 2:"2: None",'
-						echo $NM`
+						0:"All", 1:"Simple Only", 2:"None"
 					}
 				}},
-				{ SSeekBar:{
+				{ SOptionList:{
 					title:"RQ Affinity",
 					description:"Try to have scheduler requests complete on the CPU core they were made from. Higher is more aggressive. Some kernels only support 0-1.",
 					default:`$BB cat /sys/block/mmcblk0/queue/rq_affinity`,
 					action:"generic /sys/block/mmcblk0/queue/rq_affinity",
 					values:{
-						`RQA='0:"0: Disabled", 1:"1", 2:"2"'
-						echo $RQA`
+						0:"Disabled", 1:"Enabled", 2:"Aggressive"
 					}
 				}},
 			{ SPane:{
