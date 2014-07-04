@@ -84,17 +84,43 @@ cat << CTAG
 						echo '}
 					}},'
 			fi`
-			`if [ -w "/sys/kernel/power_suspend/power_suspend_state" ]; then
-			PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
+			`if [ -d "/sys/kernel/power_suspend" ]; then
 				$BB echo '{ SPane:{
-					title:"Power Suspend State"
-				}},
-					{ SCheckBox:{
-						description:"Kernel power management driver when screen is off. Better battery savings if enabled.",
-						label:"Enable",
-						default:'$PSS',
-						action:"generic /sys/kernel/power_suspend/power_suspend_state"
+					title:"Power Suspend"
+				}},'
+				if [ -f "/sys/kernel/power_suspend/power_suspend_mode" ]; then
+				PSM=\`$BB cat /sys/kernel/power_suspend/power_suspend_mode\`
+					$BB echo '{ SOptionList:{
+						title:"Power Suspend Mode"
+						description:"Kernel Mode & LCD Hooks are automatic and managed by the kernel, to manually enable or disable the Power Suspend State choose User Mode.",
+						default:'$PSM',
+						action:"generic /sys/kernel/power_suspend/power_suspend_mode",
+						values:{
+							0:"Kernel Mode", 1:"User Mode", 2:"LCD Hooks"
+						}
 					}},'
+				fi
+				if [ -f "/sys/kernel/power_suspend/power_suspend_state" ] && [ "\`$BB grep 1.2 /sys/kernel/power_suspend/power_suspend_version\`" ]; then
+				PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
+					$BB echo '{ SCheckBox:{
+						label:"Power Suspend State",
+						description:"Kernel power management driver when screen is off. Better battery savings if enabled. Note: You can only change this setting if Power Suspend Mode is in User Mode.",
+						default:'$PSS',
+						action:"powersuspend /sys/kernel/power_suspend/power_suspend_state"
+					}},'
+				fi
+				if [ -f "/sys/kernel/power_suspend/power_suspend_state" ] && [ "\`$BB grep 1.3 /sys/kernel/power_suspend/power_suspend_version\`" ]; then
+				PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
+					$BB echo '{ SSeekBar:{
+						title:"Power Suspend State"
+						description:"Kernel power management driver when screen is off. Better battery savings if enabled. Note: You can only change this setting if Power Suspend Mode is in User Mode.",
+						min:0,
+						max:2,
+						step:1,
+						default:'$PSS',
+						action:"powersuspend /sys/kernel/power_suspend/power_suspend_state"
+					}},'
+				fi
 			fi`
 			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
 			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
@@ -165,13 +191,13 @@ cat << CTAG
 				$BB echo '{ SPane:{
 				title:"USB Fast Charge"
 				}},
-					{ SSeekBar:{
+					{ SOptionList:{
 						title:"Enable",
 						description:"If enabled, device will charge faster when connected through USB, use custom for different voltage below. NOTE: Enabling this will disable access to phone storage via USB.",
 						default:'$FC',
 						action:"generic /sys/kernel/fast_charge/force_fast_charge",
 						values:{
-							0:"0: Disabled", 1:"1: Enable", 2:"2: Custom"
+							0:"Disabled", 1:"Enable", 2:"Custom"
 						}
 					}},
 					{ SSeekBar:{
