@@ -57,15 +57,27 @@ cat << CTAG
 				title:"Log Creation",
 				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_ksmg (same as dmesg but from the last shutdown).",
 			}},
+				`if [ -f "/sys/module/logger/parameters/enabled" ]; then
+				LOGMODE=\`$BB cat /sys/module/logger/parameters/enabled\`
+					$BB echo '{ SOptionList:{
+						title:"Log Mode",
+						description:"Allows you to toggle the log mode.",
+						default:'$LOGMODE',
+						action:"generic /sys/module/logger/parameters/enabled",
+						values:{
+							0:"Disabled", 1:"Enabled"
+						}
+					}},'
+				fi`
 				`if [ -f "/sys/module/logger/parameters/log_mode" ]; then
 				LOGMODE=\`$BB cat /sys/module/logger/parameters/log_mode\`
-					$BB echo '{ SSeekBar:{
+					$BB echo '{ SOptionList:{
 						title:"Log Mode",
 						description:"Allows you to toggle the log mode.",
 						default:'$LOGMODE',
 						action:"generic /sys/module/logger/parameters/log_mode",
 						values:{
-							0:"0: Enabled", 1:"1: Auto Suspend", 2:"2: Disabled"
+							0:"Enabled", 1:"Auto Suspend", 2:"Disabled"
 						}
 					}},'
 				fi`
