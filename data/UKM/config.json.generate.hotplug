@@ -32,6 +32,18 @@ cat << CTAG
 						action:"generic /sys/module/intelli_plug/parameters/intelli_plug_active"
 					}},'
 				fi
+				if [ -f "/sys/module/intelli_plug/parameters/nr_run_profile_sel" ]; then
+				PL=\`$BB cat /sys/module/intelli_plug/parameters/nr_run_profile_sel\`;
+				$BB echo '{ SOptionList:{
+						title:"Intelliplug Profile",
+						description:"The number in the parentheses indicates the amount of cores online at any time.",
+						default:'$PL',
+						action:"generic /sys/module/intelli_plug/parameters/nr_run_profile_sel",
+						values:{
+							0:"Balanced (4)", 1:"Performance (4)", 2:"Conservative (4)", 3:"Eco Performance (2)", 4:"Eco Conservative (2)"
+						}
+				}},'
+				fi
 				if [ -f "/sys/module/intelli_plug/parameters/eco_mode_active" ]; then
 				ECOMODE=\`$BB cat /sys/module/intelli_plug/parameters/eco_mode_active\`;
 					$BB echo '{ SCheckBox:{
@@ -50,6 +62,29 @@ cat << CTAG
 						action:"generic /sys/module/intelli_plug/parameters/touch_boost_active"
 					}},'
 				fi
+				if [ -f "/sys/module/intelli_plug/parameters/nr_run_hysteresis" ]; then
+				HV=\`$BB cat /sys/module/intelli_plug/parameters/nr_run_hysteresis\`;
+				$BB echo '{ SSeekBar:{
+						title:"Hysteresis Value",
+						description:"Lower = faster hotplug response (more battery drain).",
+						min:0,
+						max:16,
+						step:1,
+						default:'$HV',
+						action:"generic /sys/module/intelli_plug/parameters/nr_run_hysteresis"
+				}},'
+				fi
+				if [ -f "/sys/module/intelli_plug/parameters/cpu_nr_run_threshold" ]; then
+				RT=\`$BB cat /sys/module/intelli_plug/parameters/cpu_nr_run_threshold\`;
+				$BB echo '{ SSeekBar:{
+						title:"Threshold Value",
+						min:0,
+						max:1000,
+						step:1,
+						default:'$RT',
+						action:"generic /sys/module/intelli_plug/parameters/cpu_nr_run_threshold"
+				}},'
+				fi
 				if [ -f "/sys/module/intelli_plug/parameters/screen_off_max" ]; then
 				$BB echo '{ SSeekBar:{
 						title:"CPU Max Screen Off Frequency",
@@ -59,17 +94,6 @@ cat << CTAG
 						values:{ 0:"Disabled", '
 							sh $DEVICE CPUFrequencyList
 					$BB echo '}
-				}},'
-				fi
-				if [ -f "/sys/module/intelli_plug/parameters/nr_run_hysteresis" ]; then
-				HV=\`$BB cat /sys/module/intelli_plug/parameters/nr_run_hysteresis\`;
-				$BB echo '{ SSeekBar:{
-						title:"Hysteresis Value",
-						min:0,
-						max:16,
-						step:1,
-						default:'$HV',
-						action:"generic /sys/module/intelli_plug/parameters/nr_run_hysteresis"
 				}},'
 				fi
 			fi`
@@ -1068,13 +1092,22 @@ cat << CTAG
 					}},'
 				fi
 			fi`
-			`if [ -d "/sys/class/misc/mako_hotplug_control" ]; then
-				$BB echo '{ SPane:{
-					title:"Mako Hotplug Control"
-					description:"An in kernel replacement for Qualcomms MPDecision. Developed by franciscofranco.",
-				}},'
-				if [ -f "/sys/class/misc/mako_hotplug_control/cores_on_touch" ]; then
-				CT=\`$BB cat /sys/class/misc/mako_hotplug_control/cores_on_touch\`
+			`if [ -d "/sys/class/misc/mako_hotplug_control" ] || [ -d "/sys/devices/virtual/misc/mako_hotplug_control" ]; then
+				if [ "$(ls -A /sys/class/misc/mako_hotplug_control 2> /dev/null)" ]; then
+					MHC="/sys/class/misc/mako_hotplug_control";
+				elif [ "$(ls -A /sys/devices/virtual/misc/mako_hotplug_control 2> /dev/null)" ]; then
+					MHC="/sys/devices/virtual/misc/mako_hotplug_control";
+				else
+					MHC="";
+				fi;
+				if [ -n $MHC ]; then
+					$BB echo '{ SPane:{
+						title:"Mako Hotplug Control"
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by franciscofranco.",
+					}},'
+				fi;
+				if [ -f "$MHC/cores_on_touch" ]; then
+				CT=\`$BB cat $MHC/cores_on_touch\`
 					$BB echo '{ SSeekBar:{
 						title:"Cores on touch",
 						description:"Number of CPUs online when touching screen or pressing button.",
@@ -1084,11 +1117,11 @@ cat << CTAG
 						$BB echo ',
 						step:1,
 						default:'$CT',
-						action:"generic /sys/class/misc/mako_hotplug_control/cores_on_touch"
+						action:"generic $MHC/cores_on_touch"
 					}},'
 				fi
-				if [ -f "/sys/class/misc/mako_hotplug_control/first_level" ]; then
-				FL=\`$BB cat /sys/class/misc/mako_hotplug_control/first_level\`
+				if [ -f "$MHC/first_level" ]; then
+				FL=\`$BB cat $MHC/first_level\`
 					$BB echo '{ SSeekBar:{
 						title:"First Level",
 						description:"The threshold to online all CPUs.",
@@ -1097,16 +1130,29 @@ cat << CTAG
 						max:100,
 						step:1,
 						default:'$FL',
-						action:"generic /sys/class/misc/mako_hotplug_control/first_level"
+						action:"generic $MHC/first_level"
 					}},'
 				fi
-				if [ -f "/sys/class/misc/mako_hotplug_control/suspend_frequency" ]; then
-				SF=\`$BB cat /sys/class/misc/mako_hotplug_control/suspend_frequency\`
+				if [ -f "$MHC/load_threshold" ]; then
+				LT=\`$BB cat $MHC/load_threshold\`
+					$BB echo '{ SSeekBar:{
+						title:"Load Threshold",
+						description:"The threshold to online all CPUs.",
+						unit:"%",
+						min:0,
+						max:100,
+						step:1,
+						default:'$LT',
+						action:"generic $MHC/load_threshold"
+					}},'
+				fi
+				if [ -f "$MHC/suspend_frequency" ]; then
+				SF=\`$BB cat $MHC/suspend_frequency\`
 					$BB echo '{ SSeekBar:{
 						title:"Suspend Frequency",
 						description:"Set the maximum frequency the CPU scales up to when the screen is off.",
 						default:'$SF',
-						action:"generic /sys/class/misc/mako_hotplug_control/suspend_frequency",
+						action:"generic $MHC/suspend_frequency",
 						values:{'
 							sh $DEVICE CPUFrequencyList
 						$BB echo '}
