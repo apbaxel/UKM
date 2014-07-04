@@ -26,6 +26,9 @@ cat << CTAG
 		{ STitleBar:{
 			title:"Profile Actions",
 		}},
+			{ SDescription:{
+				description:"NOTE: After you restore a profile, you have to press the X button on top to load the settings."
+			}},
 			{ SButton:{
 				label:"Restore Selected Profile",
 				action:"restorebackup applyconfig",

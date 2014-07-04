@@ -2,7 +2,7 @@ UKM=/data/UKM;
 BB=$UKM/busybox;
 
 if [ -f $1 ]; then
-	if [[ ! -z $2 ]]; then
+	if [[ ! -z "$2" ]]; then
 		$BB echo "$2" > $1;
 	fi;
 

@@ -3,12 +3,12 @@ BB=$UKM/busybox;
 
 if [ -f $1 ]; then
 	if [[ ! -z $2 ]]; then
-		VALUE=$2
+		VALUE=$2;
 		
 		if [ "$VALUE" -eq 1 ]; then
-			$BB echo "Y" > $1
+			$BB echo "Y" > $1;
 		elif [ "$VALUE" -eq 0 ]; then
-			$BB echo "N" > $1
+			$BB echo "N" > $1;
 		fi;
 	fi;
 
@@ -17,6 +17,8 @@ VALUE=`$BB cat $1`;
 	if [ $VALUE = "Y" ]; then
 		$BB echo "1";
 	elif [ $VALUE = "N" ]; then
+		$BB echo "0";
+	else
 		$BB echo "0";
 	fi;
 	

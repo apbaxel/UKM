@@ -161,7 +161,7 @@ cat << CTAG
 					}},'
 			fi`
 			`if [ -f "/sys/module/qpnp_power_on/parameters/pwrkey_suspend" ]; then
-			PKS=\`$BB bool /sys/module/qpnp_power_on/parameters/pwrkey_suspend\`
+			PKS=\`bool /sys/module/qpnp_power_on/parameters/pwrkey_suspend\`
 				$BB echo '{ SPane:{
 					title:"Power Key Suspend"
 				}},
