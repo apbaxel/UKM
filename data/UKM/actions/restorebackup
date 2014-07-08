@@ -1,0 +1,470 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -d /data/data/com.af.synapse ]; then
+  SYNAPSE_SD_DIR=/sdcard/Synapse;
+  SYNAPSE_BOOT_DIR=$SYNAPSE_SD_DIR/kernel_backups;
+  SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_profiles;
+  SYNAPSE_GAMMA_DIR=$SYNAPSE_SD_DIR/gamma_profiles;
+
+  SYNAPSE_DATA=/data/data/com.af.synapse/databases;
+
+  [ ! -d "$SYNAPSE_BOOT_DIR" ] && $BB mkdir -p "$SYNAPSE_BOOT_DIR";
+  [ ! -f "$SYNAPSE_BOOT_DIR/.selected_boot_img" -o -z `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img" 2> /dev/null` ] && $BB echo "None" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+  [ ! -d "$SYNAPSE_CONFIG_DIR" ] && $BB mkdir -p "$SYNAPSE_CONFIG_DIR";
+  [ ! -f "$SYNAPSE_CONFIG_DIR/.selected_config_profile" -o -z `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile" 2> /dev/null` ] && $BB echo "None" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+  [ ! -d "SYNAPSE_GAMMA_DIR" ] && $BB mkdir -p "$SYNAPSE_GAMMA_DIR";
+
+  SYNAPSE_BOOT_IMG=`$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+  SYNAPSE_CONFIG_PROFILE=`$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+fi;
+
+reset_uci() {
+  /system/xbin/uci reset;
+  /system/xbin/uci;
+}
+
+case "$1" in
+	listboot)
+		$BB echo `$BB ls "$SYNAPSE_BOOT_DIR"`;
+	;;
+
+	pickboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$2" -o "$2" == "None" ]; then
+			$BB echo "$2" > "$SYNAPSE_BOOT_DIR/.selected_boot_img";
+		fi;
+		$BB echo `$BB cat "$SYNAPSE_BOOT_DIR/.selected_boot_img"`;
+	;;
+
+	flashboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+			$BB dd if="$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" of="$2" 2> /dev/null;
+			reboot;
+		elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	keepboot)
+		BCK_PROF=`$BB cat $UKM/files/bck_prof`;
+		BCK_PROF=`$BB echo ${BCK_PROF// /_}`;
+	
+		if [ "$BCK_PROF" == "None" ]; then
+			$BB echo "Enter a kernel name first and then apply.";
+		else
+			$BB dd if="$2" of="$SYNAPSE_BOOT_DIR/$BCK_PROF.img" 2> /dev/null;
+			$BB echo "None" > $UKM/files/bck_prof;
+			$BB echo "$BCK_PROF.img created. Press the Restart Synapse button below to see updated list.";
+		fi;
+	;;
+
+	delboot)
+		if [ -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG" ]; then
+			$BB rm -f "$SYNAPSE_BOOT_DIR/$SYNAPSE_BOOT_IMG";
+			$BB echo "$SYNAPSE_BOOT_IMG removed. Press the Restart Synapse button below to see updated list.";
+		elif [ "$SYNAPSE_BOOT_IMG" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+
+	listconfig)
+		$BB echo `$BB ls "$SYNAPSE_CONFIG_DIR"`;
+	;;
+
+	pickconfig)
+		if [ -f "$SYNAPSE_CONFIG_DIR/$2" -o "$2" == "None" ]; then
+			$BB echo "$2" > "$SYNAPSE_CONFIG_DIR/.selected_config_profile";
+		fi;
+		$BB echo `$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+	;;
+
+	applyconfig)
+		CNT=0;
+		for FILE in `$BB tar -t -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" 2> /dev/null`; do
+			if [ "$FILE" = "actionValueStore" -o "$FILE" = "actionValueStore-journal" ]; then
+				CNT=$((CNT + 1));
+			else
+				CNT=$((CNT + 99));
+			fi;
+		done;
+		
+		if [ $CNT -eq "2" ]; then
+			OWNER=`$BB stat -c %u $SYNAPSE_DATA`;
+			PERM=`$BB stat -c %a $SYNAPSE_DATA`;
+			if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+				$BB rm -f $SYNAPSE_DATA/*;
+				cd $SYNAPSE_DATA;
+				$BB tar -x -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+				$BB chown $OWNER:$OWNER *;
+				$BB chmod $PERM *;
+				$BB echo "None" > $SYNAPSE_CONFIG_DIR/.selected_config_profile;
+				$BB echo "$SYNAPSE_CONFIG_PROFILE restored. Press the Restart Synapse button below to see updated list.";
+			elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+				$BB echo "None selected.";
+			else
+				$BB echo "File not found.";
+			fi;
+		else
+			$BB echo "Unable to restore profile. Invalid file."
+		fi;
+	;;
+
+	keepconfig)
+		BCK_PROF=`$BB cat $UKM/files/bck_prof`;
+		BCK_PROF=`$BB echo ${BCK_PROF// /_}`;
+	
+		if [ "$BCK_PROF" == "None" ]; then
+			$BB echo "Enter a profile name first and then apply.";
+		else
+			cd $SYNAPSE_DATA;
+			$BB echo "None" > $UKM/files/bck_prof;
+			$BB tar -cZ -f "$SYNAPSE_CONFIG_DIR/$BCK_PROF.tgz" *;
+			$BB echo "$BCK_PROF.tgz created. Press the Restart Synapse button below to see updated list.";
+		fi;
+	;;
+
+	delconfig)
+		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE" ]; then
+			$BB rm -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG_PROFILE";
+			$BB echo "None" > $SYNAPSE_CONFIG_DIR/.selected_config_profile;
+			$BB echo "$SYNAPSE_CONFIG_PROFILE removed. Press the Restart Synapse button below to see updated list.";
+		elif [ "$SYNAPSE_CONFIG_PROFILE" == "None" ]; then
+			$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+	
+	listgammafaux)
+		gamma=$SYNAPSE_GAMMA_DIR/faux;
+		
+		if [ ! -f "$gamma" ]; then
+			$BB cp $UKM/files/gammafaux_prof $gamma 2> /dev/null;
+		fi;
+		
+		if [ -f $gamma ]; then
+			PERM=`$BB stat -c %a $gamma 2> /dev/null`;
+			$BB test $PERM -lt "660" && $BB chmod 660 $gamma 2> /dev/null;
+			$BB echo `$BB awk '{ print $1 }' $gamma 2> /dev/null`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	applygammafaux)
+		PATH=$UKM/files/gamma_prof;
+		gamma=$SYNAPSE_GAMMA_DIR/faux;
+		
+		if [ -f $gamma ]; then
+			if [[ ! -z $2 ]]; then
+				$BB echo $2 > $PATH;
+				
+				FAUX_PROFILE=$2;
+				kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
+				kgamma_b=/sys/devices/platform/mipi_lgit.1537/kgamma_b;
+				kgamma_g=/sys/devices/platform/mipi_lgit.1537/kgamma_g;
+				kgamma_r=/sys/devices/platform/mipi_lgit.1537/kgamma_r;
+				
+				cal=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=2 -v t=4 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				blue=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=5 -v t=14 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				green=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=15 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				red=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=25 -v t=34 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				
+				$BB test -n "$cal" && $BB echo "$cal" > $kcal;
+				$BB test -n "$blue" && $BB echo "$blue" > $kgamma_b;
+				$BB test -n "$green" && $BB echo "$green" > $kgamma_g;
+				$BB test -n "$red" && $BB echo "$red" > $kgamma_r;
+			fi;
+			
+			$BB echo `$BB cat $PATH`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	deletegammafaux)
+		FAUX_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		gamma=$SYNAPSE_GAMMA_DIR/faux;
+		
+		if [ -f "$gamma" ]; then
+			if [ "$FAUX_PROFILE" == "Google_Stock" ]; then
+				$BB echo "Cannot delete default profile.";
+			else
+				$BB sed -i "/$FAUX_PROFILE/d" $gamma;
+				$BB echo "$FAUX_PROFILE deleted. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	keepgammafaux)
+		FAUX_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		FAUX_PROFILE=`$BB echo ${FAUX_PROFILE// /_}`;
+		gamma=$SYNAPSE_GAMMA_DIR/faux;
+		
+		if [ -f "$gamma" ]; then
+			if [ -z "$FAUX_PROFILE" ]; then
+				$BB echo "Enter a profile name first and then apply."
+			elif [ "`$BB grep $FAUX_PROFILE $gamma`" ]; then
+				$BB echo "Profile name already exists.";
+			else
+				kcal=`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal`;
+				kgamma_b=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_b`;
+				kgamma_g=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_g`;
+				kgamma_r=`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_r`;
+				
+				$BB echo "$FAUX_PROFILE $kcal $kgamma_b $kgamma_g $kgamma_r" >> $gamma;
+				$BB echo "$FAUX_PROFILE created. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	listgammafranco)
+		gamma=$SYNAPSE_GAMMA_DIR/franco;
+		
+		if [ ! -f "$gamma" ]; then
+			$BB cp $UKM/files/gammafranco_prof $gamma 2> /dev/null;
+		fi;
+		
+		if [ -f "$gamma" ]; then
+			PERM=`$BB stat -c %a $gamma 2> /dev/null`;
+			$BB test $PERM -lt "660" && $BB chmod 660 $gamma 2> /dev/null;
+			$BB echo `$BB awk '{ print $1 }' $gamma 2> /dev/null`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	applygammafranco)
+		PATH=$UKM/files/gamma_prof;
+		gamma=$SYNAPSE_GAMMA_DIR/franco;
+		
+		if [ -f "$gamma" ]; then
+			if [[ ! -z $2 ]]; then
+				$BB echo $2 > $PATH;
+				
+				FRANCO_PROFILE=$2;
+				kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
+				kred_greys=/sys/class/misc/gammacontrol/red_greys;
+				kred_mids=/sys/class/misc/gammacontrol/red_mids;
+				kred_blacks=/sys/class/misc/gammacontrol/red_blacks;
+				kred_whites=/sys/class/misc/gammacontrol/red_whites;
+				kgreen_greys=/sys/class/misc/gammacontrol/green_greys;
+				kgreen_mids=/sys/class/misc/gammacontrol/green_mids;
+				kgreen_blacks=/sys/class/misc/gammacontrol/green_blacks;
+				kgreen_whites=/sys/class/misc/gammacontrol/green_whites;
+				kblue_greys=/sys/class/misc/gammacontrol/blue_greys;
+				kblue_mids=/sys/class/misc/gammacontrol/blue_mids;
+				kblue_blacks=/sys/class/misc/gammacontrol/blue_blacks;
+				kblue_whites=/sys/class/misc/gammacontrol/blue_whites;
+				kcontrast=/sys/class/misc/gammacontrol/contrast;
+				kbrightness=/sys/class/misc/gammacontrol/brightness;
+				ksaturation=/sys/class/misc/gammacontrol/saturation;
+				
+				cal=`$BB grep $FRANCO_PROFILE $gamma | $BB awk -v f=2 -v t=4 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				red_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $5 }'`;
+				red_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $6 }'`;
+				red_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $7 }'`;
+				red_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $8 }'`;
+				green_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $9 }'`;
+				green_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $10 }'`;
+				green_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $11 }'`;
+				green_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $12 }'`;
+				blue_greys=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $13 }'`;
+				blue_mids=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $14 }'`;
+				blue_blacks=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $15 }'`;
+				blue_whites=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $16 }'`;
+				contrast=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $17 }'`;
+				brightness=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $18 }'`;
+				saturation=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $19 }'`;
+				
+				$BB test -n "$cal" && $BB echo "$cal" > $kcal;
+				$BB test -n "$red_greys" && $BB echo "$red_greys" > $kred_greys;
+				$BB test -n "$red_mids" && $BB echo "$red_mids" > $kred_mids;
+				$BB test -n "$red_blacks" && $BB echo "$red_blacks" > $kred_blacks;
+				$BB test -n "$red_whites" && $BB echo "$red_whites" > $kred_whites;
+				$BB test -n "$green_greys" && $BB echo "$green_greys" > $kgreen_greys;
+				$BB test -n "$green_mids" && $BB echo "$green_mids" > $kgreen_mids;
+				$BB test -n "$green_blacks" && $BB echo "$green_blacks" > $kgreen_blacks;
+				$BB test -n "$green_whites" && $BB echo "$green_whites" > $kgreen_whites;
+				$BB test -n "$blue_greys" && $BB echo "$blue_greys" > $kblue_greys;
+				$BB test -n "$blue_mids" && $BB echo "$blue_mids" > $kblue_mids;
+				$BB test -n "$blue_blacks" && $BB echo "$blue_blacks" > $kblue_blacks;
+				$BB test -n "$blue_whites" && $BB echo "$blue_whites" > $kblue_whites;
+				$BB test -n "$contrast" && $BB echo "$contrast" > $kcontrast;
+				$BB test -n "$brightness" && $BB echo "$brightness" > $kbrightness;
+				$BB test -n "$saturation" && $BB echo "$saturation" > $ksaturation;
+			fi;
+		
+			$BB echo `$BB cat $PATH`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	deletegammafranco)
+		FRANCO_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		gamma=$SYNAPSE_GAMMA_DIR/franco;
+		
+		if [ -f "$gamma" ]; then
+			if [ "$FRANCO_PROFILE" == "Google_Stock" ]; then
+				$BB echo "Cannot delete default profile.";
+			else
+				$BB sed -i "/$FRANCO_PROFILE/d" $gamma;
+				$BB echo "$FRANCO_PROFILE deleted. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	keepgammafranco)
+		FRANCO_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		FRANCO_PROFILE=`$BB echo ${FRANCO_PROFILE// /_}`;
+		gamma=$SYNAPSE_GAMMA_DIR/franco;
+		
+		if [ -f "$gamma" ]; then
+			if [ -z "$FRANCO_PROFILE" ]; then
+				$BB echo "Enter a profile name first and then apply."
+			elif [ "`$BB grep $FRANCO_PROFILE $gamma`" ]; then
+				$BB echo "Profile name already exists.";
+			else
+				kcal=`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal`;
+				kred_greys=`$BB cat /sys/class/misc/gammacontrol/red_greys`;
+				kred_mids=`$BB cat /sys/class/misc/gammacontrol/red_mids`;
+				kred_blacks=`$BB cat /sys/class/misc/gammacontrol/red_blacks`;
+				kred_whites=`$BB cat /sys/class/misc/gammacontrol/red_whites`;
+				kgreen_greys=`$BB cat /sys/class/misc/gammacontrol/green_greys`;
+				kgreen_mids=`$BB cat /sys/class/misc/gammacontrol/green_mids`;
+				kgreen_blacks=`$BB cat /sys/class/misc/gammacontrol/green_blacks`;
+				kgreen_whites=`$BB cat /sys/class/misc/gammacontrol/green_whites`;
+				kblue_greys=`$BB cat /sys/class/misc/gammacontrol/blue_greys`;
+				kblue_mids=`$BB cat /sys/class/misc/gammacontrol/blue_mids`;
+				kblue_blacks=`$BB cat /sys/class/misc/gammacontrol/blue_blacks`;
+				kblue_whites=`$BB cat /sys/class/misc/gammacontrol/blue_whites`;
+				kcontrast=`$BB cat /sys/class/misc/gammacontrol/contrast`;
+				kbrightness=`$BB cat /sys/class/misc/gammacontrol/brightness`;
+				ksaturation=`$BB cat /sys/class/misc/gammacontrol/saturation`;
+				
+				$BB echo "$FRANCO_PROFILE $kcal $kred_greys $kred_mids $kred_blacks $kred_whites $kgreen_greys $kgreen_mids $kgreen_blacks $kgreen_whites $kblue_greys $kblue_mids $kblue_blacks $kblue_whites $kcontrast $kbrightness $ksaturation" >> $gamma;
+				$BB echo "$FRANCO_PROFILE created. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	listgammafrancoN5)
+		gamma=$SYNAPSE_GAMMA_DIR/francoN5;
+		
+		if [ ! -f "$gamma" ]; then
+			$BB cp $UKM/files/gammafrancoN5_prof $gamma 2> /dev/null;
+		fi;
+		
+		if [ -f "$gamma" ]; then
+			PERM=`$BB stat -c %a $gamma 2> /dev/null`;
+			$BB test $PERM -lt "660" && $BB chmod 660 $gamma 2> /dev/null;
+			$BB echo `$BB awk '{ print $1 }' $gamma 2> /dev/null`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	applygammafrancoN5)
+		PATH=$UKM/files/gamma_prof;
+		gamma=$SYNAPSE_GAMMA_DIR/francoN5;
+		
+		if [ -f "$gamma" ]; then
+			if [[ ! -z $2 ]]; then
+				$BB echo $2 > $PATH;
+				
+				FRANCON5_PROFILE=$2;
+				kgamma_bn=/sys/module/dsi_panel/kgamma_bn;
+				kgamma_bp=/sys/module/dsi_panel/kgamma_bp;
+				kgamma_gn=/sys/module/dsi_panel/kgamma_gn;
+				kgamma_gp=/sys/module/dsi_panel/kgamma_gp;
+				kgamma_rn=/sys/module/dsi_panel/kgamma_rn;
+				kgamma_rp=/sys/module/dsi_panel/kgamma_rp;
+				kgamma_w=/sys/module/dsi_panel/kgamma_w;
+				
+				bn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=2 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				bp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=25 -v t=47 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				gn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=48 -v t=70 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				gp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=71 -v t=93 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				rn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=94 -v t=116 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				rp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=117 -v t=139 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+				w=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk '{ print $140 }'`;
+				
+				$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;
+				$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
+				$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
+				$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
+				$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn;
+				$BB test -n "$rp" && $BB echo "$rp" > $kgamma_rp;
+				$BB test -n "$w" && $BB echo "$w" > $kgamma_w;
+			fi;
+			
+			$BB echo `$BB cat $PATH`;
+		else
+			$BB echo "Google_Stock";
+		fi;
+	;;
+	
+	deletegammafrancoN5)
+		FRANCON5_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		gamma=$SYNAPSE_GAMMA_DIR/francoN5;
+		
+		if [ -f "$gamma" ]; then		
+			if [ "$FRANCON5_PROFILE" == "Google_Stock" ]; then
+				$BB echo "Cannot delete default profile.";
+			else
+				$BB sed -i "/$FRANCON5_PROFILE/d" $gamma;
+				$BB echo "$FRANCON5_PROFILE deleted. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	keepgammafrancoN5)
+		FRANCON5_PROFILE=`$BB cat "$UKM/files/gamma_prof"`;
+		FRANCON5_PROFILE=`$BB echo ${FRANCON5_PROFILE// /_}`;
+		gamma=$SYNAPSE_GAMMA_DIR/francoN5;
+		
+		if [ -f "$gamma" ]; then
+			if [ -z "$FRANCON5_PROFILE" ]; then
+				$BB echo "Enter a profile name first and then apply.";
+			elif [ "`$BB grep $FRANCON5_PROFILE $gamma`" ]; then
+				$BB echo "Profile name already exists.";
+			else
+				kgamma_bn=`$BB cat /sys/module/dsi_panel/kgamma_bn`;
+				kgamma_bp=`$BB cat /sys/module/dsi_panel/kgamma_bp`;
+				kgamma_gn=`$BB cat /sys/module/dsi_panel/kgamma_gn`;
+				kgamma_gp=`$BB cat /sys/module/dsi_panel/kgamma_gp`;
+				kgamma_rn=`$BB cat /sys/module/dsi_panel/kgamma_rn`;
+				kgamma_rp=`$BB cat /sys/module/dsi_panel/kgamma_rp`;
+				kgamma_w=`$BB cat /sys/module/dsi_panel/kgamma_w`;
+				
+				$BB echo "$FRANCON5_PROFILE $kgamma_bn $kgamma_bp $kgamma_gn $kgamma_gp $kgamma_rn $kgamma_rp $kgamma_w" >> $gamma;
+				$BB echo "$FRANCON5_PROFILE created. Press the Restart Synapse button below to see updated list.";
+			fi;
+		else
+			$BB echo "No gamma profiles found. Press the Restart Synapse button below to create the file.";
+		fi;
+	;;
+	
+	restart)
+		am force-stop com.af.synapse 2> /dev/null;
+		$BB sleep 1;
+		reset_uci;
+		$BB sleep 1;
+		am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+	;;
+esac;

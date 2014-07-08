@@ -1,0 +1,68 @@
+#!/system/bin/sh
+
+# **************************************************************
+# Add Synapse support
+# **************************************************************
+
+UKM=/data/UKM;
+BB=$UKM/busybox;
+UCI_CONFIG=$UKM/config.json;
+DEBUG=$UKM/debug;
+UCI_FILE=$UKM/uci;
+UCI_XBIN=/system/xbin/uci;
+
+# Delete known files that re-create uci config
+
+if [ -e "/data/ak/ak-post-boot.sh" ]; then
+	$BB rm -f /data/ak/ak-post-boot.sh #ak
+fi
+
+# Delete default uci config in case kernel has one already to avoid duplicates.
+
+if [ -e "/sbin/uci" ]; then
+	$BB rm -f /sbin/uci
+fi
+
+# Delete all debug files so it can be re-created on boot.
+
+$BB rm -f $DEBUG/*
+
+# Reset profiles to default
+
+$BB echo "Google_Stock" > $UKM/files/gamma_prof
+$BB echo "LG_Stock" > $UKM/files/sound_prof
+$BB echo "LG_Stock" > $UKM/files/speaker_prof
+$BB echo "0" > $UKM/files/volt_prof;
+
+# Symlink uci file to xbin in case it's not found.
+
+if [ ! -e $UCI_XBIN ]; then
+	$BB mount -o remount,rw /system
+	$BB mount -t rootfs -o remount,rw rootfs
+	
+	$BB chmod 755 $UCI_FILE
+	$BB ln -s $UCI_FILE $UCI_XBIN
+	$BB chmod 755 $UCI_XBIN
+	
+	$BB mount -t rootfs -o remount,ro rootfs
+	$BB mount -o remount,ro /system
+fi
+
+# If uci files does not have 755 permissions, set permissions.
+
+if [ `$BB stat -c %a $UCI_FILE` -lt "755" ]; then
+	$BB chmod 755 $UCI_FILE
+fi
+
+if [ `$BB stat -c %a $UCI_XBIN` -lt "755" ]; then
+	$BB mount -o remount,rw /system
+	$BB mount -t rootfs -o remount,rw rootfs
+	$BB chmod 755 $UCI_XBIN
+	$BB mount -t rootfs -o remount,ro rootfs
+	$BB mount -o remount,ro /system
+fi
+
+# Reset uci config so it can be re-created on boot.
+
+$UCI_XBIN reset;
+$UCI_XBIN;

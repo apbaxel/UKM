@@ -1,0 +1,70 @@
+cat << CTAG
+{
+	name:BUILD.PROP,
+		elements:[
+			{ SPane:{
+				title:"build.prop Tweaks",
+				description:"A value of -1 on any of the following settings means that setting was not found in your build.prop file.",
+			}},
+				{ SSeekBar:{
+					title:"Wifi Scan Interval",
+					description:"Set the interval on which on wifi will scan for channels. Setting this to a higher value will save battery.",
+					unit:" sec",
+					min:-1,
+					max:300,
+					step:1,
+					default:15,
+					action:"buildprop wifi.supplicant_scan_interval",
+				}},
+				{ SSeekBar:{
+					title:"VM Heapsize",
+					description:"Set the maximum amount of heapsize (memory) a single instance of the Dalvik Virtual Machine (application) can obtain.",
+					unit:" MB",
+					min:-1,
+					max:1024,
+					step:1,
+					default:512,
+					action:"buildprop dalvik.vm.heapsize",
+				}},
+				{ SCheckBox:{
+					label:"Allow purging of assets",
+					description:"Purging of bitmap memory assets allows the freeing of more RAM when needed.",
+					default:0,
+					action:"buildprop persist.sys.purgeable_assets",
+				}},
+			{ SPane:{
+				title:"ADB over WIFI"
+			}},
+				{ SGeneric:{
+					title:"Device HostName",
+					default:`getprop net.hostname 2> /dev/null`,
+					action:"buildprop net.hostname",
+				}},
+				{ SGeneric:{
+					title:"Wireless Port",
+					default:`getprop service.adb.tcp.port`,
+					action:"buildprop service.adb.tcp.port",
+				}},
+			{ SPane:{
+				title:"DNS Tweaks",
+				description:"Allows you to set the default DNS (Domain Name System) for 3G connections. Use this to speed up your browsing experience and improve your security.",
+			}},
+				{ SDescription:{
+					description:"Google > DNS1: 8.8.8.8 | DNS2: 8.8.4.4"
+				}},
+				{ SDescription:{
+					description:"OpenDNS > DNS1: 208.67.222.222 | DNS2: 208.67.220.220"
+				}},
+				{ SGeneric:{
+					title:"3G DNS1:",
+					default:`getprop net.rmnet0.dns1`,
+					action:"buildprop net.rmnet0.dns1",
+				}},
+				{ SGeneric:{
+					title:"3G DNS2:",
+					default:`getprop net.rmnet0.dns2`,
+					action:"buildprop net.rmnet0.dns2",
+				}},
+		]
+}
+CTAG

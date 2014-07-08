@@ -1,0 +1,44 @@
+#!/system/bin/sh
+
+UKM=/data/UKM;
+BB=$UKM/busybox;
+UCI_CONFIG=$UKM/config.json;
+UCI_ACTION=$UKM/actions/;
+DEBUG=$UKM/debug;
+
+if [ ! -f $UCI_CONFIG ]; then
+	$BB mount -t rootfs -o rw,remount rootfs;
+	$BB chmod -R 755 $UCI_ACTION;
+	
+	if [ ! -f $DEBUG/pvs_bin ]; then
+		PVS=`$BB dmesg | $BB grep PVS`;
+		$BB echo ${PVS##*:} > $DEBUG/pvs_bin;
+	fi
+	
+	if [ ! -f $DEBUG/speed_bin ]; then
+		SPEED=`$BB dmesg | $BB grep SPEED`;
+		$BB echo ${SPEED##*:} > $DEBUG/speed_bin;
+	fi
+	
+	if [ ! -f $DEBUG/last_kmsg ]; then
+		LAST_KMSG=`$BB tail -n 1 /proc/last_kmsg`;
+		$BB echo $LAST_KMSG > $DEBUG/last_kmsg;
+	fi
+	
+	source $UKM/config.json.generate > $UCI_CONFIG;
+	
+	$BB mount -t rootfs -o ro,remount rootfs;
+fi;
+
+case "${1}" in
+  config)
+		$BB cat $UCI_CONFIG;;
+  configpath)
+		$BB echo $UCI_CONFIG;;
+  actionpath)
+		$BB echo $UCI_ACTION;;
+  reset)
+		$BB mount -t rootfs -o rw,remount rootfs;
+		$BB rm -f $UCI_CONFIG;
+		$BB mount -t rootfs -o ro,remount rootfs;;
+esac;

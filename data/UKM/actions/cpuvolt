@@ -1,0 +1,38 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+VOLT_PROF=$UKM/files/volt_prof;
+TABLE=/sys/devices/system/cpu/cpufreq/vdd_table/vdd_levels;
+FREQ=$1;
+VOLT=$2;
+LEVEL="$1 $2";
+
+if [ -f $TABLE ]; then
+	if [[ ! -z $VOLT ]]; then
+		if [ $FREQ = "global" ]; then
+			CURR_VOLT=`$BB cat $VOLT_PROF`;
+			NEW_VOLT=$((VOLT - CURR_VOLT));
+			$BB echo $VOLT > $VOLT_PROF;
+			
+			if [ "$NEW_VOLT" -gt "0" ]; then
+				NEW_VOLT="+$NEW_VOLT";
+			else
+				NEW_VOLT="$NEW_VOLT";
+			fi;
+			
+			if [ "$NEW_VOLT" -ne "0" ]; then
+				$BB echo $NEW_VOLT > $TABLE;
+			fi;
+		else
+			$BB echo $LEVEL > $TABLE;
+		fi;
+	fi;
+	
+	if [ $FREQ = "global" ]; then
+		$BB echo `$BB cat $VOLT_PROF`;
+	else
+		$BB awk '{if ($1 == "'$FREQ':") print $2;}' $TABLE
+	fi;
+else
+	$BB echo "0";
+fi;

@@ -1,0 +1,36 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
+case $1 in
+	BatteryTemperature)
+		echo `sh $DEVICE LiveBatteryTemperature`;
+	;;
+	Bootloader)
+		echo `sh $DEVICE LiveBootloader`;
+	;;
+	CPUFrequency)
+		echo `sh $DEVICE LiveCPUFrequency`;
+	;;
+	CPUTemperature)
+		echo `sh $DEVICE LiveCPUTemperature`;
+	;;
+	GPUFrequency)
+		echo `sh $DEVICE LiveGPUFrequency`;
+	;;
+	Memory)
+		echo `sh $DEVICE LiveMemory`;
+	;;
+	Time)
+		echo `sh $DEVICE LiveTime $2 $3`;
+	;;
+	UpTime)
+		echo `sh $DEVICE LiveUpTime`;
+	;;
+	UnUsed)
+		echo `sh $DEVICE LiveUnUsed`;
+	;;
+	WakelocksKernel)
+		echo `sh $DEVICE LiveWakelocksKernel`;
+	;;
+esac;

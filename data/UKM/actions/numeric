@@ -1,0 +1,12 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -f $1 ]; then
+	if [[ ! -z $2 ]]; then
+		$BB echo $2 > $1;
+	fi;
+
+	echo `awk '{ if ($1 >=2147483646) print 0; else print $0; }' $1`;
+else
+	$BB echo "0";
+fi;

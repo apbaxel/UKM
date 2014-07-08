@@ -1,0 +1,184 @@
+cat << CTAG
+{
+	name:ADV,
+		elements:[
+			`if [ -d "/sys/module/pm_8x60/modes/cpu0" ]; then
+				$BB echo '{ SPane:{
+					title:"Krait C-States Settings"
+				}},'
+				if [ -f "/sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled" ]; then
+				C0=\`$BB cat /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled\`;
+					$BB echo '{ SCheckBox:{
+						description:"Shallowest Sleep with instant wake up.",
+						label:"C0 (WFI)",
+						default:'$C0',
+						action:"socset /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled wfi"
+					}},'
+				fi
+				if [ -f "/sys/module/pm_8x60/modes/cpu0/retention/idle_enabled" ]; then
+				C1=\`$BB cat /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled\`;
+					$BB echo '{ SCheckBox:{
+						description:"Slightly deeper sleep with slight latency when waking up. (Disable this if you encounter screen flickering)",
+						label:"C1 (Retention)",
+						default:'$C1',
+						action:"socset /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled retention"
+					}},'
+				fi
+				if [ -f "/sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled" ]; then
+				C2=\`$BB cat /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled\`;
+					$BB echo '{ SCheckBox:{
+						description:"Deeper sleep with longer latency when waking up.",
+						label:"C2 (Stand Alone Power Collapse)",
+						default:'$C2',
+						action:"socset /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled standalone_power_collapse"
+					}},'
+				fi
+				if [ -f "/sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled" ]; then
+				C3=\`$BB cat /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled\`;
+					$BB echo '{ SCheckBox:{
+						description:"Really deep sleep with longest latency when waking up.",
+						label:"C3 (Power Collapse)",
+						default:'$C3',
+						action:"socset /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled power_collapse"
+					}},'
+				fi
+			fi`
+			`if [ -f "/sys/kernel/mm/ksm/run" ]; then
+			KSM=\`$BB cat /sys/kernel/mm/ksm/run\`
+			PTS=\`$BB cat /sys/kernel/mm/ksm/pages_to_scan\`
+			SLEEP=\`$BB cat /sys/kernel/mm/ksm/sleep_millisecs\`
+				$BB echo '{ SPane:{
+					title:"Kernel Samepage Merging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests.",
+						default:'$KSM',
+						action:"generic /sys/kernel/mm/ksm/run"
+					}},
+					{ SSeekBar:{
+						title:"Pages To Scan",
+						unit:" pages",
+						step:1,
+						min:0,
+						max:500,
+						default:'$PTS',
+						action:"generic /sys/kernel/mm/ksm/pages_to_scan"
+					}},
+					{ SSeekBar:{
+						title:"Scan Delay Interval",
+						unit:" ms",
+						step:10,
+						min:0,
+						max:1500,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/mm/uksm/run" ]; then
+			UKSM=\`$BB cat /sys/kernel/mm/uksm/run\`
+			SLEEP=\`$BB cat /sys/kernel/mm/uksm/sleep_millisecs\`
+			UKSMGOV=\`$BB echo $($UKM/actions/bracket-option /sys/kernel/mm/uksm/cpu_governor)\`
+			MAXCPU=\`$BB cat /sys/kernel/mm/uksm/max_cpu_percentage\`
+				$BB echo '{ SPane:{
+					title:"Ultra Kernel Samepage Merging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"UKSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. UKSM has a better algorithm than KSM.",
+						default:'$UKSM',
+						action:"generic /sys/kernel/mm/uksm/run"
+					}},
+					{ SSeekBar:{
+						title:"Sleep",
+						description:"How long will the daemon sleep before it wakes up and starts scanning memory pages.",
+						unit:" ms",
+						step:50,
+						min:0,
+						max:1000,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/uksm/sleep_millisecs"
+					}},
+					{ SOptionList:{
+						title:"CPU Governor",
+						description:"Controls how aggressively the daemon uses CPU power. This sets a preset for the maximum CPU consumption below.",
+						default:'$UKSMGOV',
+						action:"bracket-option /sys/kernel/mm/uksm/cpu_governor",
+						values:['
+							for UGOV in \`$BB cat /sys/kernel/mm/uksm/cpu_governor | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$UGOV\",";
+							done;
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:"generic /sys/kernel/mm/uksm/max_cpu_percentage"
+							},
+						]
+					}},
+					{ SSeekBar:{
+						title:"Max CPU Consumption",
+						description:"The maximum CPU consumption the daemon will use while scanning. Higher = better scanning (more battery drain).",
+						unit:"%",
+						step:1,
+						min:10,
+						max:99,
+						default:'$MAXCPU',
+						action:"generic /sys/kernel/mm/uksm/max_cpu_percentage"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/sched/gentle_fair_sleepers" ]; then
+			GFS=\`$BB cat /sys/kernel/sched/gentle_fair_sleepers\`
+			
+				$BB echo '{ SPane:{
+					title:"Gentle Fair Sleepers"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Sleeper Fairness is a concept used by CFS which treat sleeping/waiting tasks as if they were in a run queue. This implies tasks which spend most of the time waiting for an user input and such will get a fair share of CPU when they need it. Disabling Gentle Fair Sleepers could improve UI responsiveness.",
+						default:'$GFS',
+						action:"generic /sys/kernel/sched/gentle_fair_sleepers"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/sched/arch_power" ]; then
+			APOWER=\`$BB cat /sys/kernel/sched/arch_power\`
+
+				$BB echo '{ SPane:{
+					title:"Arch Power"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Arch Power use arch dependent power functions to be used instead of generic high resolution timer ticks and double ticks for reflect the relative capacity of each core.",
+						default:'$APOWER',
+						action:"generic /sys/kernel/sched/arch_power"
+					}},'
+			fi`
+			`if [ -f "/sys/module/lowmemorykiller/parameters/minfree" ]; then
+				$BB echo '{ SPane:{
+					title:"Low Memory Killer",
+					description:"LMK Minfree controls how much memory each app type can hold, and is responsible for memory management for multitasking."
+				}},'
+					for LMK in 1 2 3 4 5 6; do
+						$BB echo '{ SSeekBar:{ '
+							case $LMK in
+								1)
+									$BB echo 'title:"Foreground App", description:"The application currenty on the screen and running."' ;;
+								2)
+									$BB echo 'title:"Visible App", description:"The application that is open and running in background."' ;;
+								3)
+									$BB echo 'title:"Secondary Server", description:"This is a service an application needs that is alive and ready."' ;;
+								4)
+									$BB echo 'title:"Hidden App", description:"An idle process that wakes up on application request."' ;;
+								5)
+									$BB echo 'title:"Content Provider", description:"Apps that provide data (content) to the system."' ;;
+								6)
+									$BB echo 'title:"Empty App", description:"Apps closed by the user but ready to run."' ;;
+							esac
+						$BB echo ', action:"lmk '${LMK}'",
+						unit:"MB", min:10, max:200 }},'
+					done
+			fi`
+		]
+}
+CTAG

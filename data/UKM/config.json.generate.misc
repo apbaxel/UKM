@@ -1,0 +1,355 @@
+cat << CTAG
+{
+    name:MISC,
+		elements:[
+			{ STitleBar:{
+				title:"TCP Congestion Control"
+			}},
+				{ SOptionList:{
+					description:"Set the algorithm of internet congestion avoidance, to possibly improve speeds and load times. More info: <a href='https://en.wikipedia.org/wiki/TCP_congestion-avoidance_algorithm'>HERE</a>",
+					default:`$BB cat \`sh $DEVICE DirTCPCongestion\``,
+					action:"generic `sh $DEVICE DirTCPCongestion`",
+					values:[
+						`sh $DEVICE TCPCongestionList`
+					]
+				}},
+			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ ! -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
+			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`
+				$BB echo '{ SPane:{
+					title:"Temperature Throttle"
+				}},
+					{ SCheckBox:{
+						description:"SOC temperature limit toggle.",
+						label:"Enable",
+						default:'$THERMAL',
+						action:"boolean /sys/module/msm_thermal/parameters/enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/throttle_temp" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/throttle_temp\`
+				$BB echo '{ SPane:{
+					title:"Throttle Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/throttle_temp"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/temp_max" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/temp_max\`
+				$BB echo '{ SPane:{
+					title:"Maximum Temperature"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/temp_max"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/freq_limit_debug" ]; then
+			TEMPDEBUG=\`$BB cat /sys/module/msm_thermal/parameters/freq_limit_debug\`
+				$BB echo '{ SCheckBox:{
+					label:"Enable/Disable Thermal Debug",
+					description:"This allows to debug the CPUs throttle when the temperature reaches maximum.",
+					default:'$TEMPDEBUG',
+					action:"generic /sys/module/msm_thermal/parameters/freq_limit_debug"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/temp_threshold" ]; then
+			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/temp_threshold\`
+				$BB echo '{ SPane:{
+					title:"Temperature Threshold"
+				}},
+					{ SSeekBar:{
+					description:"This allows to throttle the CPUs frequencies when the temperature reaches a certain degree to avoid overheating.",
+					unit:"ºC",
+					step:1,
+					min:50,
+					max:100,
+					default:'$TEMP',
+					action:"generic /sys/module/msm_thermal/parameters/temp_threshold"
+				}},'
+			fi`
+			`if [ -f "/sys/module/msm_thermal/parameters/min_freq_index" ]; then
+			MFI=\`$BB cat /sys/module/msm_thermal/parameters/min_freq_index\`
+				$BB echo '{ SPane:{
+					title:"Temperature Limit Minimum Frequency"
+				}},
+					{ SSeekBar:{
+						description:"The minimum frequency used in throttle down before returning to max.",
+						default:'$MFI',
+						action:"generic /sys/module/msm_thermal/parameters/min_freq_index",
+						values:{'
+						sh $DEVICE MinFreqIndex
+						echo '}
+					}},'
+			fi`
+			`if [ -d "/sys/kernel/power_suspend" ]; then
+				$BB echo '{ SPane:{
+					title:"Power Suspend"
+				}},'
+				if [ -f "/sys/kernel/power_suspend/power_suspend_mode" ]; then
+				PSM=\`$BB cat /sys/kernel/power_suspend/power_suspend_mode\`
+					$BB echo '{ SOptionList:{
+						title:"Power Suspend Mode"
+						description:"Kernel Mode & LCD Hooks are automatic and managed by the kernel, to manually enable or disable the Power Suspend State choose User Mode.",
+						default:'$PSM',
+						action:"generic /sys/kernel/power_suspend/power_suspend_mode",
+						values:{
+							0:"Kernel Mode", 1:"User Mode", 2:"LCD Hooks"
+						}
+					}},'
+				fi
+				if [ -f "/sys/kernel/power_suspend/power_suspend_state" ] && [ "\`$BB grep 1.2 /sys/kernel/power_suspend/power_suspend_version\`" ]; then
+				PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
+					$BB echo '{ SCheckBox:{
+						label:"Power Suspend State",
+						description:"Kernel power management driver when screen is off. Better battery savings if enabled. Note: You can only change this setting if Power Suspend Mode is in User Mode.",
+						default:'$PSS',
+						action:"powersuspend /sys/kernel/power_suspend/power_suspend_state"
+					}},'
+				fi
+				if [ -f "/sys/kernel/power_suspend/power_suspend_state" ] && [ "\`$BB grep 1.3 /sys/kernel/power_suspend/power_suspend_version\`" ]; then
+				PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
+					$BB echo '{ SSeekBar:{
+						title:"Power Suspend State"
+						description:"Kernel power management driver when screen is off. Better battery savings if enabled. Note: You can only change this setting if Power Suspend Mode is in User Mode.",
+						min:0,
+						max:2,
+						step:1,
+						default:'$PSS',
+						action:"powersuspend /sys/kernel/power_suspend/power_suspend_state"
+					}},'
+				fi
+			fi`
+			`if [ -f "/sys/module/sync/parameters/fsync_enabled" ]; then
+			FSYNC=\`bool /sys/module/sync/parameters/fsync_enabled\`
+				$BB echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"boolean /sys/module/sync/parameters/fsync_enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/class/misc/fsynccontrol/fsync_enabled" ]; then
+			FSYNC=\`$BB cat /sys/class/misc/fsynccontrol/fsync_enabled\`
+				$BB echo '{ SPane:{
+					title:"FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"Disable the sync operations of the filesystem, great increasing speed but decreasing data integrity, also could create reboot and kernel panic.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/class/misc/fsynccontrol/fsync_enabled"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/dyn_fsync/Dyn_fsync_active" ]; then
+			FSYNC=\`$BB cat /sys/kernel/dyn_fsync/Dyn_fsync_active\`
+				$BB echo '{ SPane:{
+					title:"Dynamic FSYNC"
+				}},
+					{ SCheckBox:{
+						description:"While screen is on, file sync is temporarily deferred. When screen is off, a flush is called to synchronize all outstanding writes.",
+						label:"Enable",
+						default:'$FSYNC',
+						action:"generic /sys/kernel/dyn_fsync/Dyn_fsync_active"
+					}},'
+			fi`
+			`if [ -f "/sys/class/timed_output/vibrator/amp" ]; then
+			VIBRATOR=\`$BB cat /sys/class/timed_output/vibrator/amp\`
+				$BB echo '{ SPane:{
+					title:"Vibrator Strength"
+				}},
+					{ SSeekBar:{
+						description:"Allows to set the intensity of the vibrator.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:100,
+						default:'$VIBRATOR',
+						action:"generic /sys/class/timed_output/vibrator/amp"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ] && [ ! -f "/sys/kernel/fast_charge/fast_charge_level" ]; then
+			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
+				$BB echo '{ SPane:{
+				title:"USB Fast Charge"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, device will charge faster when connected through USB. NOTE: Enabling this will disable access to phone storage via USB.",
+						default:'$FC',
+						action:"generic /sys/kernel/fast_charge/force_fast_charge"
+					}},'
+			fi`
+			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ] && [ -f "/sys/kernel/fast_charge/fast_charge_level" ]; then
+			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
+			FCL=\`$BB cat /sys/kernel/fast_charge/fast_charge_level\`
+				$BB echo '{ SPane:{
+				title:"USB Fast Charge"
+				}},
+					{ SOptionList:{
+						title:"Enable",
+						description:"If enabled, device will charge faster when connected through USB, use custom for different voltage below. NOTE: Enabling this will disable access to phone storage via USB.",
+						default:'$FC',
+						action:"generic /sys/kernel/fast_charge/force_fast_charge",
+						values:{
+							0:"Disabled", 1:"Enable", 2:"Custom"
+						}
+					}},
+					{ SSeekBar:{
+						title:"Fast Charge Level",
+						description:"Fast charge voltage configuration. For USB 2.0 use 500mA as MAX, for USB 3.0 use 900mA as MAX, For wallcharger use 1500mA as MAX. WARNING: Incorrect use of voltage could damage your phone or USB ports.",
+						default:'$FCL',
+						action:"generic /sys/kernel/fast_charge/fast_charge_level",
+						values:{ 0:"Disabled",'
+							for CHARGE in \`$BB cat /sys/kernel/fast_charge/available_charge_levels\`; do
+								$BB echo "$CHARGE:\"${CHARGE} mA\", ";
+							done;
+						$BB echo '}
+					}},'
+			fi`
+			`if [ -f "/sys/module/msm_otg/parameters/otg_hack_enable" ]; then
+			OTG=\`$BB cat /sys/module/msm_otg/parameters/otg_hack_enable\`
+				$BB echo '{ SPane:{
+					title:"USB OTG (On-The-Go)"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Enabling this allows for OTG operation. More info: <a href='http://forum.xda-developers.com/nexus-4/orig-development/usb-otg-externally-powered-usb-otg-t2181820'>HERE</a>",
+						default:'$OTG',
+						action:"generic /sys/module/msm_otg/parameters/otg_hack_enable"
+					}},'
+			fi`
+			`if [ -f "/sys/class/misc/batterylifeextender/charging_limit" ]; then
+				BLX=\`$BB cat /sys/class/misc/batterylifeextender/charging_limit\`
+				$BB echo '{ SPane:{
+					title:"Battery Life Extender (BLX)"
+				}},
+					{ SSeekBar:{
+						description:"Limit the capacity to which the battery will be charged.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:100,
+						default:'$BLX',
+						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
+					}},'
+			fi`
+			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ] && [ -n "\`cat /sys/devices/virtual/input/lge_touch/accuracy 2> /dev/null\`" ]; then
+				$BB echo '{ SPane:{
+					title:"Touchscreen Accuracy Filter",
+					description:"Allows you to set the accuracy & sensitivity of the touchscreen. First select your preferred settings and then enable."
+				}},'
+					for TOUCH in 1; do
+						$BB echo '{ SCheckBox:{'
+							case $TOUCH in
+								1) 
+									$BB echo 'label:"Enable Accuracy Filter", default:0' ;;
+							esac
+						$BB echo ', action:"touch '${TOUCH}'",
+						}},'
+					done;	
+					for TOUCH in 2 3 4 5 6 7; do
+						$BB echo '{ SSeekBar:{'
+							case $TOUCH in
+								2)
+									$BB echo 'title:"Ignore Pressure Gap", default:5' ;;
+								3)
+									$BB echo 'title:"Delta Max", default:100' ;;
+								4)
+									$BB echo 'title:"Touch Max Count", default:40' ;;
+								5)
+									$BB echo 'title:"Max Pressure", default:255' ;;
+								6)
+									$BB echo 'title:"Direction Count", default:13' ;;
+								7)
+									$BB echo 'title:"Time To Max Pressure", default:4' ;;
+							esac
+							$BB echo ', action:"touch '${TOUCH}'",
+							min:0,
+							max:255
+						}},'
+					done;
+			fi`
+			`if [ -d "/sys/class/leds" ]; then
+				$BB echo '{ SPane:{
+					title:"LED Control",
+					description:"Kernel trigger for LEDs. Using this might interfere with OS level LED management and vice versa.",
+				}},'
+				if [ -f "/sys/class/leds/blue/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Blue",
+						default:none,
+						action:"bracket-option /sys/class/leds/blue/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/blue/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/green/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Green",
+						default:none,
+						action:"bracket-option /sys/class/leds/green/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/green/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/red/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Red",
+						default:none,
+						action:"bracket-option /sys/class/leds/red/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/red/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/lcd-backlight/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"LCD Backlight",
+						default:none,
+						action:"bracket-option /sys/class/leds/lcd-backlight/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/lcd-backlight/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+				if [ -f "/sys/class/leds/spotlight/trigger" ]; then
+					$BB echo '{ SOptionList:{
+						title:"Spotlight",
+						default:none,
+						action:"bracket-option /sys/class/leds/spotlight/trigger",
+						values:['
+							for LEDS in \`$BB cat /sys/class/leds/spotlight/trigger | $BB sed -e "s/\]//;s/\[//"\`; do
+								$BB echo "\"$LEDS\",";
+							done;
+						$BB echo ']
+					}},'
+				fi
+			fi`
+		]
+}
+CTAG

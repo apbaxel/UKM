@@ -1,0 +1,56 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
+TIMESTAMP=`date +%Y-%m-%d.%H.%M.%S`;
+LOGS=/sdcard/logs;
+
+[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
+$BB chmod 755 $LOGS;
+
+case $1 in
+	bootloader)	
+		$BB echo `sh $DEVICE ToggleBootloader`;
+	;;
+	tamper)	
+		$BB echo `sh $DEVICE ToggleTamper`;
+	;;
+	selinux)	
+		if [[ ! -z $2 ]]; then
+			if [ $2 = "Enforcing" ]; then
+				setenforce 1;
+			elif [ $2 = "Permissive" ]; then
+				setenforce 0;
+			fi;
+		fi;
+
+		$BB echo `getenforce`;
+	;;
+	logcat)
+		saved="$LOGS/logcat-$TIMESTAMP.txt";
+		logcat -d > $saved;
+	;;
+	dmesg)
+		saved="$LOGS/dmesg-$TIMESTAMP.txt";
+		$BB dmesg > $saved;
+	;;
+	kmsg)
+		kmsg=/proc/last_kmsg;
+		if [ -f $kmsg ]; then
+			saved="$LOGS/last_kmsg-$TIMESTAMP.txt";
+			$BB cp -f $kmsg $saved;
+		else
+			$BB echo "$kmsg not found.";
+		fi;
+	;;
+	reboot)
+		$BB sleep 1;
+		reboot $2;
+	;;
+esac;
+
+case $1 in
+	logcat|dmesg|kmsg)
+		$BB echo "Logfile saved to $saved";
+	;;
+esac;

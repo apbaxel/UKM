@@ -1,0 +1,46 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+P=/sys/module/lowmemorykiller/parameters/minfree;
+
+read() {
+	VALUE=0;
+	NOW=`$BB cat $P`;
+	for LMK in ${NOW//,/ }; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" == $1 ]; then
+			$BB echo $((LMK / 256));
+			return
+		fi;
+	done;
+}
+
+write() {
+	SET=$2;
+	LMKARR="";
+	VALUE=0;
+	NOW=`$BB cat $P`;
+	for LMK in ${NOW//,/ }; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" == $1 ]; then
+			if [ "$VALUE" == 1 ]; then
+				LMKARR="$((SET * 256))";
+			else
+				LMKARR="$LMKARR $((SET * 256))";
+			fi;
+		else
+			if [ "$VALUE" == 1 ]; then
+				LMKARR="$LMK";
+			else
+				LMKARR="$LMKARR $LMK";
+			fi;
+		fi;
+	done;
+	$BB echo ${LMKARR// /,} > $P;
+}
+
+if [[ ! -z $2 ]]; then
+	write $1 $2;
+fi;
+
+$BB echo $(read $1);

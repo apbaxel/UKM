@@ -1,0 +1,89 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+cpuread() {
+	while read FREQ UVOLT UNIT; do
+	if [ $FREQ == $1 ]; then
+		$BB echo $UVOLT;
+		return;
+	fi;
+	done < $P;
+}
+
+cpuwrite() {
+  VOLTARR="";
+  while read FREQ UVOLT UNIT; do
+    if [ $FREQ == $1 ]; then
+      VOLTARR="$VOLTARR $2";
+    else
+      VOLTARR="$VOLTARR $UVOLT";
+    fi;
+  done < $P;
+
+  $BB echo $VOLTARR > $P;
+}
+
+coreread() {
+  VOLTAGE=0;
+  while read UVOLT UNIT; do
+    VOLTAGE=$((VOLTAGE + 1));
+    if [ "$VOLTAGE" == $1 ]; then
+      $BB echo $UVOLT;
+      return;
+    fi;
+  done < $P;
+}
+
+corewrite() {
+  VOLTARR="";
+  VOLTAGE=0;
+  while read UVOLT UNIT; do
+    VOLTAGE=$((VOLTAGE + 1));
+    if [ "$VOLTAGE" == $1 ]; then
+      VOLTARR="$VOLTARR $2";
+    else
+      VOLTARR="$VOLTARR $UVOLT";
+    fi;
+  done < $P;
+
+  $BB echo $VOLTARR > $P;
+}
+
+case $1 in
+	cpuvoltglobal)
+		VOLT_PROF=$UKM/files/volt_prof;
+		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+		
+		if [[ ! -z $3 ]]; then
+			VOLT=$3;
+			CURR_VOLT=`$BB cat $VOLT_PROF`;
+			NEW_VOLT=$((VOLT - CURR_VOLT));
+			$BB echo $VOLT > $VOLT_PROF;
+			
+			VOLTARR="";
+			while read FREQ UVOLT UNIT; do
+				VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
+			done < $P;
+
+			$BB echo $VOLTARR > $P;
+		fi;
+		
+		$BB echo `$BB cat $VOLT_PROF`;
+	;;
+	cpuvolt)
+		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
+		
+		if [[ ! -z $3 ]]; then
+			cpuwrite $2 $3;
+		fi;
+		
+		$BB echo `cpuread $2`;
+	;;
+	gpuvolt)
+	P=/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table;
+	if [[ ! -z $3 ]]; then
+		corewrite $2 $3;
+	fi;
+	$BB echo $(coreread $2);
+	;;
+esac;

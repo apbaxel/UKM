@@ -1,0 +1,20 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -f $1 ]; then
+	if [[ ! -z $3 ]]; then
+		for CSTATE in /sys/module/pm_8x60/modes/cpu[0-3]/$2; do
+			if [ -f "$CSTATE/idle_enabled" ]; then
+				$BB echo $3 > $CSTATE/idle_enabled;
+			fi;
+			
+			if [ -f "$CSTATE/suspend_enabled" ]; then
+				$BB echo $3 > $CSTATE/suspend_enabled;
+			fi;
+		done;
+	fi;
+
+	$BB echo `$BB cat $1`;
+else
+	$BB echo "0";
+fi;

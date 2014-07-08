@@ -1,0 +1,18 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
+if [ -f $1 ]; then
+	PERM=`$BB stat -c %a $1`;
+	$BB test $PERM -lt "664" && $BB chmod 664 $1;
+	
+	if [[ ! -z $2 ]]; then
+		$BB echo $2 > $1;
+		
+		$BB test "$1" = "`sh $DEVICE DirCPUMinFrequency`" && sh $DEVICE SetCPUMinFrequency $2 2> /dev/null;
+		$BB test "$1" = "`sh $DEVICE DirCPUMaxFrequency`" && sh $DEVICE SetCPUMaxFrequency $2 2> /dev/null;
+		$BB test "$1" = "`sh $DEVICE DirCPUGovernor`" && sh $DEVICE SetCPUGovernor $2 2> /dev/null;
+	fi;
+
+	$BB echo `$BB cat $1`;
+fi;
