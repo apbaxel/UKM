@@ -489,6 +489,20 @@ cat << CTAG
 							action:"generic /sys/module/msm_hotplug/cpus_boosted",
 					}},'
 				fi
+                                if [ -f "/sys/module/msm_hotplug/max_cpus_online_susp" ]; then
+                                MAXCPUSOFF=\`$BB cat /sys/module/msm_hotplug/max_cpus_online_susp\`
+                                        $BB echo '{ SSeekBar:{
+                                                        title:"Max CPUs Screen Off",
+                                                        description:"Maximum number of CPUs online when screen is off.",
+                                                        min:1,
+                                                        max:'
+                                                                sh $DEVICE MaxCPU
+                                                        $BB echo ',
+                                                        step:1,
+                                                        default:'$MAXCPUSOFF',
+                                                        action:"generic /sys/module/msm_hotplug/max_cpus_online_susp",
+                                        }},'
+                                fi
 				if [ -f "/sys/module/msm_hotplug/boost_lock_duration" ]; then
 				BOOSTLOCK=\`$BB cat /sys/module/msm_hotplug/boost_lock_duration\`
 					$BB echo '{ SSeekBar:{
