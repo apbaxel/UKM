@@ -489,20 +489,20 @@ cat << CTAG
 							action:"generic /sys/module/msm_hotplug/cpus_boosted",
 					}},'
 				fi
-                                if [ -f "/sys/module/msm_hotplug/max_cpus_online_susp" ]; then
-                                MAXCPUSOFF=\`$BB cat /sys/module/msm_hotplug/max_cpus_online_susp\`
-                                        $BB echo '{ SSeekBar:{
-                                                        title:"Max CPUs Screen Off",
-                                                        description:"Maximum number of CPUs online when screen is off.",
-                                                        min:1,
-                                                        max:'
-                                                                sh $DEVICE MaxCPU
-                                                        $BB echo ',
-                                                        step:1,
-                                                        default:'$MAXCPUSOFF',
-                                                        action:"generic /sys/module/msm_hotplug/max_cpus_online_susp",
-                                        }},'
-                                fi
+				if [ -f "/sys/module/msm_hotplug/max_cpus_online_susp" ]; then
+				MAXCPUSOFF=\`$BB cat /sys/module/msm_hotplug/max_cpus_online_susp\`
+					$BB echo '{ SSeekBar:{
+						title:"Max CPUs Screen Off",
+						description:"Maximum number of CPUs online when screen is off.",
+						min:1,
+						max:'
+							sh $DEVICE MaxCPU
+						$BB echo ',
+						step:1,
+						default:'$MAXCPUSOFF',
+						action:"generic /sys/module/msm_hotplug/max_cpus_online_susp",
+					}},'
+				fi
 				if [ -f "/sys/module/msm_hotplug/boost_lock_duration" ]; then
 				BOOSTLOCK=\`$BB cat /sys/module/msm_hotplug/boost_lock_duration\`
 					$BB echo '{ SSeekBar:{
@@ -556,9 +556,13 @@ cat << CTAG
 				fi
 				if [ -f "/sys/module/msm_hotplug/update_rates" ]; then
 				UPDATERATES=\`$BB cat /sys/module/msm_hotplug/update_rates\`
-					$BB echo '{ SGeneric:{
+					$BB echo '{ SSeekBar:{
 							title:"Update Rates",
 							description:"Interval between taking samples of load across CPUs. Lower means quicker/more erratic.",
+							unit:" ms",
+							min:0,
+							max:60,
+							step:1,
 							default:'$UPDATERATES',
 							action:"generic /sys/module/msm_hotplug/update_rates"
 					}},'
@@ -587,6 +591,15 @@ cat << CTAG
 							action:"generic /sys/module/msm_hotplug/offline_load"
 					}},'
 				fi
+				if [ -f "/sys/module/msm_hotplug/io_is_busy" ]; then
+				IOBUSY=\`$BB cat /sys/module/msm_hotplug/io_is_busy\`
+						$BB echo '{ SCheckBox:{
+							label:"IO is Busy",
+							description:"Used to make the hotplug consider the I/O time as CPU load time.",
+							default:'$IOBUSY',
+							action:"generic /sys/module/msm_hotplug/io_is_busy"
+						}},'
+				fi
 				if [ -f "/sys/module/msm_hotplug/load_levels" ]; then
 				LOADLVL=\`$BB cat /sys/module/msm_hotplug/load_levels\`
 					$BB echo '{ SGeneric:{
@@ -595,15 +608,6 @@ cat << CTAG
 						default:"'$LOADLVL'",
 						action:"generic /sys/module/msm_hotplug/load_levels"
 					}},'
-				fi
-				if [ -f "/sys/module/msm_hotplug/io_is_busy" ]; then
-				IOBUSY=\`$BB cat /sys/module/msm_hotplug/io_is_busy\`
-						$BB echo '{ SCheckBox:{
-							label:"IO is Busy",
-							description:"Used to make the hotplug consider the I/O time as CPU load time",
-							default:'$IOBUSY',
-							action:"generic /sys/module/msm_hotplug/io_is_busy"
-						}},'
 				fi
 				if [ -f "/sys/module/msm_hotplug/suspend_max_cpus" ]; then
 				SMAXCPU=\`$BB cat /sys/module/msm_hotplug/suspend_max_cpus\`

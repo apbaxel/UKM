@@ -54,8 +54,7 @@ cat << CTAG
 					}},'
 			fi`
 			{ SPane:{
-				title:"Log Creation",
-				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_ksmg (same as dmesg but from the last shutdown).",
+				title:"Log Creation"
 			}},
 				`if [ -f "/sys/module/logger/parameters/enabled" ]; then
 				LOGMODE=\`$BB cat /sys/module/logger/parameters/enabled\`
@@ -81,6 +80,9 @@ cat << CTAG
 						}
 					}},'
 				fi`
+			{ SDescription:{
+				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_ksmg (same as dmesg but from the last shutdown)."
+			}},
 				{ SButton:{
 					label:"Save logcat",
 					action:"devtools logcat"

@@ -57,12 +57,15 @@ cat << CTAG
 			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/freq_limit_debug" ]; then
 			TEMPDEBUG=\`$BB cat /sys/module/msm_thermal/parameters/freq_limit_debug\`
-				$BB echo '{ SCheckBox:{
-					label:"Enable/Disable Thermal Debug",
-					description:"This allows to debug the CPUs throttle when the temperature reaches maximum.",
-					default:'$TEMPDEBUG',
-					action:"generic /sys/module/msm_thermal/parameters/freq_limit_debug"
-				}},'
+				$BB echo '{ SPane:{
+					title:"Frequency Limit Debug"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"This allows to debug the CPUs throttle when the temperature reaches maximum.",
+						default:'$TEMPDEBUG',
+						action:"generic /sys/module/msm_thermal/parameters/freq_limit_debug"
+					}},'
 			fi`
 			`if [ -f "/sys/module/msm_thermal/parameters/temp_threshold" ]; then
 			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/temp_threshold\`
