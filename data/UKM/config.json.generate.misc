@@ -103,12 +103,12 @@ cat << CTAG
 				if [ -f "/sys/kernel/power_suspend/power_suspend_mode" ]; then
 				PSM=\`$BB cat /sys/kernel/power_suspend/power_suspend_mode\`
 					$BB echo '{ SOptionList:{
-						title:"Power Suspend Mode"
-						description:"Kernel Mode & LCD Hooks are automatic and managed by the kernel, to manually enable or disable the Power Suspend State choose User Mode.",
+						title:"Power Suspend Mode",
+						description:"Kernel Mode, LCD Hooks & Highest Level Hook are automatic and managed by the kernel, to manually enable or disable the Power Suspend State choose User Mode.",
 						default:'$PSM',
 						action:"generic /sys/kernel/power_suspend/power_suspend_mode",
 						values:{
-							0:"Kernel Mode", 1:"User Mode", 2:"LCD Hooks"
+							0:"Kernel Mode", 1:"User Mode", 2:"LCD Hooks", 3:"Highest Level Hook"
 						}
 					}},'
 				fi
@@ -124,7 +124,7 @@ cat << CTAG
 				if [ -f "/sys/kernel/power_suspend/power_suspend_state" ] && [ "\`$BB grep 1.3 /sys/kernel/power_suspend/power_suspend_version\`" ]; then
 				PSS=\`$BB cat /sys/kernel/power_suspend/power_suspend_state\`
 					$BB echo '{ SSeekBar:{
-						title:"Power Suspend State"
+						title:"Power Suspend State",
 						description:"Kernel power management driver when screen is off. Better battery savings if enabled. Note: You can only change this setting if Power Suspend Mode is in User Mode.",
 						min:0,
 						max:2,
