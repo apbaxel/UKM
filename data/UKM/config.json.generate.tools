@@ -46,11 +46,11 @@ cat << CTAG
 					description:"Use GSM_auto or CDMA_auto to reduce the msm_hsic_host wakelock and save battery. After applying you need to reboot your device for the setting to take effect. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
 				}},
 					{ SOptionList:{
-						default:WCDMA_preferred,
+						default:'$VALUE',
 						action:"sqlite preferred_network_mode",
-						values:[ WCDMA_preferred, GSM_only, WCDMA_only, GSM_auto, CDMA_auto, CDMA_only, EvDo_only, GSM_CDMA_auto, LTE_CDMA_auto, 
-							LTE_GSM_auto, LTE_GSM_CDMA_auto, LTE_only, LTE_WDCMA,
-						],
+						values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
+							7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA",
+						},
 					}},'
 			fi`
 			{ SPane:{

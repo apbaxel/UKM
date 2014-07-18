@@ -4,75 +4,10 @@ SQL3=$UKM/sqlite3;
 
 DB=/data/data/com.android.providers.settings/databases;
 
-read_pnm() {
-case "$1" in
-	0)
-		$BB echo "WCDMA_preferred";;
-	1)
-		$BB echo "GSM_only";;
-	2)
-		$BB echo "WCDMA_only";;
-	3)
-		$BB echo "GSM_auto";;
-	4)
-		$BB echo "CDMA_auto";;
-	5)
-		$BB echo "CDMA_only";;
-	6)
-		$BB echo "EvDo_only";;
-	7)
-		$BB echo "GSM_CDMA_auto";;
-	8)
-		$BB echo "LTE_CDMA_auto";;
-	9)
-		$BB echo "LTE_GSM_auto";;
-	10)
-		$BB echo "LTE_GSM_CDMA_auto";;
-	11)
-		$BB echo "LTE_only";;
-	12)
-		$BB echo "LTE_WDCMA";;
-esac;
-}
-
-write_pnm() {
-cd $DB;
-
-case "$1" in
-	WCDMA_preferred)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 0);";;
-	GSM_only)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 1);";;
-	WCDMA_only)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 2);";;
-	GSM_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 3);";;
-	CDMA_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 4);";;
-	CDMA_only)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 5);";;
-	EvDo_only)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 6);";;
-	GSM_CDMA_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 7);";;
-	LTE_CDMA_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 8);";;
-	LTE_GSM_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 9);";;
-	LTE_GSM_CDMA_auto)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 10);";;
-	LTE_only)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 11);";;
-	LTE_WDCMA)
-		$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', 12);";;
-esac;
-}
-
 if [[ ! -z $2 ]]; then
-	write_pnm "$2";
+	cd $DB;
+	$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);";
 fi;
 
 cd $DB;
-VALUE=`$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
-
-$BB echo `read_pnm $VALUE`;
+$BB echo `$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
