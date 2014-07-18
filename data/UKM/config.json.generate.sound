@@ -8,7 +8,7 @@ cat << CTAG
 						description:"After you apply a profile, turn audio Off/On to update."
 					}},
 						{ SOptionList:{
-							default:LG_Stock,
+							default:Custom,
 							action:"soundfaux '$UKM'/files/sound_prof",
 							values:[ Custom, LG_Stock, Quality, Loudness, Quiet,
 							],

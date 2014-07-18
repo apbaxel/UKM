@@ -29,9 +29,9 @@ $BB rm -f $DEBUG/*
 
 # Reset profiles to default
 
-$BB echo "Google_Stock" > $UKM/files/gamma_prof
-$BB echo "LG_Stock" > $UKM/files/sound_prof
-$BB echo "LG_Stock" > $UKM/files/speaker_prof
+$BB echo "Custom" > $UKM/files/gamma_prof
+$BB echo "Custom" > $UKM/files/sound_prof
+$BB echo "Custom" > $UKM/files/speaker_prof
 $BB echo "0" > $UKM/files/volt_prof;
 
 # Symlink uci file to xbin in case it's not found.
@@ -65,4 +65,5 @@ fi
 # Reset uci config so it can be re-created on boot.
 
 $UCI_XBIN reset;
+$BB sleep 1;
 $UCI_XBIN;

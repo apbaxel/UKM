@@ -36,9 +36,9 @@ cat << CTAG
 					description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=5'>HERE</a>"
 				}},
 					{ SOptionList:{
-						default:Google_Stock,
+						default:"Custom",
 						action:"restorebackup applygammafaux",
-						values:['
+						values:[ "Custom", '
 							for FAUX in \`$UKM/actions/restorebackup listgammafaux\`; do
 								echo "\"$FAUX\","
 							done;
@@ -73,7 +73,7 @@ cat << CTAG
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
-						default:"Google_Stock",
+						default:"Custom",
 						action:"generic '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
@@ -204,9 +204,9 @@ cat << CTAG
 					description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=6'>HERE</a>"
 				}},
 					{ SOptionList:{
-						default:Google_Stock,
+						default:"Custom",
 						action:"restorebackup applygammafranco",
-						values:['
+						values:[ "Custom", '
 							for FRANCO in \`$UKM/actions/restorebackup listgammafranco\`; do
 								echo "\"$FRANCO\","
 							done;
@@ -253,7 +253,7 @@ cat << CTAG
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
-						default:"Google_Stock",
+						default:"Custom",
 						action:"generic '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
@@ -365,9 +365,9 @@ cat << CTAG
 					description:"After you apply a profile, turn screen Off/On to update. More custom profiles here: <a href='https://docs.google.com/spreadsheet/ccc?key=0AoDp2qRui0u0dGE4T2gtSDBTRHVFSldPS2RrX1Rya0E#gid=5'>HERE</a>"
 				}},
 					{ SOptionList:{
-						default:Google_Stock,
+						default:"Custom",
 						action:"restorebackup applygammafrancoN5",
-						values:['
+						values:[ "Custom", '
 							for FRANCON5 in \`$UKM/actions/restorebackup listgammafrancoN5\`; do
 								echo "\"$FRANCON5\","
 							done;
@@ -405,7 +405,7 @@ cat << CTAG
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
-						default:"Google_Stock",
+						default:"Custom",
 						action:"generic '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
