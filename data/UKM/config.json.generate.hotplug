@@ -556,13 +556,9 @@ cat << CTAG
 				fi
 				if [ -f "/sys/module/msm_hotplug/update_rates" ]; then
 				UPDATERATES=\`$BB cat /sys/module/msm_hotplug/update_rates\`
-					$BB echo '{ SSeekBar:{
+					$BB echo '{ SGeneric:{
 							title:"Update Rates",
 							description:"Interval between taking samples of load across CPUs. Lower means quicker/more erratic.",
-							unit:" ms",
-							min:0,
-							max:60,
-							step:1,
 							default:'$UPDATERATES',
 							action:"generic /sys/module/msm_hotplug/update_rates"
 					}},'
