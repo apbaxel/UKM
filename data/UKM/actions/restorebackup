@@ -159,9 +159,9 @@ case "$1" in
 		
 		if [ -f $gamma ]; then
 			if [[ ! -z $2 ]]; then
+			$BB echo $2 > $PATH;
+			
 				if [ $2 != "Custom" ]; then
-					$BB echo $2 > $PATH;
-					
 					FAUX_PROFILE=$2;
 					kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
 					kgamma_b=/sys/devices/platform/mipi_lgit.1537/kgamma_b;
@@ -246,9 +246,9 @@ case "$1" in
 		
 		if [ -f "$gamma" ]; then
 			if [[ ! -z $2 ]]; then
-				if [ $2 != "Custom" ]; then
-					$BB echo $2 > $PATH;
-					
+			$BB echo $2 > $PATH;
+			
+				if [ $2 != "Custom" ]; then					
 					FRANCO_PROFILE=$2;
 					kcal=/sys/devices/platform/kcal_ctrl.0/kcal;
 					kred_greys=/sys/class/misc/gammacontrol/red_greys;
@@ -381,32 +381,32 @@ case "$1" in
 		
 		if [ -f "$gamma" ]; then
 			if [[ ! -z $2 ]]; then
-				if [ $2 != "Custom" ]; then
-					$BB echo $2 > $PATH;
-					
+			$BB echo $2 > $PATH;
+			
+				if [ $2 != "Custom" ]; then		
 					FRANCON5_PROFILE=$2;
-					kgamma_bn=/sys/module/dsi_panel/kgamma_bn;
-					kgamma_bp=/sys/module/dsi_panel/kgamma_bp;
-					kgamma_gn=/sys/module/dsi_panel/kgamma_gn;
-					kgamma_gp=/sys/module/dsi_panel/kgamma_gp;
-					kgamma_rn=/sys/module/dsi_panel/kgamma_rn;
 					kgamma_rp=/sys/module/dsi_panel/kgamma_rp;
+					kgamma_rn=/sys/module/dsi_panel/kgamma_rn;
+					kgamma_gp=/sys/module/dsi_panel/kgamma_gp;
+					kgamma_gn=/sys/module/dsi_panel/kgamma_gn;
+					kgamma_bp=/sys/module/dsi_panel/kgamma_bp;
+					kgamma_bn=/sys/module/dsi_panel/kgamma_bn;
 					kgamma_w=/sys/module/dsi_panel/kgamma_w;
 					
-					bn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=2 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
-					bp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=25 -v t=47 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
-					gn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=48 -v t=70 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
-					gp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=71 -v t=93 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
-					rn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=94 -v t=116 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
-					rp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=117 -v t=139 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					rp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=2 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					rn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=25 -v t=47 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					gp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=48 -v t=70 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					gn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=71 -v t=93 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					bp=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=94 -v t=116 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
+					bn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=117 -v t=139 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 					w=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk '{ print $140 }'`;
 					
-					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;
-					$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
-					$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
-					$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
-					$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn;
 					$BB test -n "$rp" && $BB echo "$rp" > $kgamma_rp;
+					$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn;
+					$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
+					$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
+					$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
+					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;			
 					$BB test -n "$w" && $BB echo "$w" > $kgamma_w;
 				fi;
 			fi;
@@ -444,15 +444,15 @@ case "$1" in
 			elif [ "`$BB grep $FRANCON5_PROFILE $gamma`" ] || [ "$FRANCON5_PROFILE" == "Custom" ]; then
 				$BB echo "Profile name already exists.";
 			else
-				kgamma_bn=`$BB cat /sys/module/dsi_panel/kgamma_bn`;
-				kgamma_bp=`$BB cat /sys/module/dsi_panel/kgamma_bp`;
-				kgamma_gn=`$BB cat /sys/module/dsi_panel/kgamma_gn`;
-				kgamma_gp=`$BB cat /sys/module/dsi_panel/kgamma_gp`;
-				kgamma_rn=`$BB cat /sys/module/dsi_panel/kgamma_rn`;
 				kgamma_rp=`$BB cat /sys/module/dsi_panel/kgamma_rp`;
+				kgamma_rn=`$BB cat /sys/module/dsi_panel/kgamma_rn`;
+				kgamma_gp=`$BB cat /sys/module/dsi_panel/kgamma_gp`;
+				kgamma_gn=`$BB cat /sys/module/dsi_panel/kgamma_gn`;
+				kgamma_bp=`$BB cat /sys/module/dsi_panel/kgamma_bp`;
+				kgamma_bn=`$BB cat /sys/module/dsi_panel/kgamma_bn`;
 				kgamma_w=`$BB cat /sys/module/dsi_panel/kgamma_w`;
 				
-				$BB echo "$FRANCON5_PROFILE $kgamma_bn $kgamma_bp $kgamma_gn $kgamma_gp $kgamma_rn $kgamma_rp $kgamma_w" >> $gamma;
+				$BB echo "$FRANCON5_PROFILE $kgamma_rp $kgamma_rn $kgamma_gp $kgamma_gn $kgamma_bp $kgamma_bn $kgamma_w" >> $gamma;
 				$BB echo "$FRANCON5_PROFILE created. Press the Restart Synapse button below to see updated list.";
 			fi;
 		else
