@@ -1,10 +1,23 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
+if [ $DEVICE = "mako" ]; then
+	BASE_HP_PA_GAIN=22; #Nexus 4
+elif [ $DEVICE = "hammerhead" ]; then
+	BASE_HP_PA_GAIN=54; #Nexus 5
+else
+	BASE_HP_PA_GAIN=22; #Not defined
+fi;
 
 LG_Stock() {
 CAM_MIC_GAIN="0 255";
 HEADPHONE_GAIN="0 0 255";
-HEADPHONE_PA_GAIN="22 22 211";
+
+X=$((BASE_HP_PA_GAIN - 0));
+Y=$((255 - X - X));
+HEADPHONE_PA_GAIN="$X $X $Y";
+
 MIC_GAIN="0 255";
 SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="0 0 255";
@@ -13,7 +26,11 @@ SPEAKER_GAIN="0 0 255";
 Quality() {
 CAM_MIC_GAIN="0 255";
 HEADPHONE_GAIN="254 254 259";
-HEADPHONE_PA_GAIN="17 17 221";
+
+X=$((BASE_HP_PA_GAIN - 5));
+Y=$((255 - X - X));
+HEADPHONE_PA_GAIN="$X $X $Y";
+
 MIC_GAIN="0 255";
 SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="254 254 259";
@@ -22,7 +39,11 @@ SPEAKER_GAIN="254 254 259";
 Loudness() {
 CAM_MIC_GAIN="0 255";
 HEADPHONE_GAIN="9 9 237";
-HEADPHONE_PA_GAIN="19 19 217";
+
+X=$((BASE_HP_PA_GAIN - 3));
+Y=$((255 - X - X));
+HEADPHONE_PA_GAIN="$X $X $Y";
+
 MIC_GAIN="0 255";
 SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="5 5 245";
@@ -31,7 +52,11 @@ SPEAKER_GAIN="5 5 245";
 Quiet() {
 CAM_MIC_GAIN="0 255";
 HEADPHONE_GAIN="251 251 265";
-HEADPHONE_PA_GAIN="24 24 207";
+
+X=$((BASE_HP_PA_GAIN + 2));
+Y=$((255 - X - X));
+HEADPHONE_PA_GAIN="$X $X $Y";
+
 MIC_GAIN="0 255";
 SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="253 253 261";
@@ -82,7 +107,7 @@ if [ -f $1 ]; then
 			
 		else
 			V=$2;
-			V=$((22 - V));
+			V=$((BASE_HP_PA_GAIN - V));
 			H=$((255 - V - V));
 			
 			$BB echo "$V $V $H" > $1;
@@ -93,7 +118,7 @@ if [ -f $1 ]; then
 	C=`while read V1 V2; do echo $V1; done < $PATH`;
 
 	if [ "$PATH" == "/sys/kernel/sound_control_3/gpl_headphone_pa_gain" ]; then
-		C=$((22 - C));
+		C=$((BASE_HP_PA_GAIN - C));
 			
 		$BB echo $C;
 	else
