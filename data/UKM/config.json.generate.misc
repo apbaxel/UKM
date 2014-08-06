@@ -236,6 +236,18 @@ cat << CTAG
 						action:"generic /sys/module/msm_otg/parameters/otg_hack_enable"
 					}},'
 			fi`
+			`if [ -f "/sys/module/msm_otg/parameters/usbhost_charge_mode" ]; then
+			USB=\`bool /sys/module/msm_otg/parameters/usbhost_charge_mode\`
+				$BB echo '{ SPane:{
+					title:"USB Host Mode Charging"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Enabling this allows for OTG operation.",
+						default:'$USB',
+						action:"boolean /sys/module/msm_otg/parameters/usbhost_charge_mode"
+					}},'
+			fi`
 			`if [ -f "/sys/class/misc/batterylifeextender/charging_limit" ]; then
 				BLX=\`$BB cat /sys/class/misc/batterylifeextender/charging_limit\`
 				$BB echo '{ SPane:{
@@ -249,6 +261,19 @@ cat << CTAG
 						max:100,
 						default:'$BLX',
 						action:"generic /sys/class/misc/batterylifeextender/charging_limit"
+					}},'
+			fi`
+			`if [ -f "/sys/devices/i2c-0/0-006a/float_voltage" ]; then
+				BLX=\`$BB cat /sys/devices/i2c-0/0-006a/float_voltage\`
+				$BB echo '{ SPane:{
+					title:"Battery Life Extender (BLX)"
+				}},
+					{ SSeekBar:{
+						description:"Limit the capacity to which the battery will be charged.",
+						default:'$BLX',
+						action:"generic /sys/devices/i2c-0/0-006a/float_voltage",
+						values:{ 4000:"4.0V", 4100:"4.1V", 4200:"4.2V"
+						}
 					}},'
 			fi`
 			`if [ -f "/sys/devices/virtual/input/lge_touch/accuracy" ] && [ -n "\`cat /sys/devices/virtual/input/lge_touch/accuracy 2> /dev/null\`" ]; then
