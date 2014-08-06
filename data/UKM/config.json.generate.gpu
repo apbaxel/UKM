@@ -16,7 +16,7 @@ cat << CTAG
 				{ SSeekBar:{
 					title:"GPU Min Frequency",
 					description:"Set the minimum frequency the GPU scales down to.",
-					default:1,
+					default:`$BB cat \`sh $DEVICE DirGPUMinPwrLevel\``,
 					action:"gpuset `sh $DEVICE DirGPUMinPwrLevel`",
 					values:{
 						`sh $DEVICE GPUPowerLevel`
