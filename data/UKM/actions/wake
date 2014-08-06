@@ -12,6 +12,10 @@ if [ -f $1 ]; then
 				$BB echo "0" > /sys/devices/virtual/input/lge_touch/dt_wake_enabled;
 			elif [ "$1" == "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ] && [ -f "/sys/devices/virtual/misc/touchwake/enabled" ]; then
 				$BB echo "0" > /sys/devices/virtual/misc/touchwake/enabled;
+			elif [ "$1" == "/sys/android_touch/sweep2dim" ] && [ -f "/sys/android_touch/sweep2wake" ]; then
+				$BB echo "0" > /sys/android_touch/sweep2wake;
+			elif [ "$1" == "/sys/android_touch/sweep2wake" ] && [ -f "/sys/android_touch/sweep2dim" ]; then
+				$BB echo "0" > /sys/android_touch/sweep2dim;
 			fi;
 		fi;
 		
@@ -24,8 +28,8 @@ if [ -f $1 ]; then
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
 			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
-			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD 2> /dev/null;
+			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD 2> /dev/null;
 			$BB echo '#!/system/bin/sh' > $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '' >> $INITD/UKM_WAKE 2> /dev/null;
 			$BB echo '#This file was generated automaticaly from Synapse/UKM.' >> $INITD/UKM_WAKE 2> /dev/null;
@@ -43,8 +47,8 @@ if [ -f $1 ]; then
 			
 				$BB mount -o remount,rw /system 2> /dev/null;
 				$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
-				$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
-				$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD;
+				$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD 2> /dev/null;
+				$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD 2> /dev/null;
 				$BB echo 'echo '$2' > '$1 >> $INITD/UKM_WAKE 2> /dev/null;
 				$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 				$BB mount -o remount,ro /system 2> /dev/null;
@@ -57,8 +61,8 @@ if [ -f $1 ]; then
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
 			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
-			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD 2> /dev/null;
+			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD 2> /dev/null;
 			$BB sed -i "/$PATH/d" $INITD/UKM_WAKE 2> /dev/null;
 			$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;
@@ -70,8 +74,8 @@ if [ -f $1 ]; then
 			
 			$BB mount -o remount,rw /system 2> /dev/null;
 			$BB mount -t rootfs -o remount,rw rootfs 2> /dev/null;
-			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD;
-			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD;
+			$BB test $OWNER -ne "0" && $BB chown -R root:root $INITD 2> /dev/null;
+			$BB test $PERM -lt "775" && $BB chmod -R 775 $INITD 2> /dev/null;
 			$BB rm -f $INITD/UKM_WAKE 2> /dev/null;
 			$BB mount -t rootfs -o remount,ro rootfs 2> /dev/null;
 			$BB mount -o remount,ro /system 2> /dev/null;

@@ -14,13 +14,14 @@ cat << CTAG
 			`if [ -f "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ]; then
 			DT2W=\`$BB cat /sys/devices/virtual/input/lge_touch/dt_wake_enabled\`
 				$BB echo '{ SPane:{
-					title:"DoubleTap2Wake"
+					title:"DoubleTap2Wake",
+					description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket). NOTE: Some of these profiles may not be available in your kernel.",
 				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
+					{ SOptionList:{
 						default:'$DT2W',
-						action:"wake /sys/devices/virtual/input/lge_touch/dt_wake_enabled",'
+						action:"wake /sys/devices/virtual/input/lge_touch/dt_wake_enabled",
+						values:{ 0:"Disabled", 1:"Center (Default)", 2:"Full", 3:"Bottom half", 4:"Top half"
+						},'
 						if [ -f "/sys/devices/virtual/misc/touchwake/enabled" ]; then
 							$BB echo 'notify:[
 								{
@@ -98,8 +99,62 @@ cat << CTAG
 						label:"Enable",
 						description:"Allows you to wake the device by swiping on the navigation bar (Causes more battery drain while in pocket).",
 						default:'$S2W',
-						action:"wake /sys/android_touch/sweep2wake"
-					}},'
+						action:"wake /sys/android_touch/sweep2wake",'
+						if [ -f "/sys/android_touch/sweep2dim" ]; then
+							$BB echo 'notify:[
+								{
+									on:SET,
+									do:[ REFRESH, APPLY ],
+									to:"wake /sys/android_touch/sweep2dim"
+								}
+							]'
+						fi
+					$BB echo '}},'
+			fi`
+			`if [ -f "/sys/android_touch/sweep2dim" ]; then
+			S2D=\`$BB cat /sys/android_touch/sweep2dim\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Dim"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to dim the brightness by swiping to the left (- brightness) & right (+ brightness) on the navigation bar.",
+						default:'$S2D',
+						action:"wake /sys/android_touch/sweep2dim",'
+						if [ -f "/sys/android_touch/sweep2wake" ]; then
+							$BB echo 'notify:[
+								{
+									on:SET,
+									do:[ REFRESH, APPLY ],
+									to:"wake /sys/android_touch/sweep2wake"
+								}
+							]'
+						fi
+					$BB echo '}},'
+			fi`
+			`if [ -f "/sys/module/sweep2wake/parameters/down_kcal" ]; then
+			S2DD=\`$BB cat /sys/module/sweep2wake/parameters/down_kcal\`
+				$BB echo '{ SSeekBar:{
+					title:"Sweep2Dim Down",
+					description:"Configure how many points a sweep to the left will brighten your display.",
+					min:1,
+					max:255,
+					step:1,
+					default:'$S2DD',
+					action:"wake /sys/module/sweep2wake/parameters/down_kcal"
+				}},'
+			fi`
+			`if [ -f "/sys/module/sweep2wake/parameters/up_kcal" ]; then
+			S2DU=\`$BB cat /sys/module/sweep2wake/parameters/up_kcal\`
+				$BB echo '{ SSeekBar:{
+					title:"Sweep2Dim Up",
+					description:"Configure how many points a sweep to the right will brighten your display.",
+					min:1,
+					max:255,
+					step:1,
+					default:'$S2DU',
+					action:"wake /sys/module/sweep2wake/parameters/up_kcal"
+				}},'
 			fi`
 			`if [ -f "/sys/android_touch/shortsweep" ]; then
 			SSWEEP=\`$BB cat /sys/android_touch/shortsweep\`
@@ -122,6 +177,31 @@ cat << CTAG
 						action:"wake /sys/android_touch/s2w_s2sonly"
 					}},'
 			fi`
+			`if [ -f "/sys/android_touch/sweep2sleep" ]; then
+			S2S=\`$BB cat /sys/android_touch/sweep2sleep\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Sleep"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to turn the screen off by swiping on the navigation bar.",
+						default:'$S2S',
+						action:"wake /sys/android_touch/sweep2sleep"
+					}},'
+			fi`
+			`if [ -f "/sys/android_touch/orientation" ]; then
+			S2SO=\`$BB cat /sys/android_touch/orientation\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Sleep Orientation",
+					description:"Orientation mode for Sweep2Sleep.",
+				}},
+					{ SOptionList:{
+						default:'$S2SO',
+						action:"wake /sys/android_touch/orientation",
+						values:{ 0:"Any", 1:"Portrait Only", 2:"Landscape Only"
+						}
+					}},'
+			fi`
 			`if [ -f "/sys/android_touch/wake_timeout" ]; then
 			WT=\`$BB cat /sys/android_touch/wake_timeout\`
 				$BB echo '{ SPane:{
@@ -134,6 +214,18 @@ cat << CTAG
 						step:1,
 						default:'$WT',
 						action:"wake /sys/android_touch/wake_timeout"
+					}},'
+			fi`
+			`if [ -f "/sys/android_touch/wake_gestures" ]; then
+			WG=\`$BB cat /sys/android_touch/wake_gestures\`
+				$BB echo '{ SPane:{
+					title:"Wake Gestures"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows assigning actions to be performed when particular wake gesture is triggered. More info: <a href='http://forum.xda-developers.com/xposed/modules/app-wake-gestures-v1-1-t2768266'>HERE</a>.",
+						default:'$WG',
+						action:"wake /sys/android_touch/wake_gestures"
 					}},'
 			fi`
 			`if [ -f "/sys/module/input_core/parameters/pwrkey_suspend" ]; then
@@ -182,6 +274,30 @@ cat << CTAG
 						description:"If enabled, disables screen wake controls when lid is closed.",
 						default:'$LIDSFLO',
 						action:"generic /sys/android_touch/lid_suspend"
+					}},'
+			fi`
+			`if [ -f "/sys/module/lid/parameters/enable_lid" ]; then
+			MLID=\`$BB cat /sys/module/lid/parameters/enable_lid\`
+				$BB echo '{ SPane:{
+					title:"Magnetic Sensor"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"If enabled, magnetic sensor turns off screen when lid is closed.",
+						default:'$MLID',
+						action:"generic /sys/module/lid/parameters/enable_lid"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/double_tap_enable" ]; then
+			DTOPO=\`$BB cat /proc/touchpanel/double_tap_enable\`
+				$BB echo '{ SPane:{
+					title:"DoubleTap2Wake"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
+						default:'$DTOPO',
+						action:"generic /proc/touchpanel/double_tap_enable"
 					}},'
 			fi`
 		]
