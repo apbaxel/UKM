@@ -1,10 +1,10 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
-DEVICE=`sh $UKM/device/.device.sh`;
+PHONE=`getprop ro.product.device`;
 
-if [ $DEVICE = "mako" ]; then
+if [ $PHONE == "mako" ]; then
 	BASE_HP_PA_GAIN=22; #Nexus 4
-elif [ $DEVICE = "hammerhead" ]; then
+elif [ $PHONE == "hammerhead" ]; then
 	BASE_HP_PA_GAIN=54; #Nexus 5
 else
 	BASE_HP_PA_GAIN=22; #Not defined
