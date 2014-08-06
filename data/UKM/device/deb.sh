@@ -15,6 +15,12 @@ case "$1" in
 			$BB echo "\"$CPUGOV\",";
 		done;
 	;;
+	DebugPVS)
+		$BB echo "ACPU PVS";
+	;;
+	DebugSPEED)
+		$BB echo "SPEED BIN";
+	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
 			if [ $FREQ -le "1512000" ]; then
@@ -38,7 +44,7 @@ case "$1" in
 	DefaultGPUGovernor)
 		POLICY=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy`
 		if [ "$POLICY" = "trustzone" ]; then
-			$BB echo "`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
+			$BB echo "`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
 		else
 			$BB echo $POLICY;
 		fi;
@@ -108,7 +114,7 @@ case "$1" in
 		$BB echo $GOV;
 	;;
 	GPUPowerLevel)
-		NUM_PWRLVL=`cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
+		NUM_PWRLVL=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
 		PWR_LEVEL=-1;
 		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies`; do
 		PWR_LEVEL=$((PWR_LEVEL + 1));
@@ -293,6 +299,48 @@ case "$1" in
 			$BB echo 1 > $CPU/online;
 			$BB echo $2 > $CPU/cpufreq/scaling_min_freq;
 		done;
+	;;
+	SetGPUMinPwrLevel)
+		NUM_PWRLVL=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
+			if [[ ! -z $3 ]]; then
+				PWR_LEVEL=$3;
+				MIN_PWRLVL=$((NUM_PWRLVL - PWR_LEVEL));
+				$BB echo $MIN_PWRLVL > $2;
+			fi;
+		$BB echo $((NUM_PWRLVL - `$BB cat $2`));
+	;;
+	SetGPUGovernor)
+		POLICY=/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy;
+
+		if [[ ! -z $3 ]]; then
+			case $3 in
+				ondemand)
+					$BB echo "trustzone" > $POLICY;
+					$BB echo $3 > $2;
+				;;
+				performance)
+					$BB echo "trustzone" > $POLICY;
+					$BB echo $3 > $2;
+				;;
+				simple)
+					$BB echo "trustzone" > $POLICY;
+					$BB echo $3 > $2;
+				;;
+				interactive)
+					$BB echo "trustzone" > $POLICY;
+					$BB echo $3 > $2;
+				;;
+				conservative)
+					$BB echo $3 > $POLICY;
+				;;
+			esac;
+		fi;
+
+		if [ `$BB cat $POLICY` = "trustzone" ]; then
+			$BB echo `$BB cat $2`;
+		else
+			$BB echo `$BB cat $POLICY`;
+		fi;
 	;;
 	TCPCongestionList)
 		for TCPCC in `$BB cat /proc/sys/net/ipv4/tcp_available_congestion_control` ; do
