@@ -2,6 +2,8 @@
 
 UKM=/data/UKM;
 BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
+
 UCI_CONFIG=$UKM/config.json;
 UCI_ACTION=$UKM/actions/;
 DEBUG=$UKM/debug;
@@ -11,12 +13,12 @@ if [ ! -f $UCI_CONFIG ]; then
 	$BB chmod -R 755 $UCI_ACTION;
 	
 	if [ ! -f $DEBUG/pvs_bin ]; then
-		PVS=`$BB dmesg | $BB grep PVS`;
+		PVS=`$BB dmesg | $BB grep "\`sh $DEVICE DebugPVS\`"`;
 		$BB echo ${PVS##*:} > $DEBUG/pvs_bin;
 	fi
 	
 	if [ ! -f $DEBUG/speed_bin ]; then
-		SPEED=`$BB dmesg | $BB grep SPEED`;
+		SPEED=`$BB dmesg | $BB grep "\`sh $DEVICE DebugSPEED\`"`;
 		$BB echo ${SPEED##*:} > $DEBUG/speed_bin;
 	fi
 	
