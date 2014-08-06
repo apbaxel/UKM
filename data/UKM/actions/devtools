@@ -5,9 +5,6 @@ DEVICE=`sh $UKM/device/.device.sh`;
 TIMESTAMP=`date +%Y-%m-%d.%H.%M.%S`;
 LOGS=/sdcard/logs;
 
-[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
-$BB chmod 755 $LOGS;
-
 case $1 in
 	bootloader)	
 		$BB echo `sh $DEVICE ToggleBootloader`;
@@ -28,16 +25,25 @@ case $1 in
 	;;
 	logcat)
 		saved="$LOGS/logcat-$TIMESTAMP.txt";
+		[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
+		$BB chmod 755 $LOGS;
+		
 		logcat -d > $saved;
 	;;
 	dmesg)
 		saved="$LOGS/dmesg-$TIMESTAMP.txt";
+		[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
+		$BB chmod 755 $LOGS;
+		
 		$BB dmesg > $saved;
 	;;
 	kmsg)
 		kmsg=/proc/last_kmsg;
 		if [ -f $kmsg ]; then
 			saved="$LOGS/last_kmsg-$TIMESTAMP.txt";
+			[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";
+			$BB chmod 755 $LOGS;
+			
 			$BB cp -f $kmsg $saved;
 		else
 			$BB echo "$kmsg not found.";
