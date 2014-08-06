@@ -15,6 +15,12 @@ case "$1" in
 			$BB echo "\"$CPUGOV\",";
 		done;
 	;;
+	DebugPVS)
+		$BB echo "PVS bin";
+	;;
+	DebugSPEED)
+		$BB echo "Speed bin";
+	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
 			if [ $FREQ -le "2260000" ]; then
@@ -36,15 +42,10 @@ case "$1" in
 		$BB echo $MINCPU;
 	;;
 	DefaultGPUGovernor)
-		POLICY=`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/policy`
-		if [ "$POLICY" = "trustzone" ]; then
-			$BB echo "`cat /sys/class/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
-		else
-			$BB echo $POLICY;
-		fi;
+		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"
 	;;
 	DirKernelIMG)
-		$BB echo "/dev/block/platform/msm_sdcc.1/by-name/boot";
+		$BB echo "/dev/block/platform/msm_sdcc.1/by-name/aboot";
 	;;
 	DirCPUGovernor)
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
@@ -59,20 +60,20 @@ case "$1" in
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
 	;;
 	DirGPUGovernor)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
+		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor";
 	;;
 	DirGPUMaxFrequency)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/max_gpuclk";
+		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/max_freq";
 	;;
 	DirGPUMinPwrLevel)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/min_pwrlevel";
+		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/min_freq";
 	;;
-	DirGPUNumPwrLevels)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/num_pwrlevels";
-	;;
-	DirGPUPolicy)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy";
-	;;	
+	#DirGPUNumPwrLevels)
+	#	$BB echo "/sys/class/kgsl/kgsl-3d0/num_pwrlevels";
+	#;;
+	#DirGPUPolicy)
+	#	$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy"; 
+	#;;	
 	DirIOReadAheadSize)
 		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
@@ -86,42 +87,27 @@ case "$1" in
 		$BB echo "/proc/sys/net/ipv4/tcp_congestion_control";
 	;;
 	GPUFrequencyList)
-		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | tr ' ' '\n' | sort -u` ; do
+		for GPUFREQ in `$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/available_frequencies | tr ' ' '\n' | sort -u` ; do
 		LABEL=$((GPUFREQ / 1000000));
 			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance";
-		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
-			GOV="$GOV, simple";
-		fi;
-
-		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
-			GOV="$GOV, interactive";
-		fi;
-		
-		if [ "`$BB grep 'conservative' /sys/class/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
-			GOV="$GOV, conservative";
-		fi;
-		
-		$BB echo $GOV;
+		for GPUGOV in `$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/available_governors`; do
+			$BB echo "\"$GPUGOV\",";
+		done;
 	;;
 	GPUPowerLevel)
-		NUM_PWRLVL=`cat /sys/class/kgsl/kgsl-3d0/num_pwrlevels`;
-		PWR_LEVEL=-1;
-		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies`; do
-		PWR_LEVEL=$((PWR_LEVEL + 1));
-		MIN_PWRLVL=$((NUM_PWRLVL - PWR_LEVEL));
+		for GPUFREQ in `$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/available_frequencies | tr ' ' '\n' | sort -u` ; do
 		LABEL=$((GPUFREQ / 1000000));
-			$BB echo "$MIN_PWRLVL:\"${LABEL} MHz\", ";
+			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
 	;;
 	HasBootloader)
-		$BB echo "0";
+		$BB echo "1";
 	;;
 	HasTamperFlag)
-		$BB echo "0";
+		$BB echo "1";
 	;;
 	IOSchedulerList)
 		for IOSCHED in `$BB cat /sys/block/mmcblk0/queue/scheduler | $BB sed -e 's/\]//;s/\[//'`; do
@@ -138,11 +124,11 @@ case "$1" in
 	LiveBootloader)
 		version=`getprop ro.bootloader`;
 		
-		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		offset=16400;
+		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
+		offset=1048080;
 		locked=00;
 		unlocked=01;
-		tamper=16404;
+		tamper=1048084;
 		false=00;
 		true=01;
 		
@@ -187,7 +173,7 @@ case "$1" in
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		GPUFREQ="$((`$BB cat /sys/class/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
+		GPUFREQ="$((`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
 		$BB echo "$GPUFREQ";
 	;;
 	LiveMemory)
@@ -306,14 +292,28 @@ case "$1" in
 			$BB echo $2 > $CPU/cpufreq/scaling_min_freq;
 		done;
 	;;
+	SetGPUMinPwrLevel)
+		if [[ ! -z $3 ]]; then
+			$BB echo $3 > $2;
+		fi;
+		
+		$BB echo `$BB cat $2`;
+	;;
+	SetGPUGovernor)
+		if [[ ! -z $3 ]]; then
+			$BB echo $3 > $2;
+		fi;
+		
+		$BB echo `$BB cat $2`;
+	;;
 	TCPCongestionList)
 		for TCPCC in `$BB cat /proc/sys/net/ipv4/tcp_available_congestion_control` ; do
 			$BB echo "\"$TCPCC\",";
 		done;
 	;;
 	ToggleBootloader)
-		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		offset=16400;
+		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
+		offset=1048080;
 		locked=00;
 		unlocked=01;
 		lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
@@ -333,8 +333,8 @@ case "$1" in
 		fi;
 	;;
 	ToggleTamper)
-		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
-		offset=16404;
+		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
+		offset=1048084;
 		false=00;
 		true=01;
 		tamperstate=`$BB dd ibs=1 count=1 skip=$offset obs=1 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
