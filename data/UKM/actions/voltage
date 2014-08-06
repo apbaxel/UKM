@@ -11,16 +11,16 @@ cpuread() {
 }
 
 cpuwrite() {
-  VOLTARR="";
-  while read FREQ UVOLT UNIT; do
-    if [ $FREQ == $1 ]; then
-      VOLTARR="$VOLTARR $2";
-    else
-      VOLTARR="$VOLTARR $UVOLT";
-    fi;
-  done < $P;
+	VOLTARR="";
+	while read FREQ UVOLT UNIT; do
+	if [ $FREQ == $1 ]; then
+		VOLTARR="$VOLTARR $2";
+	else
+		VOLTARR="$VOLTARR $UVOLT";
+	fi;
+	done < $P;
 
-  $BB echo $VOLTARR > $P;
+	$BB echo "$VOLTARR" > $P;
 }
 
 coreread() {
@@ -65,7 +65,7 @@ case $1 in
 				VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
 			done < $P;
 
-			$BB echo $VOLTARR > $P;
+			$BB echo "$VOLTARR" > $P;
 		fi;
 		
 		$BB echo `$BB cat $VOLT_PROF`;
