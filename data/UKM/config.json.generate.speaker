@@ -3,6 +3,8 @@ cat << CTAG
 	name:SPEAKER,
 		elements:[
 			`if [ -d "/sys/bus/i2c/devices/0-0058" ]; then
+			SPEAKER=/sys/bus/i2c/devices/0-0058;
+			
 				$BB echo '{ SPane:{
 						title:"Speaker Profiles",
 						description:"After you apply a profile, turn audio Off/On to update."
@@ -16,88 +18,104 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:[
-										"speakerfaux /sys/bus/i2c/devices/0-0058/comp_rate",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/fixed_gain",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/ATK_time",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/REL_time",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/Hold_time",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/Output_limit_level",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/AGC_Max_Gain",
-										"speakerfaux /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold"
-									]
+									to:[ '
+										[ -f "$SPEAKER/comp_rate" ] && $BB echo '"speakerfaux '$SPEAKER'/comp_rate",'
+										[ -f "$SPEAKER/fixed_gain" ] && $BB echo '"speakerfaux '$SPEAKER'/fixed_gain",'
+										[ -f "$SPEAKER/ATK_time" ] && $BB echo '"speakerfaux '$SPEAKER'/ATK_time",'
+										[ -f "$SPEAKER/REL_time" ] && $BB echo '"speakerfaux '$SPEAKER'/REL_time",'
+										[ -f "$SPEAKER/Hold_time" ] && $BB echo '"speakerfaux '$SPEAKER'/Hold_time",'
+										[ -f "$SPEAKER/Output_limit_level" ] && $BB echo '"speakerfaux '$SPEAKER'/Output_limit_level",'
+										[ -f "$SPEAKER/AGC_Max_Gain" ] && $BB echo '"speakerfaux '$SPEAKER'/AGC_Max_Gain",'
+										[ -f "$SPEAKER/Noise_Gate_Threshold" ] && $BB echo '"speakerfaux '$SPEAKER'/Noise_Gate_Threshold"'
+									$BB echo ']
 								}
 							]
-						}},
-					{ SPane:{
-						title:"Basic Amp Controls",
-					}},
-						{ SSeekBar:{
-							title:"Dynamic Range Compression",
-							min:0,
-							max:3,
-							default:0,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/comp_rate",
-						}},
-						{ SSeekBar:{
-							title:"Fixed Gain",
-							unit:" dB",
-							min:-29,
-							max:30,
-							default:12,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/fixed_gain",
-						}},
-					{ SPane:{
-						title:"Advanced Amp Controls",
-					}},
-						{ SSeekBar:{
-							title:"Attack Time",
-							description:"Min time between -",
-							min:0,
-							max:63,
-							default:5,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/ATK_time",
-						}},
-						{ SSeekBar:{
-							title:"Release Time",
-							description:"Min time between +",
-							min:0,
-							max:63,
-							default:11,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/REL_time",
-						}},
-						{ SSeekBar:{
-							title:"Hold Time",
-							description:"Min time between + / -",
-							min:0,
-							max:63,
-							default:0,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/Hold_time",
-						}},
-						{ SSeekBar:{
-							title:"Output Limit Level",
-							unit:" dBV",
-							min:0,
-							max:31,
-							default:26,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/Output_limit_level",
-						}},
-						{ SSeekBar:{
-							title:"Max AGC Gain",
-							unit:" dB",
-							min:18,
-							max:30,
-							default:30,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/AGC_Max_Gain",
-						}},
-						{ SSeekBar:{
-							title:"Noise Gate Threshold",
-							description:"Threshold for AGC to start",
-							min:0,
-							max:4,
-							default:1,
-							action:"speakerfaux /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold",
 						}},'
+						if [ -f "$SPEAKER/comp_rate" ]; then
+							$BB echo '{ SPane:{
+								title:"Basic Amp Controls",
+							}},
+							{ SSeekBar:{
+								title:"Dynamic Range Compression",
+								min:0,
+								max:3,
+								default:0,
+								action:"speakerfaux '$SPEAKER'/comp_rate",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/fixed_gain" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Fixed Gain",
+								unit:" dB",
+								min:-29,
+								max:30,
+								default:12,
+								action:"speakerfaux '$SPEAKER'/fixed_gain",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/ATK_time" ]; then
+							$BB echo '{ SPane:{
+								title:"Advanced Amp Controls",
+							}},
+							{ SSeekBar:{
+								title:"Attack Time",
+								description:"Min time between -",
+								min:0,
+								max:63,
+								default:5,
+								action:"speakerfaux '$SPEAKER'/ATK_time",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/REL_time" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Release Time",
+								description:"Min time between +",
+								min:0,
+								max:63,
+								default:11,
+								action:"speakerfaux '$SPEAKER'/REL_time",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/Hold_time" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Hold Time",
+								description:"Min time between + / -",
+								min:0,
+								max:63,
+								default:0,
+								action:"speakerfaux '$SPEAKER'/Hold_time",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/Output_limit_level" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Output Limit Level",
+								unit:" dBV",
+								min:0,
+								max:31,
+								default:26,
+								action:"speakerfaux '$SPEAKER'/Output_limit_level",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/AGC_Max_Gain" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Max AGC Gain",
+								unit:" dB",
+								min:18,
+								max:30,
+								default:30,
+								action:"speakerfaux '$SPEAKER'/AGC_Max_Gain",
+							}},'
+						fi;
+						if [ -f "$SPEAKER/Noise_Gate_Threshold" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Noise Gate Threshold",
+								description:"Threshold for AGC to start",
+								min:0,
+								max:4,
+								default:1,
+								action:"speakerfaux '$SPEAKER'/Noise_Gate_Threshold",
+							}},'
+						fi;
 			fi`
 		]
 }

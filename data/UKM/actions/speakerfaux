@@ -1,6 +1,8 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
 
+SPEAKER=/sys/bus/i2c/devices/0-0058;
+
 LG_Stock() {
 COMP_RATE=0;
 FIXED_GAIN=12;
@@ -56,18 +58,19 @@ if [ -f $1 ]; then
 		
 			if [ $2 != "Custom" ]; then
 				$2;
-				$BB echo $COMP_RATE > /sys/bus/i2c/devices/0-0058/comp_rate;
-				$BB echo $FIXED_GAIN > /sys/bus/i2c/devices/0-0058/fixed_gain;
-				$BB echo $ATK_TIME > /sys/bus/i2c/devices/0-0058/ATK_time;
-				$BB echo $REL_TIME > /sys/bus/i2c/devices/0-0058/REL_time;
-				$BB echo $HOLD_TIME > /sys/bus/i2c/devices/0-0058/Hold_time;
-				$BB echo $OUT_LIM > /sys/bus/i2c/devices/0-0058/out_lim;
-				$BB echo $OUTPUT_LIMIT_LEVEL > /sys/bus/i2c/devices/0-0058/Output_limit_level;
-				$BB echo $AGC_MAX_GAIN > /sys/bus/i2c/devices/0-0058/AGC_Max_Gain;
-				$BB echo $NOISE_GATE_THRESHOLD > /sys/bus/i2c/devices/0-0058/Noise_Gate_Threshold;
+				
+				[ -f "$SPEAKER/comp_rate" ] && $BB echo $COMP_RATE > $SPEAKER/comp_rate;
+				[ -f "$SPEAKER/fixed_gain" ] && $BB echo $FIXED_GAIN > $SPEAKER/fixed_gain;
+				[ -f "$SPEAKER/ATK_time" ] && $BB echo $ATK_TIME > $SPEAKER/ATK_time;
+				[ -f "$SPEAKER/REL_time" ] && $BB echo $REL_TIME > $SPEAKER/REL_time;
+				[ -f "$SPEAKER/Hold_time" ] && $BB echo $HOLD_TIME > $SPEAKER/Hold_time;
+				[ -f "$SPEAKER/out_lim" ] && $BB echo $OUT_LIM > $SPEAKER/out_lim;
+				[ -f "$SPEAKER/Output_limit_level" ] && $BB echo $OUTPUT_LIMIT_LEVEL > $SPEAKER/Output_limit_level;
+				[ -f "$SPEAKER/AGC_Max_Gain" ] && $BB echo $AGC_MAX_GAIN > $SPEAKER/AGC_Max_Gain;
+				[ -f "$SPEAKER/Noise_Gate_Threshold" ] && $BB echo $NOISE_GATE_THRESHOLD > $SPEAKER/Noise_Gate_Threshold;
 			fi;
 			
-		elif [ "$1" == "/sys/bus/i2c/devices/0-0058/AGC_Max_Gain" ]; then
+		elif [ "$1" == "$SPEAKER/AGC_Max_Gain" ]; then
 			V=$2;
 			V=$((V - 18));
 			
@@ -88,7 +91,7 @@ if [ -f $1 ]; then
 	
 	if [ "$1" == "$UKM/files/speaker_prof" ]; then
 		$BB echo $C;
-	elif [ "$1" == "/sys/bus/i2c/devices/0-0058/AGC_Max_Gain" ]; then
+	elif [ "$1" == "$SPEAKER/AGC_Max_Gain" ]; then
 		C=${C##*: };
 		C=$((C + 18));
 		
