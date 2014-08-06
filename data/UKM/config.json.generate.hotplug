@@ -1107,14 +1107,14 @@ cat << CTAG
 				fi
 			fi`
 			`if [ -d "/sys/class/misc/mako_hotplug_control" ] || [ -d "/sys/devices/virtual/misc/mako_hotplug_control" ]; then
-				if [ "$(ls -A /sys/class/misc/mako_hotplug_control 2> /dev/null)" ]; then
-					MHC="/sys/class/misc/mako_hotplug_control";
-				elif [ "$(ls -A /sys/devices/virtual/misc/mako_hotplug_control 2> /dev/null)" ]; then
-					MHC="/sys/devices/virtual/misc/mako_hotplug_control";
+				if [ -f "/sys/class/misc/mako_hotplug_control/cores_on_touch" ]; then
+					MHC=/sys/class/misc/mako_hotplug_control;
+				elif [ -f "/sys/devices/virtual/misc/mako_hotplug_control/cores_on_touch" ]; then
+					MHC=/sys/devices/virtual/misc/mako_hotplug_control;
 				else
 					MHC="";
 				fi;
-				if [ -n $MHC ]; then
+				if [ -n "$MHC" ]; then
 					$BB echo '{ SPane:{
 						title:"Mako Hotplug Control"
 						description:"An in kernel replacement for Qualcomms MPDecision. Developed by franciscofranco.",
@@ -1133,7 +1133,7 @@ cat << CTAG
 						default:'$CT',
 						action:"generic $MHC/cores_on_touch"
 					}},'
-				fi
+				fi;
 				if [ -f "$MHC/first_level" ]; then
 				FL=\`$BB cat $MHC/first_level\`
 					$BB echo '{ SSeekBar:{
@@ -1146,7 +1146,7 @@ cat << CTAG
 						default:'$FL',
 						action:"generic $MHC/first_level"
 					}},'
-				fi
+				fi;
 				if [ -f "$MHC/load_threshold" ]; then
 				LT=\`$BB cat $MHC/load_threshold\`
 					$BB echo '{ SSeekBar:{
@@ -1159,7 +1159,7 @@ cat << CTAG
 						default:'$LT',
 						action:"generic $MHC/load_threshold"
 					}},'
-				fi
+				fi;
 				if [ -f "$MHC/suspend_frequency" ]; then
 				SF=\`$BB cat $MHC/suspend_frequency\`
 					$BB echo '{ SSeekBar:{
@@ -1171,12 +1171,21 @@ cat << CTAG
 							sh $DEVICE CPUFrequencyList
 						$BB echo '}
 					}},'
-				fi
+				fi;
 			fi`
 			`if [ -d "/sys/module/cpu_boost/parameters" ]; then
 				$BB echo '{ SPane:{
 						title:"CPU Boost Driver"
 					}},'
+				if [ -f "/sys/module/cpu_boost/parameters/cpu_boost" ]; then
+				CPUBOOST=\`$BB cat /sys/module/cpu_boost/parameters/cpu_boost\`;
+					$BB echo '{ SCheckBox:{
+						label:"Enable",
+						description:"An in kernel replacement for Qualcomms MPDecision. Developed by Cyanogenmod.",
+						default:'$CPUBOOST',
+						action:"generic /sys/module/cpu_boost/parameters/cpu_boost"
+					}},'
+				fi
 				if [ -f "/sys/module/cpu_boost/parameters/boost_ms" ]; then
 				BOOSTMS=\`$BB cat /sys/module/cpu_boost/parameters/boost_ms\`
 					$BB echo '{ SSeekBar:{
@@ -1281,6 +1290,20 @@ cat << CTAG
 							default:'$PB',
 							action:"generic /sys/module/cpu_boost/parameters/plug_boost_ms"
 					}},'
+				fi
+			fi`
+			`if [ -d "/sys/module/autosmp/parameters" ]; then
+				if [ -f "/sys/module/autosmp/parameters/enabled" ]; then
+				AUTOSMP=\`$BB cat /sys/module/autosmp/parameters/enabled\`;
+					$BB echo '{ SPane:{
+						title:"AutoSMP"
+					}},
+						{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by mrg666.",
+							default:'$AUTOSMP',
+							action:"generic /sys/module/autosmp/parameters/enabled"
+						}},'
 				fi
 			fi`
 		]
