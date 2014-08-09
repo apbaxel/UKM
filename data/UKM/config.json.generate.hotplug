@@ -1294,7 +1294,7 @@ cat << CTAG
 			fi`
 			`if [ -d "/sys/module/autosmp/parameters" ]; then
 				if [ -f "/sys/module/autosmp/parameters/enabled" ]; then
-				AUTOSMP=\`$BB cat /sys/module/autosmp/parameters/enabled\`;
+				AUTOSMP=\`bool /sys/module/autosmp/parameters/enabled\`;
 					$BB echo '{ SPane:{
 						title:"AutoSMP"
 					}},
@@ -1302,7 +1302,7 @@ cat << CTAG
 							label:"Enable",
 							description:"An in kernel replacement for Qualcomms MPDecision. Developed by mrg666.",
 							default:'$AUTOSMP',
-							action:"generic /sys/module/autosmp/parameters/enabled"
+							action:"boolean /sys/module/autosmp/parameters/enabled"
 						}},'
 				fi
 			fi`

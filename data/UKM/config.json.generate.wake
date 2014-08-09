@@ -300,6 +300,54 @@ cat << CTAG
 						action:"generic /proc/touchpanel/double_tap_enable"
 					}},'
 			fi`
+			`if [ -f "/proc/touchpanel/camera_enable" ]; then
+			CTCOPO=\`$BB cat /proc/touchpanel/camera_enable\`
+				$BB echo '{ SPane:{
+					title:"Circle2Camera"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to open the camera by drawing a circle on the screen.",
+						default:'$CTCOPO',
+						action:"generic /proc/touchpanel/camera_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/music_enable" ]; then
+			MTGOPO=\`$BB cat /proc/touchpanel/music_enable\`
+				$BB echo '{ SPane:{
+					title:"Gestures2Music"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to control music playback by gestures on the screen (Two Fingers vertically to play/pause, Draw left arrow to previous track, Draw right arrow for next track).",
+						default:'$MTGOPO',
+						action:"generic /proc/touchpanel/music_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/flashlight_enable" ]; then
+			VTFOPO=\`$BB cat /proc/touchpanel/flashlight_enable\`
+				$BB echo '{ SPane:{
+					title:"V2Flashlight"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to open flashlight by drawing a V on the screen.",
+						default:'$VTFOPO',
+						action:"generic /proc/touchpanel/flashlight_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/smartcover_mode_enable" ]; then
+			STCOPO=\`$BB cat /proc/touchpanel/smartcover_mode_enable\`
+				$BB echo '{ SPane:{
+					title:"Smart2Cover"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to enable the smartcover control.",
+						default:'$STCOPO',
+						action:"generic /proc/touchpanel/smartcover_mode_enable"
+					}},'
+			fi`
 		]
 }
 CTAG
