@@ -4,7 +4,7 @@ INITD=/system/etc/init.d;
 
 if [ -f $1 ]; then
 	if [[ ! -z $2 ]]; then
-		$BB echo $2 > $1;
+		$BB echo $2 > $1 2> /dev/null;
 		WAKE_PROF=`cat $UKM/files/wake_prof`;
 		
 		if [ $2 -eq 1 ]; then
