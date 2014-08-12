@@ -146,12 +146,16 @@ cat << CTAG
 				}},
 			{ SPane:{
 				title:"General Actions",
-				description:"To update/refresh lists, select Restart Synapse below."
+				description:"To update/refresh lists, select Restart Synapse below. To clear data, select Clear Synapse Data (fixes most common issues)."
 			}},
 				{ SButton:{
 					label:"Restart Synapse",
 					action:"restorebackup restart"
-				}},	
+				}},
+				{ SButton:{
+					label:"Clear Synapse Data",
+					action:"devtools cleardata"
+				}},
 			{ STitleBar:{
 				title:"Reboot"
 			}},

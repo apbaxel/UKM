@@ -53,6 +53,13 @@ case $1 in
 		$BB sleep 1;
 		reboot $2;
 	;;
+	cleardata)
+		am force-stop com.af.synapse 2> /dev/null;
+		$BB sleep 1;
+		$BB rm -R /data/data/com.af.synapse/databases;
+		$BB sleep 1;
+		am start -a android.intent.action.MAIN -n com.af.synapse/.MainActivity 2> /dev/null;
+	;;
 esac;
 
 case $1 in
