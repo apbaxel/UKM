@@ -2,21 +2,37 @@ cat << CTAG
 {
 	name:GAMMA,
 		elements:[
+			`if [ -d "/sys/devices/platform/kcal_ctrl.0" ]; then
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ]; then
+				KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
+					$BB echo '{ SPane:{
+						title:"Values",
+					}},
+						{ SGeneric:{
+							title:"KCAL",
+							default:'$KCAL',
+							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+						}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_min" ]; then
+				KM=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_min\`
+						$BB echo '{ SSeekBar:{
+							title:"KCAL Min",
+							description:"Used to block and reset values in kcal that are lower this option.",
+							min:0,
+							max:255,
+							step:1,
+							default:'$KM',
+							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal_min"
+						}},'
+				fi
+			fi`
 			`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ]; then
 			PROF=\`$BB cat $UKM/files/gamma_prof\`;
-			KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
 			BLUE=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_b\`;
 			GREEN=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_g\`;
 			RED=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_r\`;
-				$BB echo '{ SPane:{
-					title:"Values",
-				}},
-					{ SGeneric:{
-						title:"Calibration",
-						default:'$KCAL',
-						action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
-					}},
-					{ SGeneric:{
+					$BB echo '{ SGeneric:{
 						title:"Blue",
 						default:'$BLUE',
 						action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
@@ -100,7 +116,6 @@ cat << CTAG
 					}},'
 			fi`
 			`if [ -f "/sys/class/misc/gammacontrol/brightness" ]; then
-			KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
 			RED_GREYS=\`$BB cat /sys/class/misc/gammacontrol/red_greys\`;
 			RED_MIDS=\`$BB cat /sys/class/misc/gammacontrol/red_mids\`;
 			RED_BLACKS=\`$BB cat /sys/class/misc/gammacontrol/red_blacks\`;
@@ -116,15 +131,7 @@ cat << CTAG
 			CONTRAST=\`$BB cat /sys/class/misc/gammacontrol/contrast\`;
 			BRIGHTNESS=\`$BB cat /sys/class/misc/gammacontrol/brightness\`;
 			SATURATION=\`$BB cat /sys/class/misc/gammacontrol/saturation\`;
-				$BB echo '{ SPane:{
-						title:"Values",
-					}},
-						{ SGeneric:{
-							title:"Calibration",
-							default:'$KCAL',
-							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
-						}},
-						{ SGeneric:{
+				$BB echo '{ SGeneric:{
 							title:"Red Greys",
 							default:'$RED_GREYS',
 							action:"generic /sys/class/misc/gammacontrol/red_greys",
@@ -280,19 +287,10 @@ cat << CTAG
 					}},'
 			fi`
 			`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] && [ ! -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ]; then
-			KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
 			BLUE=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_blue\`;
 			GREEN=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_green\`;
 			RED=\`$BB cat /sys/devices/platform/mipi_lgit.1537/kgamma_red\`;
-				$BB echo '{ SPane:{
-						title:"Values",
-					}},
-						{ SGeneric:{
-							title:"Calibration",
-							default:'$KCAL',
-							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
-						}},
-						{ SGeneric:{
+				$BB echo '{ SGeneric:{
 							title:"Blue",
 							default:'$BLUE',
 							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_blue",
@@ -309,7 +307,6 @@ cat << CTAG
 						}},'
 			fi`
 			`if [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
-			KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
 			KGAMMA_BN=\`$BB cat /sys/module/dsi_panel/kgamma_bn\`;
 			KGAMMA_BP=\`$BB cat /sys/module/dsi_panel/kgamma_bp\`;
 			KGAMMA_GN=\`$BB cat /sys/module/dsi_panel/kgamma_gn\`;
@@ -317,15 +314,7 @@ cat << CTAG
 			KGAMMA_RN=\`$BB cat /sys/module/dsi_panel/kgamma_rn\`;
 			KGAMMA_RP=\`$BB cat /sys/module/dsi_panel/kgamma_rp\`;
 			KGAMMA_W=\`$BB cat /sys/module/dsi_panel/kgamma_w\`;
-				$BB echo '{ SPane:{
-					title:"Values",
-				}},
-					{ SGeneric:{
-						title:"Calibration",
-						default:'$KCAL',
-						action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
-					}},
-					{ SGeneric:{
+				$BB echo '{ SGeneric:{
 						title:"Blue Negative",
 						default:'$KGAMMA_BN',
 						action:"generic /sys/module/dsi_panel/kgamma_bn",
