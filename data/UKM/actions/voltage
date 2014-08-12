@@ -20,7 +20,7 @@ cpuwrite() {
 	fi;
 	done < $P;
 
-	$BB echo "$VOLTARR" > $P;
+	$BB echo "$VOLTARR" > $P 2> /dev/null;
 }
 
 coreread() {
@@ -65,7 +65,7 @@ case $1 in
 				VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
 			done < $P;
 
-			$BB echo "$VOLTARR" > $P;
+			$BB echo "$VOLTARR" > $P 2> /dev/null;
 		fi;
 		
 		$BB echo `$BB cat $VOLT_PROF`;
