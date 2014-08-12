@@ -81,24 +81,40 @@ cat << CTAG
 			`if [ -f "/sys/android_touch/doubletap2wake" ]; then
 			DT2W=\`$BB cat /sys/android_touch/doubletap2wake\`
 				$BB echo '{ SPane:{
-					title:"DoubleTap2Wake"
+					title:"DoubleTap2Wake",
+					description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket). NOTE: Some of these profiles may not be available in your kernel.",
 				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
+					{ SOptionList:{
 						default:'$DT2W',
+						values:{ 0:"Disabled", 1:"Center (Default)", 2:"Full", 3:"Bottom half", 4:"Top half"
+						},
 						action:"wake /sys/android_touch/doubletap2wake"
+					}},'
+			fi`
+			`if [ -f "/sys/android_touch/doubletap2wake_feather" ]; then
+			DT2WF=\`$BB cat /sys/android_touch/doubletap2wake_feather\`
+				$BB echo '{ SPane:{
+					title:"DoubleTap2Wake Feather",
+				}},
+					{ SSeekBar:{
+						description:"Used to control the allowed distance between tap #1 and tap #2. This will help with unintentional wakes quite a bit.",
+						min:50,
+						max:2560,
+						step:1,
+						default:'$DT2WF',
+						action:"wake /sys/android_touch/doubletap2wake_feather"
 					}},'
 			fi`
 			`if [ -f "/sys/android_touch/sweep2wake" ]; then
 			S2W=\`$BB cat /sys/android_touch/sweep2wake\`
 				$BB echo '{ SPane:{
-					title:"Sweep2Wake"
+					title:"Sweep2Wake",
+					description:"Allows you to wake the device by swiping on the navigation bar (Causes more battery drain while in pocket). NOTE: Some kernels do not support Sweep2Sleep Only.",
 				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"Allows you to wake the device by swiping on the navigation bar (Causes more battery drain while in pocket).",
+					{ SOptionList:{
 						default:'$S2W',
+						values:{ 0:"Disabled", 1:"Sweep2Wake+Sweep2Sleep", 2:"Sweep2Sleep Only"
+						},
 						action:"wake /sys/android_touch/sweep2wake",'
 						if [ -f "/sys/android_touch/sweep2dim" ]; then
 							$BB echo 'notify:[
@@ -163,18 +179,6 @@ cat << CTAG
 						description:"Enabling this makes sweep2wake work with a shorter sweep distance.",
 						default:'$SSWEEP',
 						action:"wake /sys/android_touch/shortsweep"
-					}},'
-			fi`
-			`if [ -f "/sys/android_touch/s2w_s2sonly" ]; then
-			S2S=\`$BB cat /sys/android_touch/s2w_s2sonly\`
-				$BB echo '{ SPane:{
-					title:"Sweep2Sleep"
-				}},
-					{ SCheckBox:{
-						label:"Enable",
-						description:"Allows you to turn the screen off by swiping on the navigation bar.",
-						default:'$S2S',
-						action:"wake /sys/android_touch/s2w_s2sonly"
 					}},'
 			fi`
 			`if [ -f "/sys/android_touch/sweep2sleep" ]; then
@@ -298,6 +302,54 @@ cat << CTAG
 						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
 						default:'$DTOPO',
 						action:"generic /proc/touchpanel/double_tap_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/camera_enable" ]; then
+			CTCOPO=\`$BB cat /proc/touchpanel/camera_enable\`
+				$BB echo '{ SPane:{
+					title:"Circle2Camera"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to open the camera by drawing a circle on the screen.",
+						default:'$CTCOPO',
+						action:"generic /proc/touchpanel/camera_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/music_enable" ]; then
+			MTGOPO=\`$BB cat /proc/touchpanel/music_enable\`
+				$BB echo '{ SPane:{
+					title:"Gestures2Music"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to control music playback by gestures on the screen (Two Fingers vertically to play/pause, Draw left arrow to previous track, Draw right arrow for next track).",
+						default:'$MTGOPO',
+						action:"generic /proc/touchpanel/music_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/flashlight_enable" ]; then
+			VTFOPO=\`$BB cat /proc/touchpanel/flashlight_enable\`
+				$BB echo '{ SPane:{
+					title:"V2Flashlight"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to open flashlight by drawing a V on the screen.",
+						default:'$VTFOPO',
+						action:"generic /proc/touchpanel/flashlight_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/smartcover_mode_enable" ]; then
+			STCOPO=\`$BB cat /proc/touchpanel/smartcover_mode_enable\`
+				$BB echo '{ SPane:{
+					title:"Smart2Cover"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to enable the smartcover control.",
+						default:'$STCOPO',
+						action:"generic /proc/touchpanel/smartcover_mode_enable"
 					}},'
 			fi`
 		]
