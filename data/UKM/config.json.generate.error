@@ -1,0 +1,74 @@
+cat << CTAG
+{
+	name:ERROR,
+		elements:[
+			{ SLiveLabel:{
+				refresh:0,
+				style:italic,
+				action:"echo 'DEVICE NOT SUPPORTED'"
+			}},
+			{ SPane:{
+				title:{
+					en:"General",
+					es:"General"
+				},
+			}},	
+				{ SDescription:{
+					description:"Welcome to the Universal Kernel Manager."
+				}},
+				{ SDescription:{
+					description:"Created by <a href='http://forum.xda-developers.com/member.php?u=5658634'>apb_axel</a>."
+				}},
+				{ SDescription:{
+					description:"XDA Link: <a href='http://forum.xda-developers.com/android/software/zip-synapse-script-universal-kernel-t2736986'>HERE</a>"
+				}},
+			{ SPane:{
+				title:{
+					en:"Device",
+					es:"Dispositivo"
+				},
+				description:"`getprop ro.product.model` (`getprop ro.product.device`)"
+			}},
+			{ SPane:{
+				title:{
+					en:"Android Version",
+					es:"Versión de Android"
+				},
+				description:"`getprop ro.build.version.release`"
+			}},
+			{ SPane:{
+				title:{
+					en:"Kernel Version",
+					es:"Versión del Núcleo"
+				},
+				description:"`$BB cat /proc/version`"
+			}},
+			{ SPane:{
+				title:{
+					en:"ROM Description",
+					es:"Descripción del ROM"
+				},
+				description:"`getprop ro.build.host | $BB awk '{print toupper($0)}'`"
+			}},
+			{ SPane:{
+				title:{
+					en:"ROM Version",
+					es:"Versión del ROM"
+				},
+				description:"`MODVER=\`getprop ro.modversion\`;
+					if [ -n $MODVER ]; then 
+						$BB echo $MODVER;
+					else 
+						$BB echo \`getprop ro.build.version.incremental\`;
+					fi;`"
+			}},
+			{ SPane:{
+				title:{
+					en:"Build Date",
+					es:"Fecha del ROM"
+				},
+				description:"`getprop ro.build.date`"
+			}},
+		]
+}
+CTAG

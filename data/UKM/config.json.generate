@@ -10,32 +10,49 @@ bool() {
 cat << CTAG
 {
     sections: [
-		`. $UKM/config.json.generate.info`,
-		`. $UKM/config.json.generate.status`,
-		`. $UKM/config.json.generate.cpu`,
-		`. $UKM/config.json.generate.hotplug`,
-		`. $UKM/config.json.generate.cpuvolt`,
-		`. $UKM/config.json.generate.io`,
-		`. $UKM/config.json.generate.gpu`,
-		`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] || [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
-			. $UKM/config.json.generate.gamma
-		$BB echo ','
+		`if [ -n "$DEVICE" ]; then
+			. $UKM/config.json.generate.info
+			$BB echo ','
+			. $UKM/config.json.generate.status
+			$BB echo ','
+			. $UKM/config.json.generate.cpu
+			$BB echo ','
+			. $UKM/config.json.generate.hotplug
+			$BB echo ','
+			. $UKM/config.json.generate.cpuvolt
+			$BB echo ','
+			. $UKM/config.json.generate.io
+			$BB echo ','
+			. $UKM/config.json.generate.gpu
+			$BB echo ','
+			if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] || [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
+				. $UKM/config.json.generate.gamma
+			$BB echo ','
+			fi
+			if [ -d "/sys/kernel/sound_control_3" ] || [ -d "/sys/class/misc/soundcontrol" ]; then
+				. $UKM/config.json.generate.sound
+			$BB echo ','
+			fi
+			if [ -d "/sys/bus/i2c/devices/0-0058" ]; then
+				. $UKM/config.json.generate.speaker
+			$BB echo ','
+			fi
+			. $UKM/config.json.generate.mem
+			$BB echo ','
+			. $UKM/config.json.generate.wake
+			$BB echo ','
+			. $UKM/config.json.generate.misc
+			$BB echo ','
+			. $UKM/config.json.generate.adv
+			$BB echo ','
+			. $UKM/config.json.generate.bprop
+			$BB echo ','
+			. $UKM/config.json.generate.tools
+			$BB echo ','
+			. $UKM/config.json.generate.profile
+		else
+			. $UKM/config.json.generate.error
 		fi`
-		`if [ -d "/sys/kernel/sound_control_3" ] || [ -d "/sys/class/misc/soundcontrol" ]; then
-			. $UKM/config.json.generate.sound
-		$BB echo ','
-		fi`
-		`if [ -d "/sys/bus/i2c/devices/0-0058" ]; then
-			. $UKM/config.json.generate.speaker
-		$BB echo ','
-		fi`
-		`. $UKM/config.json.generate.mem`,
-		`. $UKM/config.json.generate.wake`,
-		`. $UKM/config.json.generate.misc`,
-		`. $UKM/config.json.generate.adv`,
-		`. $UKM/config.json.generate.bprop`,
-		`. $UKM/config.json.generate.tools`,
-		`. $UKM/config.json.generate.profile`
     ]
 }
 CTAG
