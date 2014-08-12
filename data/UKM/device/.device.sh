@@ -10,12 +10,16 @@ elif [ $DEVICE == "hammerhead" ]; then
 	CONFIG="hammerhead"; #Nexus 5
 elif [ $DEVICE == "deb" -o $DEVICE == "flo" ]; then
 	CONFIG="deb"; #Nexus 7
-elif [ $DEVICE == "A0001" ]; then
-	CONFIG="A0001"; #OnePlus One
+elif [ $DEVICE == "bacon" -o $DEVICE == "A0001" ]; then
+	CONFIG="bacon"; #OnePlus One
 else
-	CONFIG="mako"; #Not defined: Nexus 4
+	CONFIG=""; #Not defined
 fi;
 
-PATH=$UKM/device/$CONFIG.sh;
+if [ -n "$CONFIG" ]; then
+	PATH=$UKM/device/$CONFIG.sh;
+else
+	PATH="";
+fi;
 
-$BB echo $PATH;
+$BB echo "$PATH";
