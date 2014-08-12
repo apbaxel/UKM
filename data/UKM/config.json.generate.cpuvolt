@@ -110,7 +110,7 @@ cat << CTAG
 						default:'$HTHRES',
 						action:"generic /sys/module/acpuclock_krait/parameters/higher_khz_thres",
 						values:{'
-							sh $CONFIG CPUFrequencyList
+							sh $DEVICE CPUFrequencyList
 						$BB echo '}
 					}},'
 				fi
