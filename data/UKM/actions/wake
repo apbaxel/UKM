@@ -12,10 +12,6 @@ if [ -f $1 ]; then
 				$BB echo "0" > /sys/devices/virtual/input/lge_touch/dt_wake_enabled;
 			elif [ "$1" == "/sys/devices/virtual/input/lge_touch/dt_wake_enabled" ] && [ -f "/sys/devices/virtual/misc/touchwake/enabled" ]; then
 				$BB echo "0" > /sys/devices/virtual/misc/touchwake/enabled;
-			elif [ "$1" == "/sys/android_touch/sweep2dim" ] && [ -f "/sys/android_touch/sweep2wake" ]; then
-				$BB echo "0" > /sys/android_touch/sweep2wake;
-			elif [ "$1" == "/sys/android_touch/sweep2wake" ] && [ -f "/sys/android_touch/sweep2dim" ]; then
-				$BB echo "0" > /sys/android_touch/sweep2dim;
 			fi;
 		fi;
 		
