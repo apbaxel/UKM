@@ -116,16 +116,28 @@ cat << CTAG
 						values:{ 0:"Disabled", 1:"Sweep2Wake+Sweep2Sleep", 2:"Sweep2Sleep Only"
 						},
 						action:"wake /sys/android_touch/sweep2wake",'
-						if [ -f "/sys/android_touch/sweep2dim" ]; then
+						if [ -f "/sys/android_touch/s2w_s2sonly" ]; then
 							$BB echo 'notify:[
 								{
 									on:SET,
 									do:[ REFRESH, APPLY ],
-									to:"wake /sys/android_touch/sweep2dim"
+									to:"wake /sys/android_touch/s2w_s2sonly"
 								}
 							]'
 						fi
 					$BB echo '}},'
+			fi`
+			`if [ -f "/sys/android_touch/s2w_s2sonly" ]; then
+			S2S=\`$BB cat /sys/android_touch/s2w_s2sonly\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Sleep"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to turn the screen off by swiping on the navigation bar.",
+						default:'$S2S',
+						action:"wake /sys/android_touch/s2w_s2sonly"
+					}},'
 			fi`
 			`if [ -f "/sys/android_touch/sweep2dim" ]; then
 			S2D=\`$BB cat /sys/android_touch/sweep2dim\`
@@ -136,17 +148,8 @@ cat << CTAG
 						label:"Enable",
 						description:"Allows you to dim the brightness by swiping to the left (- brightness) & right (+ brightness) on the navigation bar.",
 						default:'$S2D',
-						action:"wake /sys/android_touch/sweep2dim",'
-						if [ -f "/sys/android_touch/sweep2wake" ]; then
-							$BB echo 'notify:[
-								{
-									on:SET,
-									do:[ REFRESH, APPLY ],
-									to:"wake /sys/android_touch/sweep2wake"
-								}
-							]'
-						fi
-					$BB echo '}},'
+						action:"wake /sys/android_touch/sweep2dim",
+					}},'
 			fi`
 			`if [ -f "/sys/module/sweep2wake/parameters/down_kcal" ]; then
 			S2DD=\`$BB cat /sys/module/sweep2wake/parameters/down_kcal\`
