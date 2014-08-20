@@ -52,7 +52,7 @@ cat << CTAG
 				}},
 					{ SCheckBox:{
 						label:"Enable",
-						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests.",
+						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. This increases CPU consumption but improves memory.",
 						default:'$KSM',
 						action:"generic /sys/kernel/mm/ksm/run"
 					}},

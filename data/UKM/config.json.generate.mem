@@ -24,6 +24,7 @@ cat << CTAG
 			}},
 				{ SSeekBar:{
 					title:"Dirty Background Ratio",
+					description:"Contains, as a % of total system memory, the number of pages at which the pdflush background writeback daemon will start writing out dirty data.",
 					unit:"%",
 					step:1,
 					min:0,
@@ -33,6 +34,7 @@ cat << CTAG
 				}},
 				{ SSeekBar:{
 					title:"Dirty Ratio",
+					description:"Contains, as a % of total system memory, the number of pages at which a process which is generating disk writes will itself start writing out dirty data. Lower the amount of unwritten write cache to reduce lags when a huge write is required.",
 					unit:"%",
 					step:1,
 					min:0,
@@ -40,8 +42,17 @@ cat << CTAG
 					default:`$BB cat /proc/sys/vm/dirty_ratio`,
 					action:"generic /proc/sys/vm/dirty_ratio"
 				}},
+				{ SOptionList:{
+					title:"Laptop Mode (Auto FS Writeback Delay Mode)",
+					description:"This option will delay the writebacks of file system bits cached in RAM while screen is ON (Enable for better performance @ slight risk of possible data loss if crashed or sudden loss of power).",
+					default:`$BB cat /proc/sys/vm/laptop_mode`,
+					action:"generic /proc/sys/vm/laptop_mode",
+					values:{ 0:"Disabled", 1:"Enabled"
+					}
+				}},
 				{ SSeekBar:{
 					title:"Swappiness",
+					description:"Controls the tendency of the kernel to move processes out of physical memory and onto the swap disk. Because disks are much slower than RAM, this can lead to slower response times for system and applications if processes are too aggressively moved out of memory.",
 					unit:"%",
 					step:1,
 					min:0,
@@ -51,6 +62,7 @@ cat << CTAG
 				}},
 				{ SSeekBar:{
 					title:"VFS Cache Pressure",
+					description:"Controls the tendency of the kernel to reclaim the memory which is used for caching of directory and inode objects. Lower = prefer to retain dentry and inode cache, higher = prefer to reclaim dentry and inodes cache.",
 					unit:"%",
 					step:1,
 					min:0,
