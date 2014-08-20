@@ -2,6 +2,12 @@ cat << CTAG
 {
 	name:HOTPLUG,
 		elements:[
+			{ SPane:{
+				title:"Info"
+			}},
+				{ SDescription:{
+					description:"Use only one hotplug driver from the following options, using more than at the same time may cause unexpected behavior."
+				}},
 			`if [ -f "/system/bin/mpdecision" ]; then
 			MPDEC=\`ps | $BB grep mpdecision\`
 				if [ -n "$MPDEC" ]; then 
@@ -207,9 +213,9 @@ cat << CTAG
 					$BB echo '{ SSeekBar:{
 						title:"Suspend Defer Time",
 						min:0,
-						max:10000,
+						max:1000,
 						step:10,
-						default:'$RT',
+						default:'$SDT',
 						action:"generic /sys/kernel/intelli_plug/suspend_defer_time"
 					}},'
 				fi
@@ -218,11 +224,24 @@ cat << CTAG
 					$BB echo '{ SSeekBar:{
 						title:"Defer Sampling",
 						min:0,
-						max:10000,
+						max:1000,
 						unit:" ms",
-						step:10,
+						step:1,
 						default:'$DS',
 						action:"generic /sys/kernel/intelli_plug/def_sampling_ms"
+					}},'
+				fi
+				if [ -f "/sys/kernel/intelli_plug/boost_lock_duration" ]; then
+				BOOSTLOCK=\`$BB cat /sys/kernel/intelli_plug/boost_lock_duration\`
+					$BB echo '{ SSeekBar:{
+							title:"Boost Lock Duration",
+							description:"Minimum interval a CPU is boosted.",
+							unit:" ms",
+							min:1,
+							max:5000,
+							step:1,
+							default:'$BOOSTLOCK',
+							action:"generic /sys/kernel/intelli_plug/boost_lock_duration"
 					}},'
 				fi
 				if [ -f "/sys/kernel/intelli_plug/down_lock_duration" ]; then
