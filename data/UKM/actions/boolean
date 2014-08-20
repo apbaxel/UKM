@@ -6,9 +6,9 @@ if [ -f $1 ]; then
 		VALUE=$2;
 		
 		if [ "$VALUE" -eq 1 ]; then
-			$BB echo "Y" > $1;
+			$BB echo "Y" > $1 2> /dev/null;
 		elif [ "$VALUE" -eq 0 ]; then
-			$BB echo "N" > $1;
+			$BB echo "N" > $1 2> /dev/null;
 		fi;
 	fi;
 

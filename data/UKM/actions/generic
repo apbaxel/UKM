@@ -3,7 +3,7 @@ BB=$UKM/busybox;
 
 if [ -f $1 ]; then
 	if [[ ! -z "$2" ]]; then
-		$BB echo "$2" > $1;
+		$BB echo "$2" > $1 2> /dev/null;
 	fi;
 
 	$BB echo "`$BB cat $1`";

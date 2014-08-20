@@ -46,7 +46,7 @@ corewrite() {
     fi;
   done < $P;
 
-  $BB echo $VOLTARR > $P;
+  $BB echo $VOLTARR > $P 2> /dev/null;
 }
 
 case $1 in
