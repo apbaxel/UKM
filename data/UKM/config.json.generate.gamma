@@ -11,7 +11,7 @@ cat << CTAG
 						{ SGeneric:{
 							title:"KCAL",
 							default:'$KCAL',
-							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+							action:"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
 						}},'
 				fi
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_min" ]; then
@@ -65,7 +65,7 @@ cat << CTAG
 								do:[ REFRESH, APPLY ],
 								to:[
 									"generic '$UKM'/files/gamma_prof",
-									"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+									"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
 									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
 									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g",
 									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r"
@@ -224,7 +224,7 @@ cat << CTAG
 								do:[ REFRESH, APPLY ],
 								to:[
 									"generic '$UKM'/files/gamma_prof",
-									"generic /sys/devices/platform/kcal_ctrl.0/kcal",
+									"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
 									"generic /sys/class/misc/gammacontrol/red_greys",
 									"generic /sys/class/misc/gammacontrol/red_mids",
 									"generic /sys/class/misc/gammacontrol/red_blacks",
