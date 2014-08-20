@@ -108,8 +108,8 @@ cat << CTAG
 						default:'$ST',
 						action:"generic /sys/module/msm_kgsl_core/parameters/sample_time_ms",
 						min:0,
-						max:5000,
-						step:1
+						max:1000,
+						step:10
 					}},'
 				fi
 			fi`
@@ -123,7 +123,12 @@ cat << CTAG
 							default:'$UVOLT',
 							title:"Voltage '${VOLTAGE}'",
 							action:"voltage gpuvolt '${VOLTAGE}'",
-							unit:"' ${UNIT}'", min:900, max:1200, step:5 }},'
+							unit:"' ${UNIT}'",'
+							if [ "$UVOLT" -ge "900000" ]; then
+								$BB echo 'min:900000, max:1200000, step:5000 }},'
+							else
+								$BB echo 'min:900, max:1200, step:5 }},'
+							fi;
 					done < /sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table
 			fi`
 		]
