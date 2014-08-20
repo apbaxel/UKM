@@ -110,6 +110,18 @@ cat << CTAG
 							action:"generic /sys/class/misc/soundcontrol/volume_boost",
 						}},'
 			fi`
+			`if [ -f "/sys/devices/virtual/misc/soundcontrol/highperf_enabled" ]; then
+			HPE=\`cat /sys/devices/virtual/misc/soundcontrol/highperf_enabled\`;
+				$BB echo '{ SPane:{
+					title:"High performance Mode",
+					description:"Class AB mode for headphone 192Khz playback.",
+				}},
+					{ SCheckbox:{
+						label:"Enable",
+						default:'$HPE',
+						action:"generic /sys/devices/virtual/misc/soundcontrol/highperf_enabled",
+					}},'
+			fi`
 		]
 }
 CTAG
