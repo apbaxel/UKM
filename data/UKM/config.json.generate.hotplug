@@ -1010,7 +1010,7 @@ cat << CTAG
 						label:"Powersaver Mode",
 						description:"Sets 1 CPU maximum online with frequency @1728 MHz.",
 						default:'$PSM',
-						action:"/sys/module/blu_plug/parameters/powersaver_mode"
+						action:"boolean /sys/module/blu_plug/parameters/powersaver_mode"
 					}},'
 				fi
 				if [ -f "/sys/module/blu_plug/parameters/min_online" ]; then
