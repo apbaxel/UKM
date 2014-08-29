@@ -23,6 +23,19 @@ case $1 in
 
 		$BB echo `getenforce`;
 	;;
+	optimizedb)
+		for i in `$BB find /data -iname "*.db"`; do 
+			$UKM/sqlite3 $i 'VACUUM;' 2> /dev/null;
+			$UKM/sqlite3 $i 'REINDEX;' 2> /dev/null;
+		done;
+
+		for i in `$BB find /sdcard -iname "*.db"`; do
+			$UKM/sqlite3 $i 'VACUUM;' 2> /dev/null;
+			$UKM/sqlite3 $i 'REINDEX;' 2> /dev/null;
+		done;
+		
+		$BB echo "Databases have been optimized.";
+	;;
 	logcat)
 		saved="$LOGS/logcat-$TIMESTAMP.txt";
 		[ ! -d "$LOGS" ] && $BB mkdir -p "$LOGS";

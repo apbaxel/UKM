@@ -56,6 +56,16 @@ cat << CTAG
 					}},'
 			fi`
 			{ SPane:{
+				title:"Advanced Tools"
+			}},
+				{ SDescription:{
+					description:"Use this button to defrag/reindex all databases found in /data & /sdcard, this increases database read/write performance. NOTE: This process can take from 1-2 minutes."
+				}},
+				{ SButton:{
+					label:"Optimize Databases",
+					action:"devtools optimizedb"
+				}},
+			{ SPane:{
 				title:"Log Creation"
 			}},
 				`if [ -f "/sys/module/logger/parameters/enabled" ]; then
