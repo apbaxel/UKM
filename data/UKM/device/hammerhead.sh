@@ -299,20 +299,20 @@ case "$1" in
 	;;
 	SetCPUGovernor)
 		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
-			$BB echo 1 > $CPU/online;
-			$BB echo $2 > $CPU/cpufreq/scaling_governor;
+			$BB echo 1 > $CPU/online 2> /dev/null;
+			$BB echo $2 > $CPU/cpufreq/scaling_governor 2> /dev/null;
 		done;
 	;;
 	SetCPUMaxFrequency)
 		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
-			$BB echo 1 > $CPU/online;
-			$BB echo $2 > $CPU/cpufreq/scaling_max_freq;
+			$BB echo 1 > $CPU/online 2> /dev/null;
+			$BB echo $2 > $CPU/cpufreq/scaling_max_freq 2> /dev/null;
 		done;
 	;;
 	SetCPUMinFrequency)
 		for CPU in /sys/devices/system/cpu/cpu[1-3]; do
-			$BB echo 1 > $CPU/online;
-			$BB echo $2 > $CPU/cpufreq/scaling_min_freq;
+			$BB echo 1 > $CPU/online 2> /dev/null;
+			$BB echo $2 > $CPU/cpufreq/scaling_min_freq 2> /dev/null;
 		done;
 	;;
 	SetGPUMinPwrLevel)
