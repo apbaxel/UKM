@@ -408,7 +408,7 @@ case "$1" in
 					$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
 					$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
 					$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
-					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;			
+					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;
 					$BB test -n "$w" && $BB echo "$w" > $kgamma_w;
 				fi;
 			fi;

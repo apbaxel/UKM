@@ -7,7 +7,7 @@ cat << CTAG
 			
 				$BB echo '{ SPane:{
 						title:"Speaker Profiles",
-						description:"After you apply a profile, turn audio Off/On to update."
+						description:"After you apply a profile, turn audio Off/On to update. Select custom profile if you set controls manually."
 					}},
 						{ SOptionList:{
 							default:Custom,
