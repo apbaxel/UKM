@@ -185,6 +185,22 @@ cat << CTAG
 						action:"generic /sys/class/timed_output/vibrator/amp"
 					}},'
 			fi`
+			`if [ -f "/sys/devices/virtual/timed_output/vibrator/vtg_level" ]; then
+			VTGLVL=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_level\`
+			VTGMIN=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_min\`
+			VTGMAX=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_max\`
+				$BB echo '{ SPane:{
+					title:"Vibrator Strength"
+				}},
+					{ SSeekBar:{
+						description:"Allows to set the intensity of the vibrator.",
+						step:1,
+						min:'$VTGMIN',
+						max:'$VTGMAX',
+						default:'$VTGLVL',
+						action:"generic /sys/devices/virtual/timed_output/vibrator/vtg_level"
+					}},'
+			fi`
 			`if [ -f "/sys/kernel/fast_charge/force_fast_charge" ] && [ ! -f "/sys/kernel/fast_charge/fast_charge_level" ]; then
 			FC=\`$BB cat /sys/kernel/fast_charge/force_fast_charge\`
 				$BB echo '{ SPane:{
