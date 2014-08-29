@@ -68,9 +68,9 @@ cat << CTAG
 					{ SSeekBar:{
 						title:"Scan Delay Interval",
 						unit:" ms",
-						step:10,
+						step:100,
 						min:0,
-						max:1500,
+						max:3000,
 						default:'$SLEEP',
 						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
 					}},'
@@ -93,9 +93,9 @@ cat << CTAG
 						title:"Sleep",
 						description:"How long will the daemon sleep before it wakes up and starts scanning memory pages.",
 						unit:" ms",
-						step:50,
+						step:100,
 						min:0,
-						max:1000,
+						max:3000,
 						default:'$SLEEP',
 						action:"generic /sys/kernel/mm/uksm/sleep_millisecs"
 					}},
