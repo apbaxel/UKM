@@ -991,6 +991,122 @@ cat << CTAG
 					}},'
 				fi
 			fi`
+			`if [ -d "/sys/module/blu_plug/parameters" ]; then
+				if [ -f "/sys/module/blu_plug/parameters/enabled" ]; then
+				BLUHOT=\`bool /sys/module/blu_plug/parameters/enabled\`
+					$BB echo '{ SPane:{
+						title:"Blu_Plug"
+					}},
+						{ SCheckBox:{
+							label:"Enable",
+							description:"An in kernel replacement for Qualcomms MPDecision. Developed by eng.stk.",
+							default:'$BLUHOT',
+							action:"boolean /sys/module/blu_plug/parameters/enabled"
+						}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/powersaver_mode" ]; then
+				PSM=\`bool /sys/module/blu_plug/parameters/powersaver_mode\`;
+					$BB echo '{ SCheckBox:{
+						label:"Powersaver Mode",
+						description:"Sets 1 CPU maximum online with frequency @1728 MHz.",
+						default:'$PSM',
+						action:"/sys/module/blu_plug/parameters/powersaver_mode"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/min_online" ]; then
+				MINCPU=\`$BB cat /sys/module/blu_plug/parameters/min_online\`
+					$BB echo '{ SSeekBar:{
+							title:"Minimum Online CPU",
+							description:"Minimum number of CPUs that will be always online.",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MINCPU',
+							action:"generic /sys/module/blu_plug/parameters/min_online"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/max_online" ]; then
+				MAXCPU=\`$BB cat /sys/module/blu_plug/parameters/max_online\`
+					$BB echo '{ SSeekBar:{
+							title:"Maximum Online CPU",
+							description:"Maximum number of CPUs that will be always online.",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/blu_plug/parameters/max_online"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/max_cores_screenoff" ]; then
+				MCSO=\`$BB cat /sys/module/blu_plug/parameters/max_cores_screenoff\`
+					$BB echo '{ SSeekBar:{
+							title:"Max CPUs Screen Off",
+							description:"Maximum number of CPUs online when screen is off.",
+							min:1,
+							max:'
+								sh $DEVICE MaxCPU
+							$BB echo ',
+							step:1,
+							default:'$MCSO',
+							action:"generic /sys/module/blu_plug/parameters/max_cores_screenoff"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/max_freq_screenoff" ]; then
+				MFSO=\`$BB cat /sys/module/blu_plug/parameters/max_freq_screenoff\`
+					$BB echo '{ SSeekBar:{
+							title:"Max Frequency Screen Off",
+							description:"Set the maximum frequency the CPU scales up to when the screen is off.",
+							default:'$MFSO',
+							action:"generic /sys/module/blu_plug/parameters/max_freq_screenoff",
+							values:{ 0:"Disabled", '
+								sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/up_threshold" ]; then
+				MAXCPU=\`$BB cat /sys/module/blu_plug/parameters/up_threshold\`
+					$BB echo '{ SSeekBar:{
+							title:"Up Threshold",
+							description:"Over this threshold the driver will put one more CPU online.",
+							unit:"%",
+							min:0,
+							max:100,
+							step:1,
+							default:'$MAXCPU',
+							action:"generic /sys/module/blu_plug/parameters/up_threshold"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/up_timer_cnt" ]; then
+				UT=\`$BB cat /sys/module/blu_plug/parameters/up_timer_cnt\`
+					$BB echo '{ SSeekBar:{
+							title:"Up Timer Control",
+							description:"Control timer for up CPUs.",
+							min:0,
+							max:20,
+							step:1,
+							weight:0.5,
+							default:'$UT',
+							action:"generic /sys/module/blu_plug/parameters/up_timer_cnt"
+					}},'
+				fi
+				if [ -f "/sys/module/blu_plug/parameters/down_timer_cnt" ]; then
+				DT=\`$BB cat /sys/module/blu_plug/parameters/down_timer_cnt\`
+					$BB echo '{ SSeekBar:{
+							title:"Down Timer Control",
+							description:"Control timer for down CPUs.",
+							min:0,
+							max:20,
+							step:1,
+							weight:0.5,
+							default:'$DT',
+							action:"generic /sys/module/blu_plug/parameters/down_timer_cnt"
+					}},'
+				fi
+			fi`
 			`if [ -d "sys/kernel/alucard_hotplug" ]; then
 				$BB echo '{ SPane:{
 					title:"Alucard"
@@ -1517,25 +1633,25 @@ cat << CTAG
 				CFD=\`$BB cat /sys/kernel/autosmp/conf/cpufreq_down\`
 						$BB echo '{ SSeekBar:{
 							title:"CPU Frequency Down",
-							description:"Time it will take to unplug the cores.",
+							description:"Percentage values for down rate limits.",
 							min:0,
-							max:1500000,
-							step:10000,
-							weight:0.001,
+							max:100,
+							step:1,
+							unit:"%",
 							default:'$CFD',
 							action:"generic /sys/kernel/autosmp/conf/cpufreq_down"
 						}},'
 				fi
 				if [ -f "/sys/kernel/autosmp/conf/cpufreq_up" ]; then
-				CFD=\`$BB cat /sys/kernel/autosmp/conf/cpufreq_up\`
+				CFU=\`$BB cat /sys/kernel/autosmp/conf/cpufreq_up\`
 						$BB echo '{ SSeekBar:{
 							title:"CPU Frequency Up",
-							description:"Time it will take to hotplug the cores.",
+							description:"Percentage values for up rate limits.",
 							min:0,
-							max:1500000,
-							step:10000,
-							weight:0.001,
-							default:'$CFD',
+							max:100,
+							step:1,
+							unit:"%",
+							default:'$CFU',
 							action:"generic /sys/kernel/autosmp/conf/cpufreq_up"
 						}},'
 				fi
