@@ -106,6 +106,9 @@ case "$1" in
 	HasBootloader)
 		$BB echo "1";
 	;;
+	HasHeadphonePowerAmp)
+		$BB echo "0";
+	;;
 	HasTamperFlag)
 		$BB echo "1";
 	;;
@@ -301,7 +304,7 @@ case "$1" in
 	;;
 	SetGPUGovernor)
 		if [[ ! -z $3 ]]; then
-			$BB echo $3 > $2;
+			$BB echo $3 > $2 2> /dev/null;
 		fi;
 		
 		$BB echo `$BB cat $2`;

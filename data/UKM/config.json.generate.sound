@@ -5,7 +5,7 @@ cat << CTAG
 			`if [ -d "/sys/kernel/sound_control_3" ]; then
 				$BB echo '{ SPane:{
 						title:"Sound Profiles",
-						description:"After you apply a profile, turn audio Off/On to update."
+						description:"After you apply a profile, turn audio Off/On to update. Select custom profile if you set controls manually."
 					}},
 						{ SOptionList:{
 							default:Custom,
@@ -18,9 +18,9 @@ cat << CTAG
 									do:[ REFRESH, APPLY ],
 									to:[
 										"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
-										"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
-										"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
-										"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
+										"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",'
+										[ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ] && $BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",'
+										$BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
 										"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain"
 									]
 								}
@@ -42,15 +42,21 @@ cat << CTAG
 							max:10,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
-						}},
-						{ SSeekBar:{
-							title:"Headphone PowerAmp (Left & Right)",
-							min:-6,
-							max:6,
-							default:0,
-							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
-						}},
-						{ SSeekBar:{
+						}},'
+						if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
+							$BB echo '{ SSeekBar:{
+								title:"Headphone PowerAmp (Left & Right)",
+								min:-6,
+								max:6,
+								default:0,
+								action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
+							}},'
+						else
+							$BB echo '{ SDescription:{
+								description:"Power Amp Control not available. The audio driver has automatic full on or full off control for Power Amp."
+							}},'
+						fi
+						$BB echo '{ SSeekBar:{
 							title:"Handset Microphone",
 							min:-30,
 							max:10,

@@ -1,7 +1,9 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
+DEVICE=`sh $UKM/device/.device.sh`;
 PHONE=`getprop ro.product.device`;
 
+#base gpl_headphone_pa_gain
 if [ $PHONE == "mako" ]; then
 	BASE_HP_PA_GAIN=22; #Nexus 4
 elif [ $PHONE == "hammerhead" ]; then
@@ -69,12 +71,12 @@ if [ -f $1 ]; then
 		
 			if [ $2 != "Custom" ]; then
 				$2;
-				$BB echo $CAM_MIC_GAIN > /sys/kernel/sound_control_3/gpl_cam_mic_gain;
-				$BB echo $HEADPHONE_GAIN > /sys/kernel/sound_control_3/gpl_headphone_gain;
-				$BB echo $HEADPHONE_PA_GAIN > /sys/kernel/sound_control_3/gpl_headphone_pa_gain;
-				$BB echo $MIC_GAIN > /sys/kernel/sound_control_3/gpl_mic_gain;
-				$BB echo $SOUND_CONTROL_LOCKED > /sys/kernel/sound_control_3/gpl_sound_control_locked;
-				$BB echo $SPEAKER_GAIN > /sys/kernel/sound_control_3/gpl_speaker_gain;
+				$BB echo "$CAM_MIC_GAIN" > /sys/kernel/sound_control_3/gpl_cam_mic_gain;
+				$BB echo "$HEADPHONE_GAIN" > /sys/kernel/sound_control_3/gpl_headphone_gain;
+				[ "`sh $DEVICE HasHeadphonePowerAmp`" == "1" ] && $BB echo "$HEADPHONE_PA_GAIN" > /sys/kernel/sound_control_3/gpl_headphone_pa_gain;
+				$BB echo "$MIC_GAIN" > /sys/kernel/sound_control_3/gpl_mic_gain;
+				$BB echo "$SOUND_CONTROL_LOCKED" > /sys/kernel/sound_control_3/gpl_sound_control_locked;
+				$BB echo "$SPEAKER_GAIN" > /sys/kernel/sound_control_3/gpl_speaker_gain;
 			fi;
 			
 		elif [ "$1" == "/sys/kernel/sound_control_3/gpl_cam_mic_gain" ] || [ "$1" == "/sys/kernel/sound_control_3/gpl_mic_gain" ]; then
@@ -131,3 +133,5 @@ if [ -f $1 ]; then
 		fi;
 	fi;
 fi;
+
+#if [ $((num - base)) -ge -6 ] && [ $((num - base)) -le 6 ]; then

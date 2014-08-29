@@ -126,6 +126,9 @@ case "$1" in
 	HasBootloader)
 		$BB echo "1";
 	;;
+	HasHeadphonePowerAmp)
+		$BB echo "1";
+	;;
 	HasTamperFlag)
 		$BB echo "1";
 	;;
