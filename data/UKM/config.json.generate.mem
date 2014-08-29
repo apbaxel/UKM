@@ -43,6 +43,14 @@ cat << CTAG
 					action:"generic /proc/sys/vm/dirty_ratio"
 				}},
 				{ SOptionList:{
+					title:"Drop Caches (Clear VFS Cache After Boot)",
+					description:"This option will force rebuild of file system cache based on actual app usage rather than boot/startup processes. NOTE: This process can take from 1-2 minutes (Enable for better file system read/write performance).",
+					default:`$BB cat $UKM/files/dropcaches_prof`,
+					action:"dropcaches $UKM/files/dropcaches_prof",
+					values:{ 0:"Disabled", 1:"Enabled"
+					}
+				}},
+				{ SOptionList:{
 					title:"Laptop Mode (Auto FS Writeback Delay Mode)",
 					description:"This option will delay the writebacks of file system bits cached in RAM while screen is ON (Enable for better performance @ slight risk of possible data loss if crashed or sudden loss of power).",
 					default:`$BB cat /proc/sys/vm/laptop_mode`,

@@ -33,6 +33,7 @@ $BB echo "Custom" > $UKM/files/gamma_prof
 $BB echo "Custom" > $UKM/files/sound_prof
 $BB echo "Custom" > $UKM/files/speaker_prof
 $BB echo "0" > $UKM/files/volt_prof;
+$BB echo "0" > $UKM/files/dropcaches_prof;
 
 # Symlink uci file to xbin in case it's not found.
 

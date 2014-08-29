@@ -1,0 +1,20 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+PATH=/proc/sys/vm/drop_caches;
+
+if [ -f $1 ]; then
+	if [[ ! -z "$2" ]]; then
+		$BB echo "$2" > $1;
+		DC=`$BB cat $PATH`;
+		
+		if [ "$2" -eq 1 ] && [ "$DC" -ne 3 ]; then
+			$BB sync;
+			$BB echo 3 > $PATH 2> /dev/null;
+		fi
+	fi;
+
+	$BB echo "`$BB cat $1`";
+else
+	$BB echo "0";
+fi;
