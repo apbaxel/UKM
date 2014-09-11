@@ -2,7 +2,8 @@ UKM=/data/UKM;
 BB=$UKM/busybox;
 
 if [ "$1" == "freq" ]; then
-	FP=/sys/module/msm_thermal/parameters/freq_control_mask;
+	[ -d "/sys/module/msm_thermal" ] && FP=/sys/module/msm_thermal/parameters/freq_control_mask;;
+	[ -d "/sys/module/msm_thermal_v2" ] && FP=/sys/module/msm_thermal_v2/parameters/freq_control_mask;
 	
 	if [ "$2" == "core0" ]; then
 		if [[ ! -z "$3" ]]; then
@@ -68,7 +69,8 @@ if [ "$1" == "freq" ]; then
 fi;
 
 if [ "$1" == "core" ]; then
-	CP=/sys/module/msm_thermal/parameters/core_control_mask;
+	[ -d "/sys/module/msm_thermal" ] && CP=/sys/module/msm_thermal/parameters/core_control_mask;;
+	[ -d "/sys/module/msm_thermal_v2" ] && CP=/sys/module/msm_thermal_v2/parameters/core_control_mask;
 	
 	if [ "$2" == "core1" ]; then
 		if [[ ! -z "$3" ]]; then
