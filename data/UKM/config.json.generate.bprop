@@ -45,26 +45,28 @@ cat << CTAG
 					default:`getprop service.adb.tcp.port`,
 					action:"buildprop service.adb.tcp.port",
 				}},
-			{ SPane:{
-				title:"DNS Tweaks",
-				description:"Allows you to set the default DNS (Domain Name System) for 3G connections. Use this to speed up your browsing experience and improve your security.",
-			}},
-				{ SDescription:{
-					description:"Google > DNS1: 8.8.8.8 | DNS2: 8.8.4.4"
+			`if [ 2 == 1 ]; then
+				$BB echo '{ SPane:{
+					title:"DNS Tweaks",
+					description:"Allows you to set the default DNS (Domain Name System) for 3G connections. Use this to speed up your browsing experience and improve your security.",
 				}},
-				{ SDescription:{
-					description:"OpenDNS > DNS1: 208.67.222.222 | DNS2: 208.67.220.220"
-				}},
-				{ SGeneric:{
-					title:"3G DNS1:",
-					default:`getprop net.rmnet0.dns1`,
-					action:"buildprop net.rmnet0.dns1",
-				}},
-				{ SGeneric:{
-					title:"3G DNS2:",
-					default:`getprop net.rmnet0.dns2`,
-					action:"buildprop net.rmnet0.dns2",
-				}},
+					{ SDescription:{
+						description:"Google > DNS1: 8.8.8.8 | DNS2: 8.8.4.4"
+					}},
+					{ SDescription:{
+						description:"OpenDNS > DNS1: 208.67.222.222 | DNS2: 208.67.220.220"
+					}},
+					{ SGeneric:{
+						title:"3G DNS1:",
+						default:'\`getprop net.rmnet0.dns1\`',
+						action:"buildprop net.rmnet0.dns1",
+					}},
+					{ SGeneric:{
+						title:"3G DNS2:",
+						default:'\`getprop net.rmnet0.dns2\`',
+						action:"buildprop net.rmnet0.dns2",
+					}},'
+			fi`
 		]
 }
 CTAG
