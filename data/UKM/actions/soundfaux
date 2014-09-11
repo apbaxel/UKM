@@ -111,7 +111,7 @@ if [ -f $1 ]; then
 			
 			$BB echo "$V $V $H" > $1;
 		fi;
-		$BB echo 2 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
+		#$BB echo 1 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
 	fi;
 	
 	PATH=$1;
