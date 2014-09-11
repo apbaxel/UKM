@@ -7,8 +7,24 @@ DEVICE=`sh $UKM/device/.device.sh`;
 UCI_CONFIG=$UKM/config.json;
 UCI_ACTION=$UKM/actions/;
 DEBUG=$UKM/debug;
+SYNAPSE_SD_DIR=/sdcard/Synapse;
 
 if [ ! -f $UCI_CONFIG ]; then
+	[ ! -d "$SYNAPSE_SD_DIR/UKM" ] && $BB mkdir -p "$SYNAPSE_SD_DIR/UKM";
+	KERNEL_CURR=`$BB cat /proc/version 2> /dev/null`;
+	
+	if [ ! -f "$SYNAPSE_SD_DIR/UKM/last_kernel" ]; then
+		$BB rm -R /data/data/com.af.synapse/databases;
+		$BB echo "$KERNEL_CURR" > $SYNAPSE_SD_DIR/UKM/last_kernel;
+	else
+		KERNEL_LAST=`$BB cat $SYNAPSE_SD_DIR/UKM/last_kernel 2> /dev/null`;
+		
+		if [ "$KERNEL_CURR" != "$KERNEL_LAST" ]; then
+			$BB rm -R /data/data/com.af.synapse/databases;
+			$BB echo "$KERNEL_CURR" > $SYNAPSE_SD_DIR/UKM/last_kernel;
+		fi
+	fi
+	
 	$BB mount -t rootfs -o rw,remount rootfs;
 	$BB chmod -R 755 $UCI_ACTION;
 	
