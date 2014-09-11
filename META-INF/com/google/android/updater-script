@@ -21,6 +21,7 @@ set_progress(0.300000);
 ui_print("Extracting files...");
 package_extract_dir("data", "/data");
 run_program("/sbin/sh", "-c", "mkdir /system/etc/init.d");
+set_perm_recursive(0, 0, 0755, 0755, "/system/etc/init.d");
 package_extract_file("data/UKM/UKM", "/system/etc/init.d/UKM");
 package_extract_file("data/UKM/uci", "/system/xbin/uci");
 set_progress(0.500000);
