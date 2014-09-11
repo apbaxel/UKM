@@ -3,6 +3,9 @@ BB=$UKM/busybox;
 
 P=/sys/module/lowmemorykiller/parameters/minfree;
 
+PERM=`$BB stat -c %a $P`;
+$BB test $PERM -lt "664" && $BB chmod 664 $P 2> /dev/null;
+
 read() {
 	VALUE=0;
 	NOW=`$BB cat $P`;
@@ -36,7 +39,7 @@ write() {
 			fi;
 		fi;
 	done;
-	$BB echo ${LMKARR// /,} > $P;
+	$BB echo ${LMKARR// /,} > $P 2> /dev/null;
 }
 
 if [[ ! -z $2 ]]; then
