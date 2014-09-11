@@ -1,9 +1,12 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
 
+[ -d "/sys/module/pm_8x60" ] && PM=/sys/module/pm_8x60;
+[ -d "/sys/module/msm_pm" ] && PM=/sys/module/msm_pm;
+			
 if [ -f $1 ]; then
 	if [[ ! -z $3 ]]; then
-		for CSTATE in /sys/module/pm_8x60/modes/cpu[0-3]/$2; do
+		for CSTATE in $PM/modes/cpu[0-3]/$2; do
 			if [ -f "$CSTATE/idle_enabled" ]; then
 				$BB echo $3 > $CSTATE/idle_enabled;
 			fi;

@@ -2,44 +2,47 @@ cat << CTAG
 {
 	name:ADV,
 		elements:[
-			`if [ -d "/sys/module/pm_8x60/modes/cpu0" ]; then
+			`[ -d "/sys/module/pm_8x60" ] && PM=/sys/module/pm_8x60;
+			[ -d "/sys/module/msm_pm" ] && PM=/sys/module/msm_pm;
+			
+			if [ -d "$PM/modes/cpu0" ]; then
 				$BB echo '{ SPane:{
 					title:"Krait C-States Settings"
 				}},'
-				if [ -f "/sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled" ]; then
-				C0=\`$BB cat /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled\`;
+				if [ -f "$PM/modes/cpu0/wfi/idle_enabled" ]; then
+				C0=\`$BB cat $PM/modes/cpu0/wfi/idle_enabled\`;
 					$BB echo '{ SCheckBox:{
 						description:"Shallowest Sleep with instant wake up.",
 						label:"C0 (WFI)",
 						default:'$C0',
-						action:"socset /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled wfi"
+						action:"socset '$PM'/modes/cpu0/wfi/idle_enabled wfi"
 					}},'
 				fi
-				if [ -f "/sys/module/pm_8x60/modes/cpu0/retention/idle_enabled" ]; then
-				C1=\`$BB cat /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled\`;
+				if [ -f "$PM/modes/cpu0/retention/idle_enabled" ]; then
+				C1=\`$BB cat $PM/modes/cpu0/retention/idle_enabled\`;
 					$BB echo '{ SCheckBox:{
 						description:"Slightly deeper sleep with slight latency when waking up. (Disable this if you encounter screen flickering)",
 						label:"C1 (Retention)",
 						default:'$C1',
-						action:"socset /sys/module/pm_8x60/modes/cpu0/retention/idle_enabled retention"
+						action:"socset '$PM'/modes/cpu0/retention/idle_enabled retention"
 					}},'
 				fi
-				if [ -f "/sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled" ]; then
-				C2=\`$BB cat /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled\`;
+				if [ -f "$PM/modes/cpu0/standalone_power_collapse/idle_enabled" ]; then
+				C2=\`$BB cat $PM/modes/cpu0/standalone_power_collapse/idle_enabled\`;
 					$BB echo '{ SCheckBox:{
 						description:"Deeper sleep with longer latency when waking up.",
 						label:"C2 (Stand Alone Power Collapse)",
 						default:'$C2',
-						action:"socset /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled standalone_power_collapse"
+						action:"socset '$PM'/modes/cpu0/standalone_power_collapse/idle_enabled standalone_power_collapse"
 					}},'
 				fi
-				if [ -f "/sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled" ]; then
-				C3=\`$BB cat /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled\`;
+				if [ -f "$PM/modes/cpu0/power_collapse/idle_enabled" ]; then
+				C3=\`$BB cat $PM/modes/cpu0/power_collapse/idle_enabled\`;
 					$BB echo '{ SCheckBox:{
 						description:"Really deep sleep with longest latency when waking up.",
 						label:"C3 (Power Collapse)",
 						default:'$C3',
-						action:"socset /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled power_collapse"
+						action:"socset '$PM'/modes/cpu0/power_collapse/idle_enabled power_collapse"
 					}},'
 				fi
 			fi`
@@ -55,21 +58,30 @@ cat << CTAG
 						description:"KSM lets the hypervisor system share identical memory pages amongst different processes or virtualized guests. This increases CPU consumption but improves memory.",
 						default:'$KSM',
 						action:"generic /sys/kernel/mm/ksm/run"
-					}},
-					{ SSeekBar:{
+					}},'
+					if [ -f "/sys/kernel/mm/ksm/deferred_timer" ]; then
+					DT=\`$BB cat /sys/kernel/mm/ksm/deferred_timer\`
+						$BB echo '{ SCheckBox:{
+							label:"Deferred Timer",
+							description:"If enabled, KSM thread will not wakeup CPU to carryout activities thus gaining battery while compromising slightly on memory that could have been saved.",
+							default:'$DT',
+							action:"generic /sys/kernel/mm/ksm/deferred_timer"
+						}},'
+					fi
+					$BB echo '{ SSeekBar:{
 						title:"Pages To Scan",
 						unit:" pages",
-						step:1,
-						min:0,
-						max:500,
+						step:4,
+						min:4,
+						max:1024,
 						default:'$PTS',
 						action:"generic /sys/kernel/mm/ksm/pages_to_scan"
 					}},
 					{ SSeekBar:{
 						title:"Scan Delay Interval",
 						unit:" ms",
-						step:100,
-						min:0,
+						step:50,
+						min:50,
 						max:3000,
 						default:'$SLEEP',
 						action:"generic /sys/kernel/mm/ksm/sleep_millisecs"
