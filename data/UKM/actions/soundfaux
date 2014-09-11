@@ -21,7 +21,6 @@ Y=$((255 - X - X));
 HEADPHONE_PA_GAIN="$X $X $Y";
 
 MIC_GAIN="0 255";
-SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="0 0 255";
 }
 
@@ -34,7 +33,6 @@ Y=$((255 - X - X));
 HEADPHONE_PA_GAIN="$X $X $Y";
 
 MIC_GAIN="0 255";
-SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="254 254 259";
 }
 
@@ -47,7 +45,6 @@ Y=$((255 - X - X));
 HEADPHONE_PA_GAIN="$X $X $Y";
 
 MIC_GAIN="0 255";
-SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="5 5 245";
 }
 
@@ -60,12 +57,13 @@ Y=$((255 - X - X));
 HEADPHONE_PA_GAIN="$X $X $Y";
 
 MIC_GAIN="0 255";
-SOUND_CONTROL_LOCKED=0;
 SPEAKER_GAIN="253 253 261";
 }
 
 if [ -f $1 ]; then
 	if [[ ! -z $2 ]]; then
+		$BB echo 0 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
+		
 		if [ "$1" == "$UKM/files/sound_prof" ]; then
 			$BB echo $2 > $1;
 		
@@ -75,7 +73,6 @@ if [ -f $1 ]; then
 				$BB echo "$HEADPHONE_GAIN" > /sys/kernel/sound_control_3/gpl_headphone_gain;
 				[ "`sh $DEVICE HasHeadphonePowerAmp`" == "1" ] && $BB echo "$HEADPHONE_PA_GAIN" > /sys/kernel/sound_control_3/gpl_headphone_pa_gain;
 				$BB echo "$MIC_GAIN" > /sys/kernel/sound_control_3/gpl_mic_gain;
-				$BB echo "$SOUND_CONTROL_LOCKED" > /sys/kernel/sound_control_3/gpl_sound_control_locked;
 				$BB echo "$SPEAKER_GAIN" > /sys/kernel/sound_control_3/gpl_speaker_gain;
 			fi;
 			
@@ -98,7 +95,7 @@ if [ -f $1 ]; then
 				V=$2;
 				H=$((255 - V - V));
 				V=$((256 + V));
-			
+				
 				$BB echo "$V $V $H" > $1;
 			else
 				V=$2;
@@ -114,6 +111,7 @@ if [ -f $1 ]; then
 			
 			$BB echo "$V $V $H" > $1;
 		fi;
+		$BB echo 2 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
 	fi;
 	
 	PATH=$1;

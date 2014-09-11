@@ -17,6 +17,7 @@ cat << CTAG
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
 									to:[
+										"generic /sys/kernel/sound_control_3/gpl_sound_control_locked",
 										"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
 										"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",'
 										[ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ] && $BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",'
@@ -29,12 +30,27 @@ cat << CTAG
 					{ SPane:{
 						title:"Gain Controls",
 					}},
+						{ SOptionList:{
+							title:"Sound Control Lock",
+							description:"Have this enabled to prevent the driver from automatically changing your settings.",
+							default:0,
+							action:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked",
+							values:{ 0:"Disabled", 2:"Enabled"
+							}
+						}},
 						{ SSeekBar:{
 							title:"Headphone (Left & Right)",
 							min:-30,
 							max:10,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
+								}
+							]
 						}},
 						{ SSeekBar:{
 							title:"Speaker",
@@ -42,6 +58,13 @@ cat << CTAG
 							max:10,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
+								}
+							]
 						}},'
 						if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
 							$BB echo '{ SSeekBar:{
@@ -50,6 +73,13 @@ cat << CTAG
 								max:6,
 								default:0,
 								action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
+								notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
+								}
+							]
 							}},'
 						else
 							$BB echo '{ SDescription:{
@@ -62,6 +92,13 @@ cat << CTAG
 							max:10,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
+								}
+							]
 						}},
 						{ SSeekBar:{
 							title:"Camcorder Microphone",
@@ -69,63 +106,84 @@ cat << CTAG
 							max:10,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",
+							notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
+								}
+							]
 						}},'
 			fi`
-			`if [ -d "/sys/class/misc/soundcontrol" ]; then
-				HB=\`cat /sys/class/misc/soundcontrol/headset_boost\`;
-				MB=\`cat /sys/class/misc/soundcontrol/mic_boost\`;
-				MG=\`cat /sys/class/misc/soundcontrol/mic_gain\`;
-				SB=\`cat /sys/class/misc/soundcontrol/speaker_boost\`;
-				VB=\`cat /sys/class/misc/soundcontrol/volume_boost\`;
+			`[ -d "/sys/class/misc/soundcontrol" ] && SC=/sys/class/misc/soundcontrol;
+			[ -d "/sys/devices/virtual/misc/soundcontrol" ] && SC=/sys/devices/virtual/misc/soundcontrol;
+			
+			if [ -f "$SC/headset_boost" ]; then
+				HB=\`$BB cat $SC/headset_boost\`;
+				MB=\`$BB cat $SC/mic_boost\`;
+				MG=\`$BB cat $SC/mic_gain\`;
+				SB=\`$BB cat $SC/speaker_boost\`;
+				VB=\`$BB cat $SC/volume_boost\`;
 				$BB echo '{ SPane:{
-						title:"Sound Control",
+					title:"Sound Control",
+				}},
+					{ SSeekBar:{
+						title:"Headset Boost",
+						min:-11,
+						max:11,
+						default:'$HB',
+						action:"generic $SC/headset_boost",
 					}},
-						{ SSeekBar:{
-							title:"Headset Boost",
-							min:-11,
-							max:11,
-							default:'$HB',
-							action:"generic /sys/class/misc/soundcontrol/headset_boost",
-						}},
-						{ SSeekBar:{
-							title:"Microphone Boost",
-							min:-11,
-							max:11,
-							default:'$MB',
-							action:"generic /sys/class/misc/soundcontrol/mic_boost",
-						}},
-						{ SSeekBar:{
-							title:"Microphone Gain",
-							min:0,
-							max:10,
-							default:'$MG',
-							action:"generic /sys/class/misc/soundcontrol/mic_gain",
-						}},
-						{ SSeekBar:{
-							title:"Speaker Boost",
-							min:-11,
-							max:11,
-							default:'$SB',
-							action:"generic /sys/class/misc/soundcontrol/speaker_boost",
-						}},
-						{ SSeekBar:{
-							title:"Volume Boost",
-							min:0,
-							max:20,
-							default:'$VB',
-							action:"generic /sys/class/misc/soundcontrol/volume_boost",
-						}},'
-			fi`
-			`if [ -f "/sys/devices/virtual/misc/soundcontrol/highperf_enabled" ]; then
-			HPE=\`cat /sys/devices/virtual/misc/soundcontrol/highperf_enabled\`;
-				$BB echo '{ SPane:{
-					title:"High performance Mode",
+					{ SSeekBar:{
+						title:"Microphone Boost",
+						min:-11,
+						max:11,
+						default:'$MB',
+						action:"generic $SC/mic_boost",
+					}},
+					{ SSeekBar:{
+						title:"Microphone Gain",
+						min:0,
+						max:10,
+						default:'$MG',
+						action:"generic $SC/mic_gain",
+					}},
+					{ SSeekBar:{
+						title:"Speaker Boost",
+						min:-11,
+						max:11,
+						default:'$SB',
+						action:"generic $SC/speaker_boost",
+					}},
+					{ SSeekBar:{
+						title:"Volume Boost",
+						min:0,
+						max:20,
+						default:'$VB',
+						action:"generic $SC/volume_boost",
+					}},'
+				if [ -f "$SC/highperf_enabled" ]; then
+				HPE=\`$BB cat $SC/highperf_enabled\`;
+					$BB echo '{ SPane:{
+					title:"High performance",
 					description:"Class AB mode for headphone 192Khz playback.",
 				}},
-					{ SCheckbox:{
+					{ SCheckBox:{
 						label:"Enable",
 						default:'$HPE',
-						action:"generic /sys/devices/virtual/misc/soundcontrol/highperf_enabled",
+						action:"generic $SC/highperf_enabled",
+					}},'
+				fi
+			fi`
+			`if [ -f "sys/module/snd_soc_wcd9320/parameters/high_perf_mode" ]; then
+				HPM=\`$BB cat /sys/module/snd_soc_wcd9320/parameters/high_perf_mode\`;
+				$BB echo '{ SPane:{
+					title:"High performance Mode",
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						default:'$HPM',
+						action:"generic sys/module/snd_soc_wcd9320/parameters/high_perf_mode",
 					}},'
 			fi`
 		]
