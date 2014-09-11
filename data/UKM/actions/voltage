@@ -54,36 +54,44 @@ case $1 in
 		VOLT_PROF=$UKM/files/volt_prof;
 		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
 		
-		if [[ ! -z $3 ]]; then
-			VOLT=$3;
-			CURR_VOLT=`$BB cat $VOLT_PROF`;
-			NEW_VOLT=$((VOLT - CURR_VOLT));
-			$BB echo $VOLT > $VOLT_PROF;
-			
-			VOLTARR="";
-			while read FREQ UVOLT UNIT; do
-				VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
-			done < $P;
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				VOLT=$3;
+				CURR_VOLT=`$BB cat $VOLT_PROF`;
+				NEW_VOLT=$((VOLT - CURR_VOLT));
+				$BB echo $VOLT > $VOLT_PROF;
+				
+				VOLTARR="";
+				while read FREQ UVOLT UNIT; do
+					VOLTARR="$VOLTARR $((UVOLT + NEW_VOLT))";
+				done < $P;
 
-			$BB echo "$VOLTARR" > $P 2> /dev/null;
+				$BB echo "$VOLTARR" > $P 2> /dev/null;
+			fi;
+			
+			$BB echo `$BB cat $VOLT_PROF`;
 		fi;
-		
-		$BB echo `$BB cat $VOLT_PROF`;
 	;;
 	cpuvolt)
 		P=/sys/devices/system/cpu/cpu0/cpufreq/UV_mV_table;
 		
-		if [[ ! -z $3 ]]; then
-			cpuwrite $2 $3;
-		fi;
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				cpuwrite $2 $3;
+			fi;
 		
-		$BB echo `cpuread $2`;
+			$BB echo `cpuread $2`;
+		fi;
 	;;
 	gpuvolt)
 	P=/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table;
-	if [[ ! -z $3 ]]; then
-		corewrite $2 $3;
+	
+	if [ -f $P ]; then
+		if [[ ! -z $3 ]]; then
+			corewrite $2 $3;
+		fi;
+		
+		$BB echo $(coreread $2);
 	fi;
-	$BB echo $(coreread $2);
 	;;
 esac;
