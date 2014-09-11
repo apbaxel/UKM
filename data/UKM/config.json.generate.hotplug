@@ -10,11 +10,7 @@ cat << CTAG
 				}},
 			`if [ -f "/system/bin/mpdecision" ]; then
 			MPDEC=\`ps | $BB grep mpdecision\`
-				if [ -n "$MPDEC" ]; then 
-					MPDEC=1
-				else
-					MPDEC=0
-				fi
+				if [ -n "$MPDEC" ]; then MPDEC=1; else MPDEC=0; fi
 				$BB echo '{ SPane:{
 					title:"MPDecision"
 				}},
@@ -22,7 +18,7 @@ cat << CTAG
 						label:"Enable",
 						description:"Stock Qualcomm hotplug driver and frequency service. This should be disabled if current kernel has an alternative.",
 						default:'$MPDEC',
-						action:"mpdecision /system/bin/mpdecision"
+						action:"serviceset mpdecision"
 					}},'
 			fi`
 			`if [ -d "/sys/module/intelli_plug/parameters" ] && [ ! -f "/sys/kernel/intelli_plug/full_mode_profile" ]; then
@@ -280,41 +276,6 @@ cat << CTAG
 					}},'
 				fi
 			fi`
-			`if [ -f "/sys/module/msm_thermal/parameters/enabled" ] && [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
-			THERMAL=\`bool /sys/module/msm_thermal/parameters/enabled\`;
-				$BB echo '{ SCheckBox:{
-						label:"Intellithermal",
-						description:"Temperature limit toggle.",
-						default:'$THERMAL',
-						action:"boolean /sys/module/msm_thermal/parameters/enabled"
-					}},'
-			fi`
-			`if [ -f "/sys/module/msm_thermal/parameters/limit_temp_degC" ]; then
-			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/limit_temp_degC\`;
-				$BB echo '{ SSeekBar:{
-					title:"Frequency Throttle Temperature",
-					description:"Temperature to start throttling frequencies.",
-					unit:"ºC",
-					step:1,
-					min:50,
-					max:100,
-					default:'$TEMP',
-					action:"generic /sys/module/msm_thermal/parameters/limit_temp_degC"
-				}},'
-			fi`
-			`if [ -f "/sys/module/msm_thermal/parameters/core_limit_temp_degC" ]; then
-			TEMP=\`$BB cat /sys/module/msm_thermal/parameters/core_limit_temp_degC\`;
-				$BB echo '{ SSeekBar:{
-					title:"Core Throttle Temperature",
-					description:"Temperature to start shutting down cores",
-					unit:"ºC",
-					step:1,
-					min:50,
-					max:100,
-					default:'$TEMP',
-					action:"generic /sys/module/msm_thermal/parameters/core_limit_temp_degC"
-				}},'
-			fi`
 			`if [ -d "/sys/kernel/msm_mpdecision/conf" ]; then
 				if [ -f "/sys/kernel/msm_mpdecision/conf/enabled" ]; then
 				MSMMPD=\`$BB cat /sys/kernel/msm_mpdecision/conf/enabled\`
@@ -385,6 +346,67 @@ cat << CTAG
 							default:'$BOOST',
 							action:"generic /sys/kernel/msm_mpdecision/conf/boost_enabled"
 						}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/boost_time" ]; then
+				BT=\`$BB cat /sys/kernel/msm_mpdecision/conf/boost_time\`
+					$BB echo '{ SSeekBar:{
+							title:"Boost Time",
+							description:"Time that will boost your minimum CPU speed if you touch the screen or press a button.",
+							unit:" ms",
+							min:0,
+							max:5000,
+							step:100,
+							default:'$BT',
+							action:"generic /sys/kernel/msm_mpdecision/conf/boost_time",
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/boost_freqs" ]; then
+					for BF in 0 1 2 3; do
+						$BB echo '{ SSeekBar:{
+							title:"Boost Frequency Core'$BF'",
+							action:"mpdboostfreq '$BF'",
+							values: {'
+								sh $DEVICE CPUFrequencyList
+							$BB echo '}
+						}},'
+					done;
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/startdelay" ]; then
+				SD=\`$BB cat /sys/kernel/msm_mpdecision/conf/startdelay\`
+					$BB echo '{ SSeekBar:{
+							title:"Start Delay",
+							description:"Time until MPD starts to work.",
+							min:0,
+							max:50000,
+							step:1000,
+							default:'$SD',
+							action:"generic /sys/kernel/msm_mpdecision/conf/startdelay",
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/delay" ]; then
+				DL=\`$BB cat /sys/kernel/msm_mpdecision/conf/delay\`
+					$BB echo '{ SSeekBar:{
+							title:"Delay",
+							description:"Time between checks.",
+							min:0,
+							max:200,
+							step:1,
+							default:'$DL',
+							action:"generic /sys/kernel/msm_mpdecision/conf/delay",
+					}},'
+				fi
+				if [ -f "/sys/kernel/msm_mpdecision/conf/pause" ]; then
+				PAUSE=\`$BB cat /sys/kernel/msm_mpdecision/conf/pause\`
+					$BB echo '{ SSeekBar:{
+							title:"Pause",
+							description:"If something else plugs in the CPU, fall asleep for this amount of time.",
+							unit:" ms",
+							min:0,
+							max:50000,
+							step:1000,
+							default:'$PAUSE',
+							action:"generic /sys/kernel/msm_mpdecision/conf/pause",
+					}},'
 				fi
 				if [ -f "/sys/kernel/msm_mpdecision/conf/nwns_threshold_0" ]; then
 				NWNS0=\`$BB cat /sys/kernel/msm_mpdecision/conf/nwns_threshold_0\`

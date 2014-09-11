@@ -1,0 +1,24 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+T=/sys/kernel/msm_mpdecision/conf/boost_freqs;
+
+read() {
+	VALUE=-1;
+	NOW=`$BB cat $T`;
+	for BF in $NOW; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" -eq $1 ]; then
+			$BB echo $BF;
+			return
+		fi;
+	done;
+}
+
+if [ -f $T ]; then
+	if [[ ! -z $2 ]]; then
+		$BB echo "$1 $2" > $T;
+	fi;
+
+	$BB echo $(read $1);
+fi;
