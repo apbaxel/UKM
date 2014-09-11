@@ -87,6 +87,7 @@ cat << CTAG
 							SGeneric: { title:"@BASENAME" }
 						}
 					},
+					exclude: [ "weights" ]
 				}},
 		]
 }
