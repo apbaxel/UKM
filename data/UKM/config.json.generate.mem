@@ -18,6 +18,46 @@ cat << CTAG
 					action:"zram /sys/devices/virtual/block/zram0/disksize"
 				}},'
 			fi`
+			`if [ -f "/sys/block/zram0/comp_algorithm" ]; then
+			CA=\`$BB echo $($UKM/actions/bracket-option /sys/block/zram0/comp_algorithm)\`;
+				$BB echo '{ SOptionList:{
+					title:"Compression Algorithm",
+					description:"Applying a different option will reset Z-RAM. LZ4 algorithm tends to have a faster decompression. More info: <a href='https://code.google.com/p/lz4/'>HERE</a>.",
+					default:'$CA',
+					action:"bracket-option /sys/block/zram0/comp_algorithm",
+					values:['
+						for COMPALG in \`$BB cat /sys/block/zram0/comp_algorithm | $BB sed -e "s/\]//;s/\[//"\`; do
+							echo "\"$COMPALG\",";
+						done;
+					$BB echo '],
+					notify:[
+						{
+							on:APPLY,
+							do:[ RESET, REFRESH, APPLY ],
+							to:"zram /sys/devices/virtual/block/zram0/disksize"
+						}
+					]
+				}},'
+			fi`
+			`if [ -f "/sys/block/zram0/max_comp_streams" ]; then
+			MCS=\`$BB cat /sys/block/zram0/max_comp_streams\`;
+				$BB echo '{ SSeekBar:{
+					title:"Max Compression Streams",
+					description:"Applying a different option will reset Z-RAM. Can have N write operations (depending on size of streams list) executing in parallel.",
+					min:1,
+					max:5,
+					step:1,
+					default:'$MCS',
+					action:"generic /sys/block/zram0/max_comp_streams",
+					notify:[
+						{
+							on:APPLY,
+							do:[ RESET, REFRESH, APPLY ],
+							to:"zram /sys/devices/virtual/block/zram0/disksize"
+						}
+					]
+				}},'
+			fi`
 			{ SPane:{
 				title:"Virtual Memory",
 				description:"Tune the operation of the VM subsystem of the Linux kernel and the writeout of dirty data to disk. Swappiness also affects Z-RAM operation on kernels which support swaps."
@@ -50,6 +90,17 @@ cat << CTAG
 					values:{ 0:"Disabled", 1:"Enabled"
 					}
 				}},
+				`if [ -f "/proc/sys/vm/extra_free_kbytes" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"Extra Free Kilobytes",
+						unit:" kB",
+						step:50,
+						min:0,
+						max:20000,
+						default:'\`$BB cat /proc/sys/vm/extra_free_kbytes\`',
+						action:"generic /proc/sys/vm/extra_free_kbytes"
+					}},'
+				fi`
 				{ SOptionList:{
 					title:"Laptop Mode (Auto FS Writeback Delay Mode)",
 					description:"This option will delay the writebacks of file system bits cached in RAM while screen is ON (Enable for better performance @ slight risk of possible data loss if crashed or sudden loss of power).",
