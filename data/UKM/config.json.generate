@@ -19,13 +19,15 @@ cat << CTAG
 			$BB echo ','
 			. $UKM/config.json.generate.hotplug
 			$BB echo ','
+			. $UKM/config.json.generate.thermal
+			$BB echo ','
 			. $UKM/config.json.generate.cpuvolt
 			$BB echo ','
 			. $UKM/config.json.generate.io
 			$BB echo ','
 			. $UKM/config.json.generate.gpu
 			$BB echo ','
-			if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] || [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
+			if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] || [ -f "/sys/module/dsi_panel/kgamma_bn" ] || [ -d "/sys/devices/virtual/graphics/fb0" ]; then
 				. $UKM/config.json.generate.gamma
 			$BB echo ','
 			fi
