@@ -420,6 +420,54 @@ cat << CTAG
 						action:"restorebackup restart"
 					}},'
 			fi`
+			`if [ -d "/sys/devices/virtual/graphics/fb0" ]; then
+				if [ -f "/sys/devices/virtual/graphics/fb0/panel_calibration" ]; then
+				PC=\`$BB cat /sys/devices/virtual/graphics/fb0/panel_calibration\`;
+				$BB echo '{ SPane:{
+					title:"Graphics"
+				}},
+					{ SGeneric:{
+						title:"Panel Calibration",
+						default:'$PC',
+						action:"generic /sys/devices/virtual/graphics/fb0/panel_calibration",
+					}},'
+				fi
+				if [ -f "/sys/devices/virtual/graphics/fb0/cabc" ]; then
+				CABC=\`$BB cat /sys/devices/virtual/graphics/fb0/cabc\`;
+					$BB echo '{ SCheckBox:{
+						label:"CABC control",
+						default:'$CABC',
+						action:"generic /sys/devices/virtual/graphics/fb0/cabc"
+					}},'
+				fi
+				if [ -f "/sys/devices/virtual/graphics/fb0/color_enhance" ]; then
+				CE=\`$BB cat /sys/devices/virtual/graphics/fb0/color_enhance\`;
+					$BB echo '{ SCheckBox:{
+						label:"Color enhancement",
+						default:'$CE',
+						action:"generic /sys/devices/virtual/graphics/fb0/color_enhance"
+					}},'
+				fi
+				if [ -f "/sys/devices/virtual/graphics/fb0/sre" ]; then
+				SRE=\`$BB cat /sys/devices/virtual/graphics/fb0/sre\`;
+					$BB echo '{ SCheckBox:{
+						label:"Sunlight readability enhancement",
+						default:'$SRE',
+						action:"generic /sys/devices/virtual/graphics/fb0/sre"
+					}},'
+				fi
+				if [ -f "/sys/devices/virtual/graphics/fb0/gamma" ]; then
+				GAMMAOPO=\`$BB cat /sys/devices/virtual/graphics/fb0/gamma\`;
+					$BB echo '{ SSeekBar:{
+							title:"Gamma Selection",
+							min:0,
+							max:3,
+							step:1,
+							default:'$GAMMAOPO',
+							action:"generic /sys/devices/virtual/graphics/fb0/gamma",
+					}},'
+				fi
+			fi`
 			`if [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ]; then
 				BRMOD=\`$BB cat /sys/devices/i2c-0/0-0038/lm3530_br_mode\`;
 				$BB echo '{ SPane:{
