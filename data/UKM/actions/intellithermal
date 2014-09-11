@@ -1,0 +1,119 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ "$1" == "freq" ]; then
+	FP=/sys/module/msm_thermal/parameters/freq_control_mask;
+	
+	if [ "$2" == "core0" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=1;
+			FCM=`$BB cat $FP`;
+			
+			[ $3 -eq "1" ] && N=$((FCM + V)); [ $3 -eq "0" ] && N=$((FCM - V)); if [ $N -ge 0 -a $N -le 15 ]; then $BB echo "$N" > $FP 2> /dev/null; fi;
+		fi;
+
+		FCM=`$BB cat $FP`;
+		
+		if [ $FCM -eq 1 -o $FCM -eq 3 -o $FCM -eq 5 -o $FCM -eq 7 -o $FCM -eq 9 -o $FCM -eq 11 -o $FCM -eq 13 -o $FCM -eq 15 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	elif [ "$2" == "core1" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=2;
+			FCM=`$BB cat $FP`;
+			
+			[ $3 -eq "1" ] && N=$((FCM + V)); [ $3 -eq "0" ] && N=$((FCM - V)); if [ $N -ge 0 -a $N -le 15 ]; then $BB echo "$N" > $FP 2> /dev/null; fi;
+		fi;
+
+		FCM=`$BB cat $FP`;
+		
+		if [ $FCM -eq 2 -o $FCM -eq 3 -o $FCM -eq 6 -o $FCM -eq 7 -o $FCM -eq 10 -o $FCM -eq 11 -o $FCM -eq 14 -o $FCM -eq 15 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	elif [ "$2" == "core2" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=4;
+			FCM=`$BB cat $FP`;
+			
+			[ $3 -eq "1" ] && N=$((FCM + V)); [ $3 -eq "0" ] && N=$((FCM - V)); if [ $N -ge 0 -a $N -le 15 ]; then $BB echo "$N" > $FP 2> /dev/null; fi;
+		fi;
+
+		FCM=`$BB cat $FP`;
+		
+		if [ $FCM -eq 4 -o $FCM -eq 5 -o $FCM -eq 6 -o $FCM -eq 7 -o $FCM -eq 12 -o $FCM -eq 13 -o $FCM -eq 14 -o $FCM -eq 15 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	elif [ "$2" == "core3" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=8;
+			FCM=`$BB cat $FP`;
+			
+			[ $3 -eq "1" ] && N=$((FCM + V)); [ $3 -eq "0" ] && N=$((FCM - V)); if [ $N -ge 0 -a $N -le 15 ]; then $BB echo "$N" > $FP 2> /dev/null; fi;
+		fi;
+
+		FCM=`$BB cat $FP`;
+		
+		if [ $FCM -eq 8 -o $FCM -eq 9 -o $FCM -eq 10 -o $FCM -eq 11 -o $FCM -eq 12 -o $FCM -eq 13 -o $FCM -eq 14 -o $FCM -eq 15 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	fi;
+fi;
+
+if [ "$1" == "core" ]; then
+	CP=/sys/module/msm_thermal/parameters/core_control_mask;
+	
+	if [ "$2" == "core1" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=2;
+			CCM=`$BB cat $CP`;
+			
+			[ $3 -eq "1" ] && N=$((CCM + V)); [ $3 -eq "0" ] && N=$((CCM - V)); if [ $N -ge 0 -a $N -le 14 ]; then $BB echo "$N" > $CP 2> /dev/null; fi;
+		fi;
+
+		CCM=`$BB cat $CP`;
+		
+		if [ $CCM -eq 2 -o $CCM -eq 6 -o $CCM -eq 10 -o $CCM -eq 14 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	elif [ "$2" == "core2" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=4;
+			CCM=`$BB cat $CP`;
+			
+			[ $3 -eq "1" ] && N=$((CCM + V)); [ $3 -eq "0" ] && N=$((CCM - V)); if [ $N -ge 0 -a $N -le 14 ]; then $BB echo "$N" > $CP 2> /dev/null; fi;
+		fi;
+
+		CCM=`$BB cat $CP`;
+		
+		if [ $CCM -eq 4 -o $CCM -eq 6 -o $CCM -eq 12 -o $CCM -eq 14 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	elif [ "$2" == "core3" ]; then
+		if [[ ! -z "$3" ]]; then
+			V=8;
+			CCM=`$BB cat $CP`;
+			
+			[ $3 -eq "1" ] && N=$((CCM + V)); [ $3 -eq "0" ] && N=$((CCM - V)); if [ $N -ge 0 -a $N -le 14 ]; then $BB echo "$N" > $CP 2> /dev/null; fi;
+		fi;
+
+		CCM=`$BB cat $CP`;
+		
+		if [ $CCM -eq 8 -o $CCM -eq 10 -o $CCM -eq 12 -o $CCM -eq 14 ]; then
+			$BB echo 1;
+		else
+			$BB echo 0;
+		fi;
+	fi;
+fi;
