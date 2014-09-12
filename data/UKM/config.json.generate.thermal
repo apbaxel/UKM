@@ -34,7 +34,7 @@ cat << CTAG
 							label:"Enable",
 							description:"An in kernel replacement for Qualcomms Thermald. Developed by faux123.",
 							default:'$THERMAL',
-							action:"boolean $MSMTHERMAL/parameters/enabled"
+							action:"boolean '$MSMTHERMAL'/parameters/enabled"
 						}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/intelli_enabled" ]; then
@@ -46,7 +46,7 @@ cat << CTAG
 							label:"Enable",
 							description:"An in kernel replacement for Qualcomms Thermald. Developed by faux123 & alucard_24.",
 							default:'$INTELLIE',
-							action:"boolean $MSMTHERMAL/parameters/intelli_enabled"
+							action:"boolean '$MSMTHERMAL'/parameters/intelli_enabled"
 						}},'
 				fi
 				if [ -f "$MSMTHERMAL/core_control/enabled" ]; then
@@ -54,7 +54,7 @@ cat << CTAG
 					$BB echo '{ SCheckBox:{
 						label:"Core Control",
 						default:'$CC',
-						action:"generic $MSMTHERMAL/core_control/enabled"
+						action:"generic '$MSMTHERMAL'/core_control/enabled"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/vdd_restriction/enabled" ]; then
@@ -62,7 +62,7 @@ cat << CTAG
 					$BB echo '{ SCheckBox:{
 						label:"VDD Restriction",
 						default:'$CC',
-						action:"generic $MSMTHERMAL/vdd_restriction/enabled"
+						action:"generic '$MSMTHERMAL'/vdd_restriction/enabled"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/limit_temp_degC" ]; then
@@ -75,7 +75,7 @@ cat << CTAG
 						min:50,
 						max:100,
 						default:'$LT',
-						action:"generic $MSMTHERMAL/parameters/limit_temp_degC"
+						action:"generic '$MSMTHERMAL'/parameters/limit_temp_degC"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/core_limit_temp_degC" ]; then
@@ -88,7 +88,7 @@ cat << CTAG
 						min:50,
 						max:100,
 						default:'$TEMP',
-						action:"generic $MSMTHERMAL/parameters/core_limit_temp_degC"
+						action:"generic '$MSMTHERMAL'/parameters/core_limit_temp_degC"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/freq_control_mask" ]; then
@@ -144,7 +144,7 @@ cat << CTAG
 						min:0,
 						max:20,
 						default:'$CTHG',
-						action:"generic $MSMTHERMAL/parameters/core_temp_hysteresis_degC"
+						action:"generic '$MSMTHERMAL'/parameters/core_temp_hysteresis_degC"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/freq_step" ]; then
@@ -155,7 +155,7 @@ cat << CTAG
 						min:1,
 						max:10,
 						default:'$FS',
-						action:"generic $MSMTHERMAL/parameters/freq_step"
+						action:"generic '$MSMTHERMAL'/parameters/freq_step"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/immediately_limit_stop" ]; then
@@ -163,7 +163,7 @@ cat << CTAG
 					$BB echo '{ SCheckBox:{
 						label:"Immediately Limit Stop",
 						default:'$ILS',
-						action:"boolean $MSMTHERMAL/parameters/immediately_limit_stop"
+						action:"boolean '$MSMTHERMAL'/parameters/immediately_limit_stop"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/poll_ms" ]; then
@@ -175,7 +175,7 @@ cat << CTAG
 						min:0,
 						max:3000,
 						default:'$PMS',
-						action:"generic $MSMTHERMAL/parameters/poll_ms"
+						action:"generic '$MSMTHERMAL'/parameters/poll_ms"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/temp_hysteresis_degC" ]; then
@@ -187,7 +187,7 @@ cat << CTAG
 						min:0,
 						max:20,
 						default:'$TH',
-						action:"generic $MSMTHERMAL/parameters/temp_hysteresis_degC"
+						action:"generic '$MSMTHERMAL'/parameters/temp_hysteresis_degC"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/thermal_limit_low" ]; then
@@ -198,7 +198,7 @@ cat << CTAG
 						min:1,
 						max:30,
 						default:'$TLL',
-						action:"generic $MSMTHERMAL/parameters/thermal_limit_low"
+						action:"generic '$MSMTHERMAL'/parameters/thermal_limit_low"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/parameters/thermal_limit_high" ]; then
@@ -209,7 +209,7 @@ cat << CTAG
 						min:1,
 						max:30,
 						default:'$TLH',
-						action:"generic $MSMTHERMAL/parameters/thermal_limit_high"
+						action:"generic '$MSMTHERMAL'/parameters/thermal_limit_high"
 					}},'
 				fi
 			fi`
