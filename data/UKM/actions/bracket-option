@@ -7,10 +7,4 @@ if [ -f $1 ]; then
 	fi;
 
 	$BB echo $($BB cat $1 | $BB sed -n -e '/\[[^]]/s/^[^[]*\[\([^]]*\)].*$/\1/p');
-else	
-	case $1 in
-		/sys/block/mmcblk0/queue/scheduler)
-			$BB echo "noop";
-		;;
-	esac;
 fi;
