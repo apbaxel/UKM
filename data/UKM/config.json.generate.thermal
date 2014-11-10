@@ -49,12 +49,29 @@ cat << CTAG
 							action:"boolean '$MSMTHERMAL'/parameters/intelli_enabled"
 						}},'
 				fi
+				if [ -f "$MSMTHERMAL/parameters/thermal_debug_mode" ]; then
+				DEBUG=\`cat $MSMTHERMAL/parameters/thermal_debug_mode\`
+					echo '{ SCheckBox:{
+							label:"Debug Mask",
+							description:"Allows you to activate debug mask for thermal operations.",
+							default:'$DEBUG',
+							action:"generic '$MSMTHERMAL'/parameters/thermal_debug_mode"
+					}},'
+				fi
 				if [ -f "$MSMTHERMAL/core_control/enabled" ]; then
-				CC=\`$BB cat $MSMTHERMAL/core_control/enabled\`;
+				ECC=\`$BB cat $MSMTHERMAL/core_control/enabled\`;
+					$BB echo '{ SCheckBox:{
+						label:"Enable Core Control",
+						default:'$ECC',
+						action:"generic '$MSMTHERMAL'/core_control/enabled"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/core_control/core_control" ]; then
+				CC=\`$BB cat $MSMTHERMAL/core_control/core_control\`;
 					$BB echo '{ SCheckBox:{
 						label:"Core Control",
 						default:'$CC',
-						action:"generic '$MSMTHERMAL'/core_control/enabled"
+						action:"generic '$MSMTHERMAL'/core_control/core_control"
 					}},'
 				fi
 				if [ -f "$MSMTHERMAL/vdd_restriction/enabled" ]; then
@@ -210,6 +227,14 @@ cat << CTAG
 						max:30,
 						default:'$TLH',
 						action:"generic '$MSMTHERMAL'/parameters/thermal_limit_high"
+					}},'
+				fi
+				if [ -f "$MSMTHERMAL/parameters/temp_safety" ]; then
+				TS=\`$BB cat $MSMTHERMAL/parameters/temp_safety\`;
+					$BB echo '{ SCheckBox:{
+						label:"Temperature Safety",
+						default:'$TS',
+						action:"generic '$MSMTHERMAL'/parameters/temp_safety"
 					}},'
 				fi
 			fi`
