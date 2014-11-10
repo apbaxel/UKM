@@ -65,6 +65,14 @@ cat << CTAG
 						action:"live WakelocksKernel"
 					}},'
 			fi`
+			{ SPane:{
+				title:"Installation Check:"
+			}},
+				{ SLiveLabel:{
+					refresh:0,
+					style:italic,
+					action:"live InstallationCheck"
+				}},
 		]
 }
 CTAG
