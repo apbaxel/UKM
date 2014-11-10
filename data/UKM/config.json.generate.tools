@@ -37,23 +37,25 @@ cat << CTAG
 					values:[ Enforcing, Permissive
 					],
 				}},
-			`DB=/data/data/com.android.providers.settings/databases;
-			cd $DB;
-			VALUE=\`$UKM/sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';" 2> /dev/null\`;
-			if [[ ! -z $VALUE ]]; then
-				$BB echo '{ SPane:{
-					title:"Preferred Network Mode",
-					description:"Use GSM_auto or CDMA_auto to reduce the msm_hsic_host wakelock and save battery. After applying you need to reboot your device for the setting to take effect. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
-				}},
-					{ SOptionList:{
-						default:'$VALUE',
-						action:"sqlite preferred_network_mode",
-						values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
-							7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
-							13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
-							19:"TD-SCDMA_WCDMA_LTE", 20:"TD-SCDMA_GSM_WDCMA_LTE", 21:"TD-SCDMA_GSM_WCDMA_CDMA_EvDo", 22:"TD-SCDMA_LTE_CDMA_EvDo_GSM_WCDMA"
-						},
-					}},'
+			`if [ 1 == 1 ]; then
+				DB=/data/data/com.android.providers.settings/databases;
+				cd $DB;
+				VALUE=\`$UKM/sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';" 2> /dev/null\`;
+				if [[ ! -z $VALUE ]]; then
+					$BB echo '{ SPane:{
+						title:"Preferred Network Mode",
+						description:"Use GSM_auto or CDMA_auto to reduce the msm_hsic_host wakelock and save battery. After applying you need to reboot your device for the setting to take effect. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
+					}},
+						{ SOptionList:{
+							default:'$VALUE',
+							action:"sqlite preferred_network_mode",
+							values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
+								7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
+								13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
+								19:"TD-SCDMA_WCDMA_LTE", 20:"TD-SCDMA_GSM_WDCMA_LTE", 21:"TD-SCDMA_GSM_WCDMA_CDMA_EvDo", 22:"TD-SCDMA_LTE_CDMA_EvDo_GSM_WCDMA"
+							},
+						}},'
+				fi
 			fi`
 			{ SPane:{
 				title:"Advanced Tools"
@@ -92,6 +94,18 @@ cat << CTAG
 						}
 					}},'
 				fi`
+				`if [ -f "/sys/kernel/printk_mode/printk_mode" ]; then
+				PRINTK=\`$BB cat /sys/kernel/printk_mode/printk_mode\`
+					$BB echo '{ SOptionList:{
+						title:"Kernel Logger",
+						description:"Allows you to toggle dmesg kernel logging.",
+						default:'$PRINTK',
+						action:"generic /sys/kernel/printk_mode/printk_mode",
+						values:{
+							0:"Disabled", 1:"Enabled"
+						}
+					}},'
+				fi`
 			{ SDescription:{
 				description:"Save the logcat (App/system debug), dmesg (active kernel output) or last_ksmg (same as dmesg but from the last shutdown)."
 			}},
@@ -107,53 +121,56 @@ cat << CTAG
 					label:"Save last_kmsg",
 					action:"devtools kmsg"
 				}},
-			{ SPane:{
-				title:"Kernel"
-			}},
-				{ SOptionList:{
-					title:"Selected Image",
-					description:"Choose the image you want and apply your choice in Synapse before using the action buttons below.",
-					action:"restorebackup pickboot",
-					default:"None",
-					values:[ "None",
-						`for IMG in \`$UKM/actions/restorebackup listboot\`; do
-							echo "\"$IMG\","
-						done`
-					]
+			`if [ -e "\`sh $DEVICE DirKernelIMG\`" ]; then
+			KERNEL=\`sh $DEVICE DirKernelIMG\`
+				$BB echo '{ SPane:{
+					title:"Kernel"
 				}},
-				{ SButton:{
-					label:"Restore Selected Kernel",
-					action:"restorebackup flashboot `sh $DEVICE DirKernelIMG`"
-				}},
-				{ SButton:{
-					label:"Delete Selected Kernel",
-					action:"restorebackup delboot",
-					notify:[
-						{ on:APPLY,
-						do:[ RESET, REFRESH ],
-						to:"restorebackup pickboot"
-						}
-					]
-				}},
-				{ SGeneric:{
-					title:"Kernel Name",
-					default:"None",
-					action:"generic $UKM/files/bck_prof",
-				}},
-				{ SDescription:{
-					description:"First set a name above and apply. After this you can press the Backup Current Kernel button below."
-				}},
-				{ SButton:{
-					label:"Backup Current Kernel",
-					action:"restorebackup keepboot `sh $DEVICE DirKernelIMG`",
-					notify:[
-						{
-							on:APPLY,
-							do:[ REFRESH, APPLY ],
-							to:"generic $UKM/files/bck_prof"
-						}
-					]
-				}},
+					{ SOptionList:{
+						title:"Selected Image",
+						description:"Choose the image you want and apply your choice in Synapse before using the action buttons below.",
+						action:"restorebackup pickboot",
+						default:"None",
+						values:[ "None",'
+							for IMG in \`$UKM/actions/restorebackup listboot\`; do
+								echo "\"$IMG\","
+							done
+						$BB echo ']
+					}},
+					{ SButton:{
+						label:"Restore Selected Kernel",
+						action:"restorebackup flashboot '$KERNEL'"
+					}},
+					{ SButton:{
+						label:"Delete Selected Kernel",
+						action:"restorebackup delboot",
+						notify:[
+							{ on:APPLY,
+							do:[ RESET, REFRESH ],
+							to:"restorebackup pickboot"
+							}
+						]
+					}},
+					{ SGeneric:{
+						title:"Kernel Name",
+						default:"None",
+						action:"generic '$UKM'/files/bck_prof",
+					}},
+					{ SDescription:{
+						description:"First set a name above and apply. After this you can press the Backup Current Kernel button below."
+					}},
+					{ SButton:{
+						label:"Backup Current Kernel",
+						action:"restorebackup keepboot '$KERNEL'",
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:"generic '$UKM'/files/bck_prof"
+							}
+						]
+					}},'
+			fi`
 			{ SPane:{
 				title:"General Actions",
 				description:"To update/refresh lists, select Restart Synapse below. To clear data, select Clear Synapse Data (fixes most common issues)."
