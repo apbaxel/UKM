@@ -15,24 +15,124 @@ cat << CTAG
 			{ STitleBar:{
 				title:"CPU Frequency Scaling"
 			}},
-				{ SSeekBar:{
-					title:"CPU Min Frequency",
-					description:"Set the minimum frequency the CPU scales down to.",
-					default:`sh $DEVICE DefaultCPUMinFrequency`,
-					action:"cpuset `sh $DEVICE DirCPUMinFrequency`",
-					values:{
-						`sh $DEVICE CPUFrequencyList`
-					}
-				}},
-				{ SSeekBar:{
-					title:"CPU Max Frequency",
-					description:"Set the maximum frequency the CPU scales up to.",
-					default:`sh $DEVICE DefaultCPUMaxFrequency`,
-					action:"cpuset `sh $DEVICE DirCPUMaxFrequency`",
-					values:{
-						`sh $DEVICE CPUFrequencyList`
-					}
-				}},
+				`if [ ! -f "/sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_all_cpus" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"CPU Min Frequency",
+						description:"Set the minimum frequency the CPU scales down to.",
+						default:'\`sh $DEVICE DefaultCPUMinFrequency\`',
+						action:"cpuset '\`sh $DEVICE DirCPUMinFrequency\`'",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo }'
+					}},'
+				else
+					$BB echo '{ SSeekBar:{
+						title:"CPU0 Min Frequency",
+						description:"Set the minimum frequency the CPU0 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_all_cpus\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_all_cpus",
+						notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:[
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu1",
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu2",
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu3"
+									]
+								}
+							],
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU1 Min Frequency",
+						description:"Set the minimum frequency the CPU1 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu1\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu1",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU2 Min Frequency",
+						description:"Set the minimum frequency the CPU2 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu2\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu2",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU3 Min Frequency",
+						description:"Set the minimum frequency the CPU3 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu3\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_min_freq_cpu3",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi`
+				`if [ ! -f "/sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_all_cpus" ]; then
+					$BB echo '{ SSeekBar:{
+						title:"CPU Max Frequency",
+						description:"Set the maximum frequency the CPU scales down to.",
+						default:'\`sh $DEVICE DefaultCPUMaxFrequency\`',
+						action:"cpuset '\`sh $DEVICE DirCPUMaxFrequency\`'",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo }'
+					}},'
+				else
+					$BB echo '{ SSeekBar:{
+						title:"CPU0 Max Frequency",
+						description:"Set the maximum frequency the CPU0 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_all_cpus\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_all_cpus",
+						notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:[
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu1",
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu2",
+										"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu3"
+									]
+								}
+							],
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU1 Max Frequency",
+						description:"Set the maximum frequency the CPU1 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu1\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu1",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU2 Max Frequency",
+						description:"Set the maximum frequency the CPU2 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu2\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu2",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},
+					{ SSeekBar:{
+						title:"CPU3 Max Frequency",
+						description:"Set the maximum frequency the CPU3 scales down to.",
+						default:'\`cat /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu3\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_max_freq_cpu3",
+						values:{'
+							sh $DEVICE CPUFrequencyList
+						$BB echo '}
+					}},'
+				fi`
 				`if [ -f "/sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq" ]; then
 				SOMF=\`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/screen_off_max_freq\`
 					$BB echo '{ SSeekBar:{
@@ -62,25 +162,117 @@ cat << CTAG
 				title:"CPU Governor",
 				description:"The CPU governor determines how the CPU behaves in response to changes in workload. More info: <a href='http://timos.me/tm/wiki/cpugovernors'>HERE</a>"
 			}},
-				{ SOptionList:{
-					default:`$BB cat \`sh $DEVICE DirCPUGovernor\``,
-					action:"cpuset `sh $DEVICE DirCPUGovernor`",
-					values:[
-						`sh $DEVICE CPUGovernorList`
-					],
-					notify:[
-						{
-							on:APPLY,
-							do:[ REFRESH, CANCEL ],
-							to:"`sh $DEVICE DirCPUGovernorTree`"
-						},
-						{
-							on:REFRESH,
-							do:REFRESH,
-							to:"`sh $DEVICE DirCPUGovernorTree`"
-						}
-					]
-				}},
+				`if [ ! -f "/sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_all_cpus" ]; then
+					$BB echo '{ SOptionList:{
+						default:'\`sh $DEVICE DefaultCPUGovernor\`',
+						action:"cpuset '\`sh $DEVICE DirCPUGovernor\`'",
+						values:['
+							sh $DEVICE CPUGovernorList
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, CANCEL ],
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							},
+							{
+								on:REFRESH,
+								do:REFRESH,
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							}
+						]
+					}},'
+				else
+					$BB echo '{ SOptionList:{
+						title:"CPU0",
+						default:'\`sh $DEVICE DefaultCPUGovernor\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_all_cpus",
+						values:['
+							sh $DEVICE CPUGovernorList
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, APPLY ],
+								to:[
+									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu1",
+									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu2",
+									"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu3",
+								]
+							}
+							{
+								on:APPLY,
+								do:[ REFRESH, CANCEL ],
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							},
+							{
+								on:REFRESH,
+								do:REFRESH,
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							}
+						]
+					}},
+					{ SOptionList:{
+						title:"CPU1",
+						default:'\`sh $DEVICE DefaultCPUGovernor\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu1",
+						values:['
+							sh $DEVICE CPUGovernorList
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, CANCEL ],
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							},
+							{
+								on:REFRESH,
+								do:REFRESH,
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							}
+						]
+					}},
+					{ SOptionList:{
+						title:"CPU2",
+						default:'\`sh $DEVICE DefaultCPUGovernor\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu2",
+						values:['
+							sh $DEVICE CPUGovernorList
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, CANCEL ],
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							},
+							{
+								on:REFRESH,
+								do:REFRESH,
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							}
+						]
+					}},
+					{ SOptionList:{
+						title:"CPU3",
+						default:'\`sh $DEVICE DefaultCPUGovernor\`',
+						action:"generic /sys/devices/system/cpu/cpufreq/all_cpus/scaling_governor_cpu3",
+						values:['
+							sh $DEVICE CPUGovernorList
+						$BB echo '],
+						notify:[
+							{
+								on:APPLY,
+								do:[ REFRESH, CANCEL ],
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							},
+							{
+								on:REFRESH,
+								do:REFRESH,
+								to:"'\`sh $DEVICE DirCPUGovernorTree\`'"
+							}
+						]
+					}},'
+				fi`
 			{ SPane:{
 				title:"CPU Governor Tunables"
 			}},
@@ -99,7 +291,7 @@ cat << CTAG
 							},
 						}
 					},
-					exclude: [ "overall_stats", "vdd_table" ]
+					exclude: [ "overall_stats", "vdd_table", "all_cpus" ]
 				}},
 		]
 }
