@@ -26,7 +26,7 @@ case "$1" in
 	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
-			if [ $FREQ -le "1512000" ]; then
+			if [ $FREQ -le "1300000" ]; then
 				MAXCPU=$FREQ;
 			fi;
 		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
@@ -53,7 +53,7 @@ case "$1" in
 		fi;
 	;;
 	DirKernelIMG)
-		$BB echo "/dev/block/platform/msm_sdcc.1/by-name/boot";
+		$BB echo "/dev/block/platform/omap/omap_hsmmc.0/by-name/param";
 	;;
 	DirCPUGovernor)
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
@@ -71,7 +71,7 @@ case "$1" in
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
 	;;
 	DirGPUMaxFrequency)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk";
+		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/gpu_oc";
 	;;
 	DirGPUMinPwrLevel)
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/min_pwrlevel";
@@ -92,10 +92,7 @@ case "$1" in
 		$BB echo "/proc/sys/net/ipv4/tcp_congestion_control";
 	;;
 	GPUFrequencyList)
-		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies | tr ' ' '\n' | sort -u` ; do
-		LABEL=$((GPUFREQ / 1000000));
-			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
-		done;
+		$BB echo '0:"0: 307 MHz", 1:"1: 384 MHz", 2:"2: 512 MHz"'
 	;;
 	GPUGovernorList)
 		GOV="ondemand, performance";
@@ -138,19 +135,18 @@ case "$1" in
 		done;
 	;;
 	LiveBatteryTemperature)
-		BAT_C=`$BB awk '{ print $1 / 10 }' /sys/class/power_supply/battery/temp`;
+		BAT_C=`$BB awk '{ print $1 / 10 }' /sys/devices/platform/omap/omap_i2c.4/i2c-4/4-0036/power_supply/battery/temp`;
 		BAT_F=`$BB awk "BEGIN { print ( ($BAT_C * 1.8) + 32 ) }"`;
-		BAT_H=`$BB cat /sys/class/power_supply/battery/health`;
 
-		$BB echo "$BAT_C°C | $BAT_F°F@nHealth: $BAT_H";
+		$BB echo "$BAT_C°C | $BAT_F°F";
 	;;
 	LiveBootloader)
 		version=`getprop ro.bootloader`;
 		
-		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
-		offset=5241856;
-		locked=00;
-		unlocked=02;
+		block=/dev/block/platform/omap/omap_hsmmc.0/by-name/param;
+		offset=124;
+		locked=01;
+		unlocked=00;
 		
 		lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
 		
@@ -167,25 +163,20 @@ case "$1" in
 	LiveCPUFrequency)
 		CPU0=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`;
 		CPU1=`$BB cat /sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq 2> /dev/null`;
-		CPU2=`$BB cat /sys/devices/system/cpu/cpu2/cpufreq/scaling_cur_freq 2> /dev/null`;
-		CPU3=`$BB cat /sys/devices/system/cpu/cpu3/cpufreq/scaling_cur_freq 2> /dev/null`;
 		
 		if [ -z "$CPU0" ]; then CPU0="Offline"; else CPU0="$((CPU0 / 1000)) MHz"; fi;
 		if [ -z "$CPU1" ]; then CPU1="Offline"; else CPU1="$((CPU1 / 1000)) MHz"; fi;
-		if [ -z "$CPU2" ]; then CPU2="Offline"; else CPU2="$((CPU2 / 1000)) MHz"; fi;
-		if [ -z "$CPU3" ]; then CPU3="Offline"; else CPU3="$((CPU3 / 1000)) MHz"; fi;
 		
-		$BB echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
+		$BB echo "Core 0: $CPU0@nCore 1: $CPU1";
 	;;
 	LiveCPUTemperature)
-		CPU_C=`$BB cat /sys/class/thermal/thermal_zone0/temp`;
+		CPU_C=`$BB awk '{ print $1 / 1000 }' /sys/devices/platform/omap/omap_temp_sensor.0/temperature`;
 		CPU_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
 
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		GPUFREQ="$((`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
-		$BB echo "$GPUFREQ";
+		$BB echo "$((`cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_cur_freq` / 1000)) MHz"; }
 	;;
 	LiveMemory)
 		while read TYPE MEM KB; do
@@ -270,7 +261,7 @@ case "$1" in
 		$BB echo $WL;
 	;;
 	MaxCPU)
-		$BB echo "4";
+		$BB echo "2";
 	;;
 	MinFreqIndex)
 		ID=0;
@@ -351,10 +342,10 @@ case "$1" in
 		done;
 	;;
 	ToggleBootloader)
-		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
-		offset=5241856;
-		locked=00;
-		unlocked=02;
+		block=/dev/block/platform/omap/omap_hsmmc.0/by-name/param;
+		offset=124;
+		locked=01;
+		unlocked=00;
 		lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
 
 		if [ $lockstate == $locked ]; then

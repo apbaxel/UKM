@@ -21,6 +21,9 @@ case "$1" in
 	DebugSPEED)
 		$BB echo "SPEED BIN";
 	;;
+	DefaultCPUGovernor)
+		$BB echo `$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
+	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
 			if [ $FREQ -le "2260000" ]; then
@@ -42,11 +45,15 @@ case "$1" in
 		$BB echo $MINCPU;
 	;;
 	DefaultGPUGovernor)
-		POLICY=`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/policy`
-		if [ "$POLICY" = "trustzone" ]; then
-			$BB echo "`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
-		else
-			$BB echo $POLICY;
+		if [ -f "/sys/class/kgsl/kgsl-3d0/pwrscale/policy" ]; then
+			POLICY=`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/policy`
+			if [ "$POLICY" = "trustzone" ]; then
+				$BB echo "`$BB cat /sys/class/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
+			else
+				$BB echo $POLICY;
+			fi;
+		elif [ -f "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor" ]; then
+			$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"
 		fi;
 	;;
 	DirKernelIMG)
@@ -65,7 +72,11 @@ case "$1" in
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
 	;;
 	DirGPUGovernor)
-		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
+		if [ -f "/sys/class/kgsl/kgsl-3d0/pwrscale/policy" ]; then
+			$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
+		elif [ -f "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor" ]; then
+			$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor";
+		fi;
 	;;
 	DirGPUMaxFrequency)
 		$BB echo "/sys/class/kgsl/kgsl-3d0/max_gpuclk";
@@ -78,9 +89,6 @@ case "$1" in
 	;;
 	DirGPUPolicy)
 		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy";
-	;;	
-	DirIOReadAheadSize)
-		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
 	DirIOScheduler)
 		$BB echo "/sys/block/mmcblk0/queue/scheduler";
@@ -98,20 +106,26 @@ case "$1" in
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance";
-		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
-			GOV="$GOV, simple";
-		fi;
+		if [ -f "/sys/class/kgsl/kgsl-3d0/pwrscale/policy" ]; then
+			GOV="ondemand, performance";
+			if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+				GOV="$GOV, simple";
+			fi;
 
-		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
-			GOV="$GOV, interactive";
+			if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
+				GOV="$GOV, interactive";
+			fi;
+			
+			if [ "`$BB grep 'conservative' /sys/class/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
+				GOV="$GOV, conservative";
+			fi;
+			
+			$BB echo $GOV;
+		elif [ -f "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor" ]; then
+			for GPUGOV in `$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/available_governors`; do
+				$BB echo "\"$GPUGOV\",";
+			done;
 		fi;
-		
-		if [ "`$BB grep 'conservative' /sys/class/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
-			GOV="$GOV, conservative";
-		fi;
-		
-		$BB echo $GOV;
 	;;
 	GPUPowerLevel)
 		NUM_PWRLVL=`$BB cat /sys/class/kgsl/kgsl-3d0/num_pwrlevels`;

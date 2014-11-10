@@ -21,6 +21,9 @@ case "$1" in
 	DebugSPEED)
 		$BB echo "SPEED BIN";
 	;;
+	DefaultCPUGovernor)
+		$BB echo `$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
+	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
 			if [ $FREQ -le "1512000" ]; then
@@ -78,9 +81,6 @@ case "$1" in
 	;;
 	DirGPUPolicy)
 		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy";
-	;;
-	DirIOReadAheadSize)
-		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
 	DirIOScheduler)
 		$BB echo "/sys/block/mmcblk0/queue/scheduler";

@@ -26,7 +26,7 @@ case "$1" in
 	;;
 	DefaultCPUMaxFrequency)
 		while read FREQ TIME; do
-			if [ $FREQ -le "1512000" ]; then
+			if [ $FREQ -le "2260000" ]; then
 				MAXCPU=$FREQ;
 			fi;
 		done < /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state;
@@ -36,7 +36,7 @@ case "$1" in
 	DefaultCPUMinFrequency)
 		S=0;
 		while read FREQ TIME; do
-			if [ $FREQ -ge "384000" ] && [ $S -eq "0" ]; then
+			if [ $FREQ -ge "300000" ] && [ $S -eq "0" ]; then
 				S=1;
 				MINCPU=$FREQ;
 			fi;
@@ -45,12 +45,7 @@ case "$1" in
 		$BB echo $MINCPU;
 	;;
 	DefaultGPUGovernor)
-		POLICY=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy`
-		if [ "$POLICY" = "trustzone" ]; then
-			$BB echo "`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/$POLICY/governor`"
-		else
-			$BB echo $POLICY;
-		fi;
+		$BB echo "`$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor`"
 	;;
 	DirKernelIMG)
 		$BB echo "/dev/block/platform/msm_sdcc.1/by-name/boot";
@@ -68,19 +63,22 @@ case "$1" in
 		$BB echo "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
 	;;
 	DirGPUGovernor)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/trustzone/governor";
+		$BB echo "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor";
 	;;
 	DirGPUMaxFrequency)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/max_gpuclk";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/max_gpuclk";
 	;;
 	DirGPUMinPwrLevel)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/min_pwrlevel";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/min_pwrlevel";
 	;;
 	DirGPUNumPwrLevels)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/num_pwrlevels";
 	;;
 	DirGPUPolicy)
-		$BB echo "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy";
+		$BB echo "/sys/class/kgsl/kgsl-3d0/pwrscale/policy";
+	;;	
+	DirIOReadAheadSize)
+		$BB echo "/sys/block/mmcblk0/queue/read_ahead_kb";
 	;;
 	DirIOScheduler)
 		$BB echo "/sys/block/mmcblk0/queue/scheduler";
@@ -92,31 +90,20 @@ case "$1" in
 		$BB echo "/proc/sys/net/ipv4/tcp_congestion_control";
 	;;
 	GPUFrequencyList)
-		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies | tr ' ' '\n' | sort -u` ; do
+		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | tr ' ' '\n' | sort -u` ; do
 		LABEL=$((GPUFREQ / 1000000));
 			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
 	;;
 	GPUGovernorList)
-		GOV="ondemand, performance";
-		if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
-			GOV="$GOV, simple";
-		fi;
-		
-		if [ -f "/sys/module/msm_kgsl_core/parameters/up_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/down_threshold" ] || [ -f "/sys/module/msm_kgsl_core/parameters/sample_time_ms" ]; then
-			GOV="$GOV, interactive";
-		fi;
-		
-		if [ "`$BB grep 'conservative' /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/avail_policies`" ]; then
-			GOV="$GOV, conservative";
-		fi;
-		
-		$BB echo $GOV;
+		for GPUGOV in `$BB cat /sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/available_governors`; do
+			$BB echo "\"$GPUGOV\",";
+		done;
 	;;
 	GPUPowerLevel)
-		NUM_PWRLVL=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
+		NUM_PWRLVL=`$BB cat /sys/class/kgsl/kgsl-3d0/num_pwrlevels`;
 		PWR_LEVEL=-1;
-		for GPUFREQ in `$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpu_available_frequencies`; do
+		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies`; do
 		PWR_LEVEL=$((PWR_LEVEL + 1));
 		MIN_PWRLVL=$((NUM_PWRLVL - PWR_LEVEL));
 		LABEL=$((GPUFREQ / 1000000));
@@ -130,7 +117,7 @@ case "$1" in
 		$BB echo "1";
 	;;
 	HasTamperFlag)
-		$BB echo "0";
+		$BB echo "1";
 	;;
 	IOSchedulerList)
 		for IOSCHED in `$BB cat /sys/block/mmcblk0/queue/scheduler | $BB sed -e 's/\]//;s/\[//'`; do
@@ -147,12 +134,16 @@ case "$1" in
 	LiveBootloader)
 		version=`getprop ro.bootloader`;
 		
-		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
-		offset=5241856;
+		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
+		offset=16400;
 		locked=00;
-		unlocked=02;
+		unlocked=01;
+		tamper=16404;
+		false=00;
+		true=01;
 		
 		lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
+		tamperstate=`$BB dd ibs=1 count=1 skip=$tamper if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
 		
 		if [ $lockstate == $locked ]; then
 			state="Locked";
@@ -162,7 +153,15 @@ case "$1" in
 			state="Unknown";
 		fi;
 		
-		$BB echo "Version: $version@nState: $state";
+		if [ $tamperstate == $false ]; then
+			tamper="False";
+		elif [ $tamperstate == $true ]; then
+			tamper="True";
+		else
+			tamper="Unknown";
+		fi;
+		
+		$BB echo "Version: $version@nState: $state@nTamper: $tamper";
 	;;
 	LiveCPUFrequency)
 		CPU0=`$BB cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2> /dev/null`;
@@ -178,13 +177,13 @@ case "$1" in
 		$BB echo "Core 0: $CPU0@nCore 1: $CPU1@nCore 2: $CPU2@nCore 3: $CPU3";
 	;;
 	LiveCPUTemperature)
-		CPU_C=`$BB cat /sys/class/thermal/thermal_zone0/temp`;
+		CPU_C=`$BB cat /sys/class/thermal/thermal_zone7/temp`;
 		CPU_F=`$BB awk "BEGIN { print ( ($CPU_C * 1.8) + 32 ) }"`;
 
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		GPUFREQ="$((`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
+		GPUFREQ="$((`$BB cat /sys/class/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
 		$BB echo "$GPUFREQ";
 	;;
 	LiveMemory)
@@ -304,7 +303,7 @@ case "$1" in
 		done;
 	;;
 	SetGPUMinPwrLevel)
-		NUM_PWRLVL=`$BB cat /sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/num_pwrlevels`;
+		NUM_PWRLVL=`$BB cat /sys/class/kgsl/kgsl-3d0/num_pwrlevels`;
 			if [[ ! -z $3 ]]; then
 				PWR_LEVEL=$3;
 				MIN_PWRLVL=$((NUM_PWRLVL - PWR_LEVEL));
@@ -313,37 +312,11 @@ case "$1" in
 		$BB echo $((NUM_PWRLVL - `$BB cat $2`));
 	;;
 	SetGPUGovernor)
-		POLICY=/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/pwrscale/policy;
-
 		if [[ ! -z $3 ]]; then
-			case $3 in
-				ondemand)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				performance)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				simple)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				interactive)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				conservative)
-					$BB echo $3 > $POLICY;
-				;;
-			esac;
+			$BB echo $3 > $2 2> /dev/null;
 		fi;
-
-		if [ `$BB cat $POLICY` = "trustzone" ]; then
-			$BB echo `$BB cat $2`;
-		else
-			$BB echo `$BB cat $POLICY`;
-		fi;
+		
+		$BB echo `$BB cat $2`;
 	;;
 	TCPCongestionList)
 		for TCPCC in `$BB cat /proc/sys/net/ipv4/tcp_available_congestion_control` ; do
@@ -351,10 +324,10 @@ case "$1" in
 		done;
 	;;
 	ToggleBootloader)
-		block=/dev/block/platform/msm_sdcc.1/by-name/aboot;
-		offset=5241856;
+		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
+		offset=16400;
 		locked=00;
-		unlocked=02;
+		unlocked=01;
 		lockstate=`$BB dd ibs=1 count=1 skip=$offset if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
 
 		if [ $lockstate == $locked ]; then
@@ -372,6 +345,24 @@ case "$1" in
 		fi;
 	;;
 	ToggleTamper)
-		$BB echo "0";
+		block=/dev/block/platform/msm_sdcc.1/by-name/misc;
+		offset=16404;
+		false=00;
+		true=01;
+		tamperstate=`$BB dd ibs=1 count=1 skip=$offset obs=1 if=$block 2> /dev/null | $BB od -h | $BB head -n 1 | $BB cut -c 11-`;
+
+		if [ $tamperstate == $true ]; then
+			$BB echo "Setting tamper flag to False...";
+			setstate=$false;
+		elif [ $tamperstate == $false ]; then
+			$BB echo "Setting tamper flag to True...";
+			setstate=$true;
+		else
+			"Tamper is Unknown. No changes were made.";
+		fi;
+		
+		if [ -n "$setstate" ]; then
+			$BB echo -ne "\x$setstate" | $BB dd obs=1 count=1 seek=$offset of=$block 2> /dev/null;
+		fi;
 	;;
 esac;
