@@ -27,11 +27,11 @@ cat << CTAG
 			$BB echo ','
 			. $UKM/config.json.generate.gpu
 			$BB echo ','
-			if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ] || [ -f "/sys/class/misc/gammacontrol/brightness" ] || [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ] || [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ] || [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" ] || [ -f "/sys/module/dsi_panel/kgamma_bn" ] || [ -d "/sys/devices/virtual/graphics/fb0" ]; then
+			if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" -o -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" -o -f "/sys/class/misc/gammacontrol/brightness" -o -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" -o -f "/sys/module/msm_fb/parameters/backlight_dimmer" -o -f "/sys/devices/platform/mipi_lgit.1537/kgamma_blue" -o -f "/sys/module/dsi_panel/kgamma_bn" -o -d "/sys/devices/virtual/graphics/fb0" -o -f "/sys/module/panel_s6e8aa0/parameters/contrast" -o -f "/sys/devices/platform/omapdss/manager0/gamma" -o -f "/sys/class/backlight/s6e8aa0/acl_set" ]; then
 				. $UKM/config.json.generate.gamma
 			$BB echo ','
 			fi
-			if [ -d "/sys/kernel/sound_control_3" ] || [ -d "/sys/class/misc/soundcontrol" ]; then
+			if [ -d "/sys/kernel/sound_control_3" -o -d "/sys/class/misc/soundcontrol" ]; then
 				. $UKM/config.json.generate.sound
 			$BB echo ','
 			fi
