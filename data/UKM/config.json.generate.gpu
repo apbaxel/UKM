@@ -13,35 +13,44 @@ cat << CTAG
 			{ SPane:{
 				title:"GPU Frequency Scaling",
 			}},
-				{ SSeekBar:{
-					title:"GPU Min Frequency",
-					description:"Set the minimum frequency the GPU scales down to.",
-					default:`$BB cat \`sh $DEVICE DirGPUMinPwrLevel\``,
-					action:"gpuset `sh $DEVICE DirGPUMinPwrLevel`",
-					values:{
-						`sh $DEVICE GPUPowerLevel`
-					}
+				`if [ -f "\`sh $DEVICE DirGPUMinPwrLevel\`" ]; then
+				GPUMIN=\`sh $DEVICE DirGPUMinPwrLevel\`
+					$BB echo '{ SSeekBar:{
+						title:"GPU Min Frequency",
+						description:"Set the minimum frequency the GPU scales down to.",
+						default:'\`$BB cat $GPUMIN\`',
+						action:"gpuset '$GPUMIN'",
+						values:{
+							'\`sh $DEVICE GPUPowerLevel\`'
+						}
+					}},'
+				fi`
+				`if [ -f "\`sh $DEVICE DirGPUMaxFrequency\`" ]; then
+				GPUMAX=\`sh $DEVICE DirGPUMaxFrequency\`
+					$BB echo '{ SSeekBar:{
+						title:"GPU Max Frequency",
+						description:"Set the maximum frequency the GPU scales up to.",
+						default:'\`$BB cat $GPUMAX\`',
+						action:"generic '$GPUMAX'",
+						values:{
+							'\`sh $DEVICE GPUFrequencyList\`'
+						}
+				}},'
+				fi`
+			`if [ -f "\`sh $DEVICE DirGPUGovernor\`" ]; then
+			GPUGOV=\`sh $DEVICE DirGPUGovernor\`
+				$BB echo '{ SPane:{
+					title:"GPU Governor",
+					description:"The GPU Governor makes scaling decisions based on specific algorithm for 2D/3D scenarios."
 				}},
-				{ SSeekBar:{
-					title:"GPU Max Frequency",
-					description:"Set the maximum frequency the GPU scales up to.",
-					default:`$BB cat \`sh $DEVICE DirGPUMaxFrequency\``,
-					action:"generic `sh $DEVICE DirGPUMaxFrequency`",
-					values:{
-						`sh $DEVICE GPUFrequencyList`
-					}
-				}},
-			{ SPane:{
-				title:"GPU Governor",
-				description:"The GPU Governor makes scaling decisions based on specific algorithm for 2D/3D scenarios."
-			}},
-				{ SOptionList:{
-					default:`sh $DEVICE DefaultGPUGovernor`,
-					action:"gpuset `sh $DEVICE DirGPUGovernor`",
-					values:[
-						`sh $DEVICE GPUGovernorList`
-					]
-				}},
+					{ SOptionList:{
+						default:'\`sh $DEVICE DefaultGPUGovernor\`',
+						action:"gpuset '$GPUGOV'",
+						values:[
+							'\`sh $DEVICE GPUGovernorList\`'
+						]
+					}},'
+			fi`
 			`if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
 				$BB echo '{ SPane:{
 					title:"Simple Governor Tunables"
