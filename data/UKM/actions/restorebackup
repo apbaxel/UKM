@@ -159,7 +159,7 @@ case "$1" in
 		
 		if [ -f $gamma ]; then
 			if [[ ! -z $2 ]]; then
-			$BB echo $2 > $PATH;
+			$BB echo $2 > $PATH 2> /dev/null;
 			
 				if [ $2 != "Custom" ]; then
 					FAUX_PROFILE=$2;
@@ -173,11 +173,11 @@ case "$1" in
 					green=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=15 -v t=24 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 					red=`$BB grep $FAUX_PROFILE $gamma | $BB awk -v f=25 -v t=34 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 					
-					$BB test -n "$cal" && $BB echo "$cal" > $kcal;
-					[ -f "/sys/devices/platform/kcal_ctrl.0/kcal_ctrl" ] && $BB echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_ctrl;
-					$BB test -n "$blue" && $BB echo "$blue" > $kgamma_b;
-					$BB test -n "$green" && $BB echo "$green" > $kgamma_g;
-					$BB test -n "$red" && $BB echo "$red" > $kgamma_r;
+					$BB test -n "$cal" && $BB echo "$cal" > $kcal 2> /dev/null;
+					[ -f "/sys/devices/platform/kcal_ctrl.0/kcal_ctrl" ] && $BB echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_ctrl 2> /dev/null;
+					$BB test -n "$blue" && $BB echo "$blue" > $kgamma_b 2> /dev/null;
+					$BB test -n "$green" && $BB echo "$green" > $kgamma_g 2> /dev/null;
+					$BB test -n "$red" && $BB echo "$red" > $kgamma_r 2> /dev/null;
 				fi;
 			fi;
 			
@@ -247,7 +247,7 @@ case "$1" in
 		
 		if [ -f "$gamma" ]; then
 			if [[ ! -z $2 ]]; then
-			$BB echo $2 > $PATH;
+			$BB echo $2 > $PATH 2> /dev/null;
 			
 				if [ $2 != "Custom" ]; then					
 					FRANCO_PROFILE=$2;
@@ -285,23 +285,23 @@ case "$1" in
 					brightness=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $18 }'`;
 					saturation=`$BB grep $FRANCO_PROFILE $gamma | $BB awk '{ print $19 }'`;
 					
-					$BB test -n "$cal" && $BB echo "$cal" > $kcal;
-					[ -f "/sys/devices/platform/kcal_ctrl.0/kcal_ctrl" ] && $BB echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_ctrl;
-					$BB test -n "$red_greys" && $BB echo "$red_greys" > $kred_greys;
-					$BB test -n "$red_mids" && $BB echo "$red_mids" > $kred_mids;
-					$BB test -n "$red_blacks" && $BB echo "$red_blacks" > $kred_blacks;
-					$BB test -n "$red_whites" && $BB echo "$red_whites" > $kred_whites;
-					$BB test -n "$green_greys" && $BB echo "$green_greys" > $kgreen_greys;
-					$BB test -n "$green_mids" && $BB echo "$green_mids" > $kgreen_mids;
-					$BB test -n "$green_blacks" && $BB echo "$green_blacks" > $kgreen_blacks;
-					$BB test -n "$green_whites" && $BB echo "$green_whites" > $kgreen_whites;
-					$BB test -n "$blue_greys" && $BB echo "$blue_greys" > $kblue_greys;
-					$BB test -n "$blue_mids" && $BB echo "$blue_mids" > $kblue_mids;
-					$BB test -n "$blue_blacks" && $BB echo "$blue_blacks" > $kblue_blacks;
-					$BB test -n "$blue_whites" && $BB echo "$blue_whites" > $kblue_whites;
-					$BB test -n "$contrast" && $BB echo "$contrast" > $kcontrast;
-					$BB test -n "$brightness" && $BB echo "$brightness" > $kbrightness;
-					$BB test -n "$saturation" && $BB echo "$saturation" > $ksaturation;
+					$BB test -n "$cal" && $BB echo "$cal" > $kcal 2> /dev/null;
+					[ -f "/sys/devices/platform/kcal_ctrl.0/kcal_ctrl" ] && $BB echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_ctrl 2> /dev/null;
+					$BB test -n "$red_greys" && $BB echo "$red_greys" > $kred_greys 2> /dev/null;
+					$BB test -n "$red_mids" && $BB echo "$red_mids" > $kred_mids 2> /dev/null;
+					$BB test -n "$red_blacks" && $BB echo "$red_blacks" > $kred_blacks 2> /dev/null;
+					$BB test -n "$red_whites" && $BB echo "$red_whites" > $kred_whites 2> /dev/null;
+					$BB test -n "$green_greys" && $BB echo "$green_greys" > $kgreen_greys 2> /dev/null;
+					$BB test -n "$green_mids" && $BB echo "$green_mids" > $kgreen_mids 2> /dev/null;
+					$BB test -n "$green_blacks" && $BB echo "$green_blacks" > $kgreen_blacks 2> /dev/null;
+					$BB test -n "$green_whites" && $BB echo "$green_whites" > $kgreen_whites 2> /dev/null;
+					$BB test -n "$blue_greys" && $BB echo "$blue_greys" > $kblue_greys 2> /dev/null;
+					$BB test -n "$blue_mids" && $BB echo "$blue_mids" > $kblue_mids 2> /dev/null;
+					$BB test -n "$blue_blacks" && $BB echo "$blue_blacks" > $kblue_blacks 2> /dev/null;
+					$BB test -n "$blue_whites" && $BB echo "$blue_whites" > $kblue_whites 2> /dev/null;
+					$BB test -n "$contrast" && $BB echo "$contrast" > $kcontrast 2> /dev/null;
+					$BB test -n "$brightness" && $BB echo "$brightness" > $kbrightness 2> /dev/null;
+					$BB test -n "$saturation" && $BB echo "$saturation" > $ksaturation 2> /dev/null;
 				fi;
 			fi;
 		
@@ -383,7 +383,7 @@ case "$1" in
 		
 		if [ -f "$gamma" ]; then
 			if [[ ! -z $2 ]]; then
-			$BB echo $2 > $PATH;
+			$BB echo $2 > $PATH 2> /dev/null;
 			
 				if [ $2 != "Custom" ]; then		
 					FRANCON5_PROFILE=$2;
@@ -403,13 +403,13 @@ case "$1" in
 					bn=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk -v f=117 -v t=139 '{for(i=f;i<=t;i++) printf("%s%s",$i,(i==t)?"\n":OFS)}'`;
 					w=`$BB grep $FRANCON5_PROFILE $gamma | $BB awk '{ print $140 }'`;
 					
-					$BB test -n "$rp" && $BB echo "$rp" > $kgamma_rp;
-					$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn;
-					$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp;
-					$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn;
-					$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp;
-					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn;
-					$BB test -n "$w" && $BB echo "$w" > $kgamma_w;
+					$BB test -n "$rp" && $BB echo "$rp" > $kgamma_rp 2> /dev/null;
+					$BB test -n "$rn" && $BB echo "$rn" > $kgamma_rn 2> /dev/null;
+					$BB test -n "$gp" && $BB echo "$gp" > $kgamma_gp 2> /dev/null;
+					$BB test -n "$gn" && $BB echo "$gn" > $kgamma_gn 2> /dev/null;
+					$BB test -n "$bp" && $BB echo "$bp" > $kgamma_bp 2> /dev/null;
+					$BB test -n "$bn" && $BB echo "$bn" > $kgamma_bn 2> /dev/null;
+					$BB test -n "$w" && $BB echo "$w" > $kgamma_w 2> /dev/null;
 				fi;
 			fi;
 			
