@@ -468,6 +468,39 @@ cat << CTAG
 					}},'
 				fi
 			fi`
+			`if [ -f "/sys/module/panel_s6e8aa0/parameters/contrast" ]; then
+			TC=\`$BB cat /sys/module/panel_s6e8aa0/parameters/contrast\`;
+				$BB echo '{ SSeekBar:{
+					title:"Trinity Contrast",
+					description:"Set the luminance difference between dark and light.",
+					min:-24,
+					max:16,
+					step:1,
+					default:'$TC',
+					action:"generic /sys/module/panel_s6e8aa0/parameters/contrast"
+				}},'
+			fi`
+			`if [ -f "/sys/devices/platform/omapdss/manager0/gamma" ]; then
+			OGC=\`$BB cat /sys/devices/platform/omapdss/manager0/gamma\`;
+				$BB echo '{ SSeekBar:{
+					title:"OMAP Gamma Contrast",
+					description:"Set midtones (middle gray levels).",
+					default:'$OGC',
+					action:"generic /sys/devices/platform/omapdss/manager0/gamma",
+					values:{ 
+						0:"0 (Disabled)", 1:"1", 2:"2", 3:"3", 4:"4", 5:"5 (Default)", 6:"6", 7:"7", 8:"8", 9:"9", 10:"10"
+					}
+				}},'
+			fi`
+			`if [ -f "/sys/class/backlight/s6e8aa0/acl_set" ]; then
+			CAB=\`$BB cat /sys/class/backlight/s6e8aa0/acl_set\`;
+				$BB echo '{ SCheckBox:{
+					label:"Content Adaptive Brightness",
+					description:"Decreases the brightness of mostly-white backgrounds to save battery.",
+					default:'$CAB',
+					action:"generic /sys/class/backlight/s6e8aa0/acl_set"
+				}},'
+			fi`
 			`if [ -f "/sys/devices/i2c-0/0-0038/lm3530_br_mode" ]; then
 				BRMOD=\`$BB cat /sys/devices/i2c-0/0-0038/lm3530_br_mode\`;
 				$BB echo '{ SPane:{
