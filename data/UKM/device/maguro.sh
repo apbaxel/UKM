@@ -176,7 +176,14 @@ case "$1" in
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		$BB echo "$((`cat /sys/devices/system/cpu/cpu0/cpufreq/gpu_cur_freq` / 1000)) MHz"; }
+		GPUCURFREQ=/sys/devices/system/cpu/cpu0/cpufreq/gpu_cur_freq;
+		
+		if [ -f "$GPUCURFREQ" ]; then
+			GPUFREQ="$((`$BB cat $GPUCURFREQ` / 1000)) MHz";
+			$BB echo "$GPUFREQ";
+		else
+			$BB echo "-";
+		fi;
 	;;
 	LiveMemory)
 		while read TYPE MEM KB; do

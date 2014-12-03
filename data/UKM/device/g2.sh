@@ -90,7 +90,7 @@ case "$1" in
 		$BB echo "/proc/sys/net/ipv4/tcp_congestion_control";
 	;;
 	GPUFrequencyList)
-		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | tr ' ' '\n' | sort -u` ; do
+		for GPUFREQ in `$BB cat /sys/class/kgsl/kgsl-3d0/gpu_available_frequencies | $BB tr ' ' '\n' | $BB sort -u` ; do
 		LABEL=$((GPUFREQ / 1000000));
 			$BB echo "$GPUFREQ:\"${LABEL} MHz\", ";
 		done;
@@ -183,8 +183,14 @@ case "$1" in
 		$BB echo "$CPU_C°C | $CPU_F°F";
 	;;
 	LiveGPUFrequency)
-		GPUFREQ="$((`$BB cat /sys/class/kgsl/kgsl-3d0/gpuclk` / 1000000)) MHz";
-		$BB echo "$GPUFREQ";
+		GPUCURFREQ=/sys/class/kgsl/kgsl-3d0/gpuclk;
+		
+		if [ -f "$GPUCURFREQ" ]; then
+			GPUFREQ="$((`$BB cat $GPUCURFREQ` / 1000000)) MHz";
+			$BB echo "$GPUFREQ";
+		else
+			$BB echo "-";
+		fi;
 	;;
 	LiveMemory)
 		while read TYPE MEM KB; do
