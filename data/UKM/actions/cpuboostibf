@@ -1,0 +1,24 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+T=/sys/module/cpu_boost/parameters/input_boost_freq;
+
+read() {
+	VALUE=-1;
+	NOW=`$BB cat $T`;
+	for IBF in $NOW; do
+		VALUE=$(($VALUE+1));
+		if [ "$VALUE" -eq $1 ]; then
+			$BB echo ${IBF:2};
+			return
+		fi;
+	done;
+}
+
+if [ -f $T ]; then
+	if [[ ! -z $2 ]]; then
+		$BB echo "$1:$2" > $T;
+	fi;
+
+	$BB echo $(read $1);
+fi;
