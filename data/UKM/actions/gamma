@@ -1,0 +1,16 @@
+UKM=/data/UKM;
+BB=$UKM/busybox;
+
+if [ -f $1 ]; then
+	if [[ ! -z "$2" ]]; then
+		$BB echo "$2" > $1 2> /dev/null;
+		
+		if [ "$1" == "/sys/devices/platform/kcal_ctrl.0/kcal" ] && [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_ctrl" ]; then
+			$BB echo 1 > /sys/devices/platform/kcal_ctrl.0/kcal_ctrl;
+		fi;
+	fi;
+	
+	$BB echo "`$BB cat $1`";
+else
+	$BB echo "0";
+fi;

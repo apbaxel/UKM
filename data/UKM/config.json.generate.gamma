@@ -11,7 +11,7 @@ cat << CTAG
 						{ SGeneric:{
 							title:"KCAL",
 							default:'$KCAL',
-							action:"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
+							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal",
 						}},'
 				fi
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_min" ]; then
@@ -23,7 +23,7 @@ cat << CTAG
 							max:255,
 							step:1,
 							default:'$KM',
-							action:"generic /sys/devices/platform/kcal_ctrl.0/kcal_min"
+							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_min"
 						}},'
 				fi
 			fi`
@@ -35,17 +35,17 @@ cat << CTAG
 					$BB echo '{ SGeneric:{
 						title:"Blue",
 						default:'$BLUE',
-						action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
+						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_b",
 					}},
 					{ SGeneric:{
 						title:"Green",
 						default:'$GREEN',
-						action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g",
+						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_g",
 					}},
 					{ SGeneric:{
 						title:"Red",
 						default:'$RED',
-						action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r",
+						action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_r",
 					}},
 				{ SPane:{
 					title:"Gamma Profiles",
@@ -64,11 +64,11 @@ cat << CTAG
 								on:APPLY,
 								do:[ REFRESH, APPLY ],
 								to:[
-									"generic '$UKM'/files/gamma_prof",
-									"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
-									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_b",
-									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_g",
-									"generic /sys/devices/platform/mipi_lgit.1537/kgamma_r"
+									"gamma '$UKM'/files/gamma_prof",
+									"gamma /sys/devices/platform/kcal_ctrl.0/kcal",
+									"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_b",
+									"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_g",
+									"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_r"
 								]
 							}
 						]
@@ -83,14 +83,14 @@ cat << CTAG
 							{
 								on:APPLY,
 								do:[ RESET, APPLY ],
-								to:"generic '$UKM'/files/gamma_prof"
+								to:"gamma '$UKM'/files/gamma_prof"
 							}
 						]
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
 						default:"Custom",
-						action:"generic '$UKM'/files/gamma_prof",
+						action:"gamma '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
 							description:"First set a name above and apply. After this you can press the Backup Current Profile button below."
@@ -102,7 +102,7 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:"generic '$UKM'/files/gamma_prof"
+									to:"gamma '$UKM'/files/gamma_prof"
 								}
 							]
 						}},
@@ -134,77 +134,77 @@ cat << CTAG
 				$BB echo '{ SGeneric:{
 							title:"Red Greys",
 							default:'$RED_GREYS',
-							action:"generic /sys/class/misc/gammacontrol/red_greys",
+							action:"gamma /sys/class/misc/gammacontrol/red_greys",
 						}},
 						{ SGeneric:{
 							title:"Red Mids",
 							default:'$RED_MIDS',
-							action:"generic /sys/class/misc/gammacontrol/red_mids",
+							action:"gamma /sys/class/misc/gammacontrol/red_mids",
 						}},
 						{ SGeneric:{
 							title:"Red Blacks",
 							default:'$RED_BLACKS',
-							action:"generic /sys/class/misc/gammacontrol/red_blacks",
+							action:"gamma /sys/class/misc/gammacontrol/red_blacks",
 						}},
 						{ SGeneric:{
 							title:"Red Whites",
 							default:'$RED_WHITES',
-							action:"generic /sys/class/misc/gammacontrol/red_whites",
+							action:"gamma /sys/class/misc/gammacontrol/red_whites",
 						}},
 						{ SGeneric:{
 							title:"Green Greys",
 							default:'$GREEN_GREYS',
-							action:"generic /sys/class/misc/gammacontrol/green_greys",
+							action:"gamma /sys/class/misc/gammacontrol/green_greys",
 						}},
 						{ SGeneric:{
 							title:"Green Mids",
 							default:'$GREEN_MIDS',
-							action:"generic /sys/class/misc/gammacontrol/green_mids",
+							action:"gamma /sys/class/misc/gammacontrol/green_mids",
 						}},
 						{ SGeneric:{
 							title:"Green Blacks",
 							default:'$GREEN_BLACKS',
-							action:"generic /sys/class/misc/gammacontrol/green_blacks",
+							action:"gamma /sys/class/misc/gammacontrol/green_blacks",
 						}},
 						{ SGeneric:{
 							title:"Green Whites",
 							default:'$GREEN_WHITES',
-							action:"generic /sys/class/misc/gammacontrol/green_whites",
+							action:"gamma /sys/class/misc/gammacontrol/green_whites",
 						}},
 						{ SGeneric:{
 							title:"Blue Greys",
 							default:'$BLUE_GREYS',
-							action:"generic /sys/class/misc/gammacontrol/blue_greys",
+							action:"gamma /sys/class/misc/gammacontrol/blue_greys",
 						}},
 						{ SGeneric:{
 							title:"Blue Mids",
 							default:'$BLUE_MIDS',
-							action:"generic /sys/class/misc/gammacontrol/blue_mids",
+							action:"gamma /sys/class/misc/gammacontrol/blue_mids",
 						}},
 						{ SGeneric:{
 							title:"Blue Blacks",
 							default:'$BLUE_BLACKS',
-							action:"generic /sys/class/misc/gammacontrol/blue_blacks",
+							action:"gamma /sys/class/misc/gammacontrol/blue_blacks",
 						}},
 						{ SGeneric:{
 							title:"Blue Whites",
 							default:'$BLUE_WHITES',
-							action:"generic /sys/class/misc/gammacontrol/blue_whites",
+							action:"gamma /sys/class/misc/gammacontrol/blue_whites",
 						}},
 						{ SGeneric:{
 							title:"Contrast",
 							default:'$CONTRAST',
-							action:"generic /sys/class/misc/gammacontrol/contrast",
+							action:"gamma /sys/class/misc/gammacontrol/contrast",
 						}},
 						{ SGeneric:{
 							title:"Brightness",
 							default:'$BRIGHTNESS',
-							action:"generic /sys/class/misc/gammacontrol/brightness",
+							action:"gamma /sys/class/misc/gammacontrol/brightness",
 						}},
 						{ SGeneric:{
 							title:"Saturation",
 							default:'$SATURATION',
-							action:"generic /sys/class/misc/gammacontrol/saturation",
+							action:"gamma /sys/class/misc/gammacontrol/saturation",
 						}},
 				{ SPane:{
 					title:"Gamma Profiles",
@@ -223,23 +223,23 @@ cat << CTAG
 								on:APPLY,
 								do:[ REFRESH, APPLY ],
 								to:[
-									"generic '$UKM'/files/gamma_prof",
-									"kcal /sys/devices/platform/kcal_ctrl.0/kcal",
-									"generic /sys/class/misc/gammacontrol/red_greys",
-									"generic /sys/class/misc/gammacontrol/red_mids",
-									"generic /sys/class/misc/gammacontrol/red_blacks",
-									"generic /sys/class/misc/gammacontrol/red_whites",
-									"generic /sys/class/misc/gammacontrol/green_greys",
-									"generic /sys/class/misc/gammacontrol/green_mids",
-									"generic /sys/class/misc/gammacontrol/green_blacks",
-									"generic /sys/class/misc/gammacontrol/green_whites",
-									"generic /sys/class/misc/gammacontrol/blue_greys",
-									"generic /sys/class/misc/gammacontrol/blue_mids",
-									"generic /sys/class/misc/gammacontrol/blue_blacks",
-									"generic /sys/class/misc/gammacontrol/blue_whites",
-									"generic /sys/class/misc/gammacontrol/contrast",
-									"generic /sys/class/misc/gammacontrol/brightness",
-									"generic /sys/class/misc/gammacontrol/saturation"
+									"gamma '$UKM'/files/gamma_prof",
+									"gamma /sys/devices/platform/kcal_ctrl.0/kcal",
+									"gamma /sys/class/misc/gammacontrol/red_greys",
+									"gamma /sys/class/misc/gammacontrol/red_mids",
+									"gamma /sys/class/misc/gammacontrol/red_blacks",
+									"gamma /sys/class/misc/gammacontrol/red_whites",
+									"gamma /sys/class/misc/gammacontrol/green_greys",
+									"gamma /sys/class/misc/gammacontrol/green_mids",
+									"gamma /sys/class/misc/gammacontrol/green_blacks",
+									"gamma /sys/class/misc/gammacontrol/green_whites",
+									"gamma /sys/class/misc/gammacontrol/blue_greys",
+									"gamma /sys/class/misc/gammacontrol/blue_mids",
+									"gamma /sys/class/misc/gammacontrol/blue_blacks",
+									"gamma /sys/class/misc/gammacontrol/blue_whites",
+									"gamma /sys/class/misc/gammacontrol/contrast",
+									"gamma /sys/class/misc/gammacontrol/brightness",
+									"gamma /sys/class/misc/gammacontrol/saturation"
 								]
 							}
 						]
@@ -254,14 +254,14 @@ cat << CTAG
 							{
 								on:APPLY,
 								do:[ RESET, APPLY ],
-								to:"generic '$UKM'/files/gamma_prof"
+								to:"gamma '$UKM'/files/gamma_prof"
 							}
 						]
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
 						default:"Custom",
-						action:"generic '$UKM'/files/gamma_prof",
+						action:"gamma '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
 							description:"First set a name above and apply. After this you can press the Backup Current Profile button below."
@@ -273,7 +273,7 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:"generic '$UKM'/files/gamma_prof"
+									to:"gamma '$UKM'/files/gamma_prof"
 								}
 							]
 						}},
@@ -293,17 +293,17 @@ cat << CTAG
 				$BB echo '{ SGeneric:{
 							title:"Blue",
 							default:'$BLUE',
-							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_blue",
+							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_blue",
 						}},
 						{ SGeneric:{
 							title:"Green",
 							default:'$GREEN',
-							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_green",
+							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_green",
 						}},
 						{ SGeneric:{
 							title:"Red",
 							default:'$RED',
-							action:"generic /sys/devices/platform/mipi_lgit.1537/kgamma_red",
+							action:"gamma /sys/devices/platform/mipi_lgit.1537/kgamma_red",
 						}},'
 			fi`
 			`if [ -f "/sys/module/dsi_panel/kgamma_bn" ]; then
@@ -317,37 +317,37 @@ cat << CTAG
 				$BB echo '{ SGeneric:{
 						title:"Blue Negative",
 						default:'$KGAMMA_BN',
-						action:"generic /sys/module/dsi_panel/kgamma_bn",
+						action:"gamma /sys/module/dsi_panel/kgamma_bn",
 					}},
 					{ SGeneric:{
 						title:"Blue Positive",
 						default:'$KGAMMA_BP',
-						action:"generic /sys/module/dsi_panel/kgamma_bp",
+						action:"gamma /sys/module/dsi_panel/kgamma_bp",
 					}},
 					{ SGeneric:{
 						title:"Green Negative",
 						default:'$KGAMMA_GN',
-						action:"generic /sys/module/dsi_panel/kgamma_gn",
+						action:"gamma /sys/module/dsi_panel/kgamma_gn",
 					}},
 					{ SGeneric:{
 						title:"Green Positive",
 						default:'$KGAMMA_GP',
-						action:"generic /sys/module/dsi_panel/kgamma_gp",
+						action:"gamma /sys/module/dsi_panel/kgamma_gp",
 					}},
 					{ SGeneric:{
 						title:"Red Negative",
 						default:'$KGAMMA_RN',
-						action:"generic /sys/module/dsi_panel/kgamma_rn",
+						action:"gamma /sys/module/dsi_panel/kgamma_rn",
 					}},
 					{ SGeneric:{
 						title:"Red Positive",
 						default:'$KGAMMA_RP',
-						action:"generic /sys/module/dsi_panel/kgamma_rp",
+						action:"gamma /sys/module/dsi_panel/kgamma_rp",
 					}},
 					{ SGeneric:{
 						title:"White Point",
 						default:'$KGAMMA_W',
-						action:"generic /sys/module/dsi_panel/kgamma_w",
+						action:"gamma /sys/module/dsi_panel/kgamma_w",
 					}},
 				{ SPane:{
 					title:"Gamma Profiles",
@@ -366,14 +366,14 @@ cat << CTAG
 								on:APPLY,
 								do:[ REFRESH, APPLY ],
 								to:[
-									"generic '$UKM'/files/gamma_prof",
-									"generic /sys/module/dsi_panel/kgamma_bn",
-									"generic /sys/module/dsi_panel/kgamma_bp",
-									"generic /sys/module/dsi_panel/kgamma_gn",
-									"generic /sys/module/dsi_panel/kgamma_gp",
-									"generic /sys/module/dsi_panel/kgamma_rn",
-									"generic /sys/module/dsi_panel/kgamma_rp",
-									"generic /sys/module/dsi_panel/kgamma_w"
+									"gamma '$UKM'/files/gamma_prof",
+									"gamma /sys/module/dsi_panel/kgamma_bn",
+									"gamma /sys/module/dsi_panel/kgamma_bp",
+									"gamma /sys/module/dsi_panel/kgamma_gn",
+									"gamma /sys/module/dsi_panel/kgamma_gp",
+									"gamma /sys/module/dsi_panel/kgamma_rn",
+									"gamma /sys/module/dsi_panel/kgamma_rp",
+									"gamma /sys/module/dsi_panel/kgamma_w"
 								]
 							}
 						]
@@ -388,14 +388,14 @@ cat << CTAG
 							{
 								on:APPLY,
 								do:[ RESET, APPLY ],
-								to:"generic '$UKM'/files/gamma_prof"
+								to:"gamma '$UKM'/files/gamma_prof"
 							}
 						]
 					}},
 					{ SGeneric:{
 						title:"Profile Name",
 						default:"Custom",
-						action:"generic '$UKM'/files/gamma_prof",
+						action:"gamma '$UKM'/files/gamma_prof",
 					}},
 						{ SDescription:{
 							description:"First set a name above and apply. After this you can press the Backup Current Profile button below."
@@ -407,7 +407,7 @@ cat << CTAG
 								{
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
-									to:"generic '$UKM'/files/gamma_prof"
+									to:"gamma '$UKM'/files/gamma_prof"
 								}
 							]
 						}},
@@ -560,6 +560,30 @@ cat << CTAG
 						action:"generic /sys/module/lm3630_bl/parameters/min_brightness"
 					}},'
 				fi
+				if [ -f "/sys/module/lm3630_bl/parameters/backlight_threshold" ]; then
+				BLT=\`$BB cat /sys/module/lm3630_bl/parameters/backlight_threshold\`;
+					$BB echo '{ SSeekBar:{
+						title:"Backlight Dimmer Threshold",
+						description:"Sets threshold value for backlight dimmer.",
+						step:1,
+						min:0,
+						max:50,
+						default:'$BLT',
+						action:"generic /sys/module/lm3630_bl/parameters/backlight_threshold",
+					}},'
+				fi
+				if [ -f "/sys/module/lm3630_bl/parameters/backlight_offset" ]; then
+				BLO=\`$BB cat /sys/module/lm3630_bl/parameters/backlight_offset\`;
+					$BB echo '{ SSeekBar:{
+						title:"Backlight Dimmer Offset",
+						description:"Sets offset value for backlight dimmer.",
+						step:1,
+						min:0,
+						max:50,
+						default:'$BLO',
+						action:"generic /sys/module/lm3630_bl/parameters/backlight_offset",
+					}},'
+				fi
  			fi`
 			`if [ -f "/sys/module/msm_fb/parameters/backlight_dimmer" ]; then
  			BLKD=\`$BB cat /sys/module/msm_fb/parameters/backlight_dimmer\`;
@@ -574,6 +598,18 @@ cat << CTAG
  						default:'$BLKD',
  						action:"generic /sys/module/msm_fb/parameters/backlight_dimmer"
  					}},'
+ 			fi`
+			`if [ -f "/sys/module/mdss_dsi/parameters/color_preset" ]; then
+			CP=\`$BB cat /sys/module/mdss_dsi/parameters/color_preset\`;
+ 				$BB echo '{ SOptionList:{
+						title:"Color Preset",
+						description:"When this option is enabled you will have slighly cooler and vivid color preset. For changes to take effect use power button to lock screen off and then on.",
+						default:'$CP',
+						action:"generic /sys/module/mdss_dsi/parameters/color_preset",
+						values:{
+							0:"Disabled", 1:"Vivid", 2:"Stock"
+						}
+					}},'
  			fi`
 		]
 }
