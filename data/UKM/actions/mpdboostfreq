@@ -1,7 +1,10 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
 
-T=/sys/kernel/msm_mpdecision/conf/boost_freqs;
+[ -d "/sys/kernel/msm_mpdecision/conf" ] && BHC=/sys/kernel/msm_mpdecision/conf;
+[ -d "/sys/kernel/bricked_hotplug/conf" ] && BHC=/sys/kernel/bricked_hotplug/conf;
+
+T=$BHC/boost_freqs;
 
 read() {
 	VALUE=-1;
