@@ -2,7 +2,7 @@ cat << CTAG
 {
 	name:TOOLS,
 		elements:[
-			`if [ "\`sh $DEVICE HasBootloader\`" == "1" ]; then
+			`if [ "\`sh $DEVICE HasBootloader\`" == "1" ] && [ -e "\`sh $DEVICE DirKernelIMG\`" ]; then
 				$BB echo '{ STitleBar:{
 					title:"Bootloader Status"
 				}},
@@ -18,7 +18,7 @@ cat << CTAG
 						action:"devtools bootloader"
 					}},'
 			fi`
-			`if [ "\`sh $DEVICE HasTamperFlag\`" == "1" ]; then
+			`if [ "\`sh $DEVICE HasTamperFlag\`" == "1" ] && [ -e "\`sh $DEVICE DirKernelIMG\`" ]; then
 				$BB echo '{ SDescription:{
 					description:"The bootloader sets a tamper flag if it has ever been unlocked/altered. The button below allows you to change this state."
 				}},
@@ -48,7 +48,7 @@ cat << CTAG
 					}},
 						{ SOptionList:{
 							default:'$VALUE',
-							action:"sqlite preferred_network_mode",
+							action:"sqlite PreferredNetworkMode",
 							values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
 								7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
 								13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
@@ -95,12 +95,10 @@ cat << CTAG
 					}},'
 				fi`
 				`if [ -f "/sys/kernel/printk_mode/printk_mode" ]; then
-				PRINTK=\`$BB cat /sys/kernel/printk_mode/printk_mode\`
 					$BB echo '{ SOptionList:{
 						title:"Kernel Logger",
 						description:"Allows you to toggle dmesg kernel logging.",
-						default:'$PRINTK',
-						action:"generic /sys/kernel/printk_mode/printk_mode",
+						action:"printk /sys/kernel/printk_mode/printk_mode",
 						values:{
 							0:"Disabled", 1:"Enabled"
 						}
