@@ -62,7 +62,7 @@ SPEAKER_GAIN="253 253 261";
 
 if [ -f $1 ]; then
 	if [[ ! -z $2 ]]; then
-		$BB echo 0 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
+		[ "`sh $DEVICE HasHeadphonePowerAmp`" == "1" ] && $BB echo 0 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
 		
 		if [ "$1" == "$UKM/files/sound_prof" ]; then
 			$BB echo $2 > $1;
@@ -75,7 +75,10 @@ if [ -f $1 ]; then
 				$BB echo "$MIC_GAIN" > /sys/kernel/sound_control_3/gpl_mic_gain;
 				$BB echo "$SPEAKER_GAIN" > /sys/kernel/sound_control_3/gpl_speaker_gain;
 			fi;
-			
+		
+		elif [ "$1" == "/sys/kernel/sound_control_3/gpl_sound_control_locked" ]; then
+			[ "`sh $DEVICE HasHeadphonePowerAmp`" == "1" ] && $BB echo "$2" > $1 2> /dev/null;
+		
 		elif [ "$1" == "/sys/kernel/sound_control_3/gpl_cam_mic_gain" ] || [ "$1" == "/sys/kernel/sound_control_3/gpl_mic_gain" ]; then
 			if [ "$2" -lt 0 ]; then
 				V=$2;
@@ -111,7 +114,7 @@ if [ -f $1 ]; then
 			
 			$BB echo "$V $V $H" > $1;
 		fi;
-		#$BB echo 1 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
+		#[ "`sh $DEVICE HasHeadphonePowerAmp`" == "1" ] && $BB echo 1 > /sys/kernel/sound_control_3/gpl_sound_control_locked;
 	fi;
 	
 	PATH=$1;

@@ -17,7 +17,7 @@ cat << CTAG
 									on:APPLY,
 									do:[ REFRESH, APPLY ],
 									to:['
-										[ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ] && $BB echo '"generic /sys/kernel/sound_control_3/gpl_sound_control_locked",'
+										[ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ] && $BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked",'
 										$BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
 										"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",'
 										[ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ] && $BB echo '"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",'
@@ -35,7 +35,7 @@ cat << CTAG
 								title:"Sound Control Lock",
 								description:"Have this enabled to prevent the driver from automatically changing your settings.",
 								default:0,
-								action:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked",
+								action:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked",
 								values:{ 0:"Disabled", 2:"Enabled"
 								}
 							}},'
@@ -45,29 +45,33 @@ cat << CTAG
 							min:-30,
 							max:10,
 							default:0,
-							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",
-							notify:[
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
-								}
-							]
-						}},
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",'
+							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
+								$BB echo 'notify:[
+									{
+										on:APPLY,
+										do:[ REFRESH, APPLY ],
+										to:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked"
+									}
+								]'
+							fi
+						$BB echo '}},
 						{ SSeekBar:{
 							title:"Speaker",
 							min:-30,
 							max:10,
 							default:0,
-							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",
-							notify:[
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
-								}
-							]
-						}},'
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",'
+							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
+								$BB echo 'notify:[
+									{
+										on:APPLY,
+										do:[ REFRESH, APPLY ],
+										to:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked"
+									}
+								]'
+							fi
+						$BB echo '}},'
 						if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
 							$BB echo '{ SSeekBar:{
 								title:"Headphone PowerAmp (Left & Right)",
@@ -76,12 +80,12 @@ cat << CTAG
 								default:0,
 								action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_pa_gain",
 								notify:[
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
-								}
-							]
+									{
+										on:APPLY,
+										do:[ REFRESH, APPLY ],
+										to:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked"
+									}
+								]
 							}},'
 						else
 							$BB echo '{ SDescription:{
@@ -93,29 +97,33 @@ cat << CTAG
 							min:-30,
 							max:10,
 							default:0,
-							action:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",
-							notify:[
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
-								}
-							]
-						}},
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",'
+							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
+								$BB echo 'notify:[
+									{
+										on:APPLY,
+										do:[ REFRESH, APPLY ],
+										to:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked"
+									}
+								]'
+							fi
+						$BB echo '}},
 						{ SSeekBar:{
 							title:"Camcorder Microphone",
 							min:-30,
 							max:10,
 							default:0,
-							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",
-							notify:[
-								{
-									on:APPLY,
-									do:[ REFRESH, APPLY ],
-									to:"generic /sys/kernel/sound_control_3/gpl_sound_control_locked"
-								}
-							]
-						}},'
+							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",'
+							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
+								$BB echo 'notify:[
+									{
+										on:APPLY,
+										do:[ REFRESH, APPLY ],
+										to:"soundfaux /sys/kernel/sound_control_3/gpl_sound_control_locked"
+									}
+								]'
+							fi
+						$BB echo '}},'
 			fi`
 			`[ -d "/sys/class/misc/soundcontrol" ] && SC=/sys/class/misc/soundcontrol;
 			[ -d "/sys/devices/virtual/misc/soundcontrol" ] && SC=/sys/devices/virtual/misc/soundcontrol;
