@@ -2,12 +2,57 @@ UKM=/data/UKM;
 BB=$UKM/busybox;
 SQL3=$UKM/sqlite3;
 
-DB=/data/data/com.android.providers.settings/databases;
+SYNAPSE_SD_DIR=/sdcard/Synapse;
+SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_configs;
+SYNAPSE_DATA=/data/data/com.af.synapse/databases;
+DISABLED_SETTINGS="'buildprop net.hostname', 'buildprop service.adb.tcp.port', 'devtools selinux', 'generic /data/UKM/files/bck_prof', 'sqlite PreferredNetworkMode'";
+DISABLED_ACTIONS="AND key NOT LIKE 'cpuvolt%' AND key NOT LIKE 'gamma%' AND key NOT LIKE 'restorebackup%' AND key NOT LIKE 'soundfaux%' AND key NOT LIKE 'speakerfaux%' AND key NOT LIKE 'voltage%'";
 
-if [[ ! -z $2 ]]; then
-	cd $DB;
-	$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);";
-fi;
+case "$1" in
+	ExportConfigSynapse)
+		BCK_PROF=`$BB cat $UKM/files/bck_prof`;
+		BCK_PROF=`$BB echo ${BCK_PROF// /_}`;
+		
+		if [ "$BCK_PROF" == "None" ]; then
+			$BB echo "Enter a config name first and then apply.";
+		else
+			$BB echo "None" > $UKM/files/bck_prof;
+			cd $SYNAPSE_DATA;
+			$SQL3 -separator '=' actionValueStore "SELECT key, value FROM action_value WHERE context = 'global' AND key NOT IN ($DISABLED_SETTINGS) $DISABLED_ACTIONS ORDER BY key ASC;" > "$SYNAPSE_CONFIG_DIR/$BCK_PROF.txt" 2> /dev/null;
+			$BB echo "$BCK_PROF.txt created. Press the Restart Synapse button below to see updated list.";
+		fi;
+	;;
+	ImportConfigSynapse)
+		SYNAPSE_CONFIG=`$BB cat "$SYNAPSE_CONFIG_DIR/.selected_config_profile"`;
+		
+		if [ -f "$SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG" ]; then
+			cd $SYNAPSE_DATA;
+			$SQL3 actionValueStore "DROP TABLE IF EXISTS my_action_value";
+			$SQL3 actionValueStore "CREATE TABLE my_action_value (key TEXT, value TEXT)";
+			$SQL3 actionValueStore <<EOF
+.separator =
+.import $SYNAPSE_CONFIG_DIR/$SYNAPSE_CONFIG my_action_value
+EOF
+			ROWS=`$SQL3 actionValueStore "SELECT COUNT(*) FROM action_value T0 INNER JOIN my_action_value T1 ON T0.key = T1.key WHERE T0.value <> T1.value;" 2> /dev/null`;
+			$SQL3 actionValueStore "UPDATE action_value SET value = (SELECT T1.value FROM my_action_value T1 WHERE T1.key = action_value.key) WHERE key NOT IN ($DISABLED_SETTINGS) $DISABLED_ACTIONS AND value <> (SELECT T1.value FROM my_action_value T1 WHERE T1.key = action_value.key)";
+			$SQL3 actionValueStore "DROP TABLE my_action_value";
+			$BB echo "None" > $SYNAPSE_CONFIG_DIR/.selected_config_profile;
+			$BB echo "$SYNAPSE_CONFIG imported $ROWS row(s). Press the Restart Synapse button below to see updated list.";
+		elif [ "$SYNAPSE_CONFIG" == "None" ]; then
+				$BB echo "None selected.";
+		else
+			$BB echo "File not found.";
+		fi;
+	;;
+	PreferredNetworkMode)
+		DB=/data/data/com.android.providers.settings/databases;
 
-cd $DB;
-$BB echo `$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
+		if [[ ! -z $2 ]]; then
+			cd $DB;
+			$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);";
+		fi;
+
+		cd $DB;
+		$BB echo `$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
+	;;
+esac;
