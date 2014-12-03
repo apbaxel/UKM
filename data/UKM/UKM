@@ -30,6 +30,7 @@ $BB rm -f $DEBUG/*
 # Reset profiles to default
 
 $BB echo "Custom" > $UKM/files/gamma_prof
+$BB echo "Custom" > $UKM/files/lmk_prof
 $BB echo "Custom" > $UKM/files/sound_prof
 $BB echo "Custom" > $UKM/files/speaker_prof
 $BB echo "0" > $UKM/files/volt_prof;

@@ -169,7 +169,29 @@ cat << CTAG
 				$BB echo '{ SPane:{
 					title:"Low Memory Killer",
 					description:"LMK Minfree controls how much memory each app type can hold, and is responsible for memory management for multitasking."
-				}},'
+				}},
+					{ SOptionList:{
+						title:"LMK Profile",
+						description:"This option will auto-tune LMK minfree values as per selected profile.",
+						default:Custom,
+						action:"lmk profile",
+						values:[ Custom, Low, Medium, Default, Aggressive, Exterminate,
+						],
+						notify:[
+								{
+									on:APPLY,
+									do:[ REFRESH, APPLY ],
+									to:[ 
+											"lmk 1",
+											"lmk 2",
+											"lmk 3",
+											"lmk 4",
+											"lmk 5",
+											"lmk 6"
+									],
+								}
+						]
+					}},'
 					for LMK in 1 2 3 4 5 6; do
 						$BB echo '{ SSeekBar:{ '
 							case $LMK in
@@ -187,7 +209,7 @@ cat << CTAG
 									$BB echo 'title:"Empty App", description:"Apps closed by the user but ready to run."' ;;
 							esac
 						$BB echo ', action:"lmk '${LMK}'",
-						unit:"MB", min:10, max:200 }},'
+						unit:"MB", min:1, max:300 }},'
 					done
 			fi`
 		]

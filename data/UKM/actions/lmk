@@ -6,6 +6,7 @@ P=/sys/module/lowmemorykiller/parameters/minfree;
 PERM=`$BB stat -c %a $P`;
 $BB test $PERM -lt "664" && $BB chmod 664 $P 2> /dev/null;
 
+#Read/Write
 read() {
 	VALUE=0;
 	NOW=`$BB cat $P`;
@@ -42,8 +43,48 @@ write() {
 	$BB echo ${LMKARR// /,} > $P 2> /dev/null;
 }
 
-if [[ ! -z $2 ]]; then
-	write $1 $2;
-fi;
+#Profiles
+Low(){
+	MINFREE="1536,2048,2560,8192,16384,20480";
+	COST="64";
+}
 
-$BB echo $(read $1);
+Medium(){
+	MINFREE="1536,2048,4096,16384,18432,20480";
+	COST="48";
+}
+
+Default(){
+	MINFREE="1536,2048,4096,16384,28672,32768";
+	COST="32";
+}
+
+Aggressive(){
+	MINFREE="2048,4096,4096,16384,32768,49152";
+	COST="16";
+}
+
+Exterminate(){
+	MINFREE="4096,8192,16384,19200,49152,65536";
+	COST="16";
+}
+
+if [ "$1" == "profile" ]; then
+	if [[ ! -z $2 ]]; then
+		$BB echo $2 > $UKM/files/lmk_prof;
+		
+		if [ $2 != "Custom" ]; then
+			$2;
+			$BB echo "$MINFREE" > $P;
+			$BB echo "$COST" > /sys/module/lowmemorykiller/parameters/cost;
+		fi;
+	fi;
+	
+	$BB echo `$BB cat $UKM/files/lmk_prof;`
+else
+	if [[ ! -z $2 ]]; then
+		write $1 $2;
+	fi;
+
+	$BB echo $(read $1);
+fi;
