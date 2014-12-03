@@ -271,6 +271,21 @@ cat << CTAG
 						action:"boolean /sys/module/qpnp_power_on/parameters/pwrkey_suspend"
 					}},'
 			fi`
+			`if [ -f "/sys/android_touch/vib_strength" ]; then
+			VIBRATOR=\`$BB cat /sys/android_touch/vib_strength\`
+				$BB echo '{ SPane:{
+					title:"Vibrator Strength for Wake Controls"
+				}},
+					{ SSeekBar:{
+						description:"Allows to set the intensity of the vibrator while using wake controls.",
+						unit:"%",
+						step:1,
+						min:0,
+						max:90,
+						default:'$VIBRATOR',
+						action:"generic /sys/android_touch/vib_strength"
+					}},'
+			fi`
 			`if [ -f "/sys/android_touch/lid_suspend" ]; then
 			LIDSFLO=\`$BB cat /sys/android_touch/lid_suspend\`
 				$BB echo '{ SPane:{
