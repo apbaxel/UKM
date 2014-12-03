@@ -29,7 +29,9 @@ if [ -f $TABLE ]; then
 	fi;
 	
 	if [ $FREQ = "global" ]; then
-		$BB echo `$BB cat $VOLT_PROF`;
+		V=`$BB cat $VOLT_PROF 2> /dev/null`;
+		
+		if [ -z "$V" ]; then $BB echo 0; else $BB echo $V; fi;
 	else
 		$BB awk '{if ($1 == "'$FREQ':") print $2;}' $TABLE
 	fi;
