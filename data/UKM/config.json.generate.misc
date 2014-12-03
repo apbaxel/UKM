@@ -90,7 +90,7 @@ cat << CTAG
 			`if [ -f "/sys/class/timed_output/vibrator/amp" ]; then
 			VIBRATOR=\`$BB cat /sys/class/timed_output/vibrator/amp\`
 				$BB echo '{ SPane:{
-					title:"Vibrator Strength"
+					title:"Vibrator Strength Amp"
 				}},
 					{ SSeekBar:{
 						description:"Allows to set the intensity of the vibrator.",
@@ -107,7 +107,7 @@ cat << CTAG
 			VTGMIN=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_min\`
 			VTGMAX=\`$BB cat /sys/devices/virtual/timed_output/vibrator/vtg_max\`
 				$BB echo '{ SPane:{
-					title:"Vibrator Strength"
+					title:"Vibrator Strength VTG"
 				}},
 					{ SSeekBar:{
 						description:"Allows to set the intensity of the vibrator.",
@@ -121,7 +121,7 @@ cat << CTAG
 			`if [ -f "/sys/class/misc/vibratorcontrol/vibrator_strength" ]; then
 			VIBRATOR=\`$BB cat /sys/class/misc/vibratorcontrol/vibrator_strength\`
 				$BB echo '{ SPane:{
-					title:"Vibrator Strength"
+					title:"Vibrator Strength VC"
 				}},
 					{ SSeekBar:{
 						description:"Allows to set the intensity of the vibrator.",
@@ -135,7 +135,7 @@ cat << CTAG
 			`if [ -f "/sys/vibrator/pwmvalue" ]; then
 			VIBRATOR=\`$BB cat /sys/vibrator/pwmvalue\`
 				$BB echo '{ SPane:{
-					title:"Vibrator Strength"
+					title:"Vibrator Strength PWM"
 				}},
 					{ SSeekBar:{
 						description:"Allows to set the intensity of the vibrator.",
