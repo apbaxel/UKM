@@ -141,6 +141,58 @@ cat << CTAG
 					}},'
 				fi
 			fi`
+			`if [ -f "/sys/devices/virtual/misc/customvoltage/core_voltages" ]; then		
+				$BB echo '{ STitleBar:{
+					title:"Core Voltages"
+				}},'
+				VOLTAGE=0
+				while read UVOLT UNIT; do
+					VOLTAGE=$((VOLTAGE + 1));
+						$BB echo '{ SSeekBar:{
+							title:"Voltage '${VOLTAGE}'",
+							unit:"' ${UNIT}'",
+							min:700,
+							max:1500,
+							step:1,
+							default:'$UVOLT',
+							action:"voltage corevolt '${VOLTAGE}'"
+						}},'
+				done < /sys/devices/virtual/misc/customvoltage/core_voltages;
+			fi`
+			`if [ -f "/sys/devices/virtual/misc/customvoltage/iva_voltages" ]; then			
+				$BB echo '{ STitleBar:{
+					title:"IVA Voltages"
+				}},'
+				VOLTAGE=0
+				while read UVOLT UNIT; do
+					VOLTAGE=$((VOLTAGE + 1));
+						$BB echo '{ SSeekBar:{
+							title:"Voltage '${VOLTAGE}'",
+							unit:"' ${UNIT}'",
+							min:700,
+							max:1500,
+							step:1,
+							default:'$UVOLT',
+							action:"voltage ivavolt '${VOLTAGE}'"
+						}},'
+				done < /sys/devices/virtual/misc/customvoltage/iva_voltages;
+			fi`
+			`if [ -f "/sys/devices/virtual/misc/customvoltage/regulator_voltages" ]; then			
+				$BB echo '{ STitleBar:{
+					title:"Regulator Voltages"
+				}},'
+				while read FREQ UVOLT UNIT; do
+					$BB echo '{ SSeekBar:{
+						title:"'${FREQ//\:/}'",
+						unit:"' ${UNIT}'",
+						min:800,
+						max:3500,
+						step:1,
+						default:'$UVOLT',
+						action:"voltage regulatorvolt '${FREQ}'",
+					}},'
+				done < /sys/devices/virtual/misc/customvoltage/regulator_voltages;
+			fi`
 		]
 }
 CTAG

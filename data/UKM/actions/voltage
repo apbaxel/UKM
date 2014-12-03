@@ -69,7 +69,9 @@ case $1 in
 				$BB echo "$VOLTARR" > $P 2> /dev/null;
 			fi;
 			
-			$BB echo `$BB cat $VOLT_PROF`;
+			V=`$BB cat $VOLT_PROF 2> /dev/null`;
+			
+			if [ -z "$V" ]; then $BB echo 0; else $BB echo $V; fi;
 		fi;
 	;;
 	cpuvolt)
@@ -84,14 +86,46 @@ case $1 in
 		fi;
 	;;
 	gpuvolt)
-	P=/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table;
-	
-	if [ -f $P ]; then
-		if [[ ! -z $3 ]]; then
-			corewrite $2 $3;
-		fi;
+		P=/sys/devices/system/cpu/cpu0/cpufreq/gpu_mv_table;
 		
-		$BB echo $(coreread $2);
-	fi;
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				corewrite $2 $3;
+			fi;
+			
+			$BB echo $(coreread $2);
+		fi;
+	;;
+	corevolt)
+		P=/sys/devices/virtual/misc/customvoltage/core_voltages;
+		
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				corewrite $2 $3;
+			fi;
+			
+			$BB echo `coreread $2`;
+		fi;
+	;;
+	ivavolt)
+		P=/sys/devices/virtual/misc/customvoltage/iva_voltages;
+		
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				corewrite $2 $3;
+			fi;
+			
+			$BB echo `coreread $2`;
+		fi;
+	;;
+	regulatorvolt)
+		P=/sys/devices/virtual/misc/customvoltage/regulator_voltages;
+		
+		if [ -f $P ]; then
+			if [[ ! -z $3 ]]; then
+				cpuwrite $2 $3;
+			fi;
+			$BB echo `cpuread $2`;
+		fi;
 	;;
 esac;
