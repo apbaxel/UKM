@@ -22,6 +22,7 @@ case $1 in
 		fi;
 
 		$BB echo `getenforce`;
+		#/sys/fs/selinux/enforce
 	;;
 	optimizedb)
 		for i in `$BB find /data -iname "*.db"`; do 
