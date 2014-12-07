@@ -345,36 +345,44 @@ case "$1" in
 		$BB echo $((NUM_PWRLVL - `$BB cat $2`));
 	;;
 	SetGPUGovernor)
-		POLICY=/sys/class/kgsl/kgsl-3d0/pwrscale/policy;
+		if [ -f "/sys/class/kgsl/kgsl-3d0/pwrscale/policy" ]; then
+			POLICY=/sys/class/kgsl/kgsl-3d0/pwrscale/policy;
 
-		if [[ ! -z $3 ]]; then
-			case $3 in
-				ondemand)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				performance)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				simple)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				interactive)
-					$BB echo "trustzone" > $POLICY;
-					$BB echo $3 > $2;
-				;;
-				conservative)
-					$BB echo $3 > $POLICY;
-				;;
-			esac;
-		fi;
+			if [[ ! -z $3 ]]; then
+				case $3 in
+					ondemand)
+						$BB echo "trustzone" > $POLICY;
+						$BB echo $3 > $2;
+					;;
+					performance)
+						$BB echo "trustzone" > $POLICY;
+						$BB echo $3 > $2;
+					;;
+					simple)
+						$BB echo "trustzone" > $POLICY;
+						$BB echo $3 > $2;
+					;;
+					interactive)
+						$BB echo "trustzone" > $POLICY;
+						$BB echo $3 > $2;
+					;;
+					conservative)
+						$BB echo $3 > $POLICY;
+					;;
+				esac;
+			fi;
 
-		if [ `$BB cat $POLICY` = "trustzone" ]; then
+			if [ `$BB cat $POLICY` = "trustzone" ]; then
+				$BB echo `$BB cat $2`;
+			else
+				$BB echo `$BB cat $POLICY`;
+			fi;
+		elif [ -f "/sys/devices/fdb00000.qcom,kgsl-3d0/devfreq/fdb00000.qcom,kgsl-3d0/governor" ]; then
+			if [[ ! -z $3 ]]; then
+				$BB echo $3 > $2 2> /dev/null;
+			fi;
+		
 			$BB echo `$BB cat $2`;
-		else
-			$BB echo `$BB cat $POLICY`;
 		fi;
 	;;
 	TCPCongestionList)
