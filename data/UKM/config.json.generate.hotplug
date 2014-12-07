@@ -403,11 +403,9 @@ cat << CTAG
 					}},'
 				fi
 				if [ -f "$BHC/idle_freq" ]; then
-				IDLEFREQ=\`$BB cat $BHC/idle_freq\`
 					$BB echo '{ SSeekBar:{
 							title:"Idle Frequency",
 							description:"If CPU0 is below this frequency, does not plug in CPU 1-3.",
-							default:'$IDLEFREQ',
 							action:"generic '$BHC'/idle_freq",
 							values:{'
 								sh $DEVICE CPUFrequencyList
