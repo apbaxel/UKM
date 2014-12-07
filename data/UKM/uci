@@ -6,13 +6,14 @@ DEVICE=`sh $UKM/device/.device.sh`;
 
 UCI_CONFIG=$UKM/config.json;
 UCI_ACTION=$UKM/actions/;
+UCI_DEVICE=$UKM/device/;
 UCI_FILES=$UKM/files/;
 DEBUG=$UKM/debug;
 SYNAPSE_SD_DIR=/sdcard/Synapse;
 
 if [ ! -f $UCI_CONFIG ]; then
 	$BB mount -t rootfs -o rw,remount rootfs;
-	$BB chmod -R 755 $UCI_ACTION $UCI_FILES;
+	$BB chmod -R 755 $UCI_ACTION $UCI_DEVICE $UCI_FILES;
 
 	[ ! -d "$SYNAPSE_SD_DIR/UKM" ] && $BB mkdir -p "$SYNAPSE_SD_DIR/UKM";
 	KERNEL_CURR=`$BB cat /proc/version 2> /dev/null`;
