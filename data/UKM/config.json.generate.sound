@@ -43,7 +43,7 @@ cat << CTAG
 						$BB echo '{ SSeekBar:{
 							title:"Headphone (Left & Right)",
 							min:-30,
-							max:10,
+							max:20,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_headphone_gain",'
 							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
@@ -59,7 +59,7 @@ cat << CTAG
 						{ SSeekBar:{
 							title:"Speaker",
 							min:-30,
-							max:10,
+							max:20,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_speaker_gain",'
 							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
@@ -95,7 +95,7 @@ cat << CTAG
 						$BB echo '{ SSeekBar:{
 							title:"Handset Microphone",
 							min:-30,
-							max:10,
+							max:20,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_mic_gain",'
 							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
@@ -111,7 +111,7 @@ cat << CTAG
 						{ SSeekBar:{
 							title:"Camcorder Microphone",
 							min:-30,
-							max:10,
+							max:20,
 							default:0,
 							action:"soundfaux /sys/kernel/sound_control_3/gpl_cam_mic_gain",'
 							if [ "\`sh $DEVICE HasHeadphonePowerAmp\`" == "1" ]; then
