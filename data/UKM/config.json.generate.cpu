@@ -350,39 +350,56 @@ cat << CTAG
 						}},'
 					fi
 					if [ -f "/sys/module/cpu_boost/parameters/input_boost_freq" ]; then
-						$BB echo '{ SSeekBar:{
-							title:"CPU0 Input Boost Frequency",
-							description:"This will boost your minimum CPU0 speed to the selected frequency when you touch the screen or press a button.",
-							action:"cpuboostibf 0",
-							values:{ 0:"Disabled", '
-								sh $DEVICE CPUFrequencyList
-							$BB echo '}
-						}},
-						{ SSeekBar:{
-							title:"CPU1 Input Boost Frequency",
-							description:"This will boost your minimum CPU1 speed to the selected frequency when you touch the screen or press a button.",
-							action:"cpuboostibf 1",
-							values:{ 0:"Disabled", '
-								sh $DEVICE CPUFrequencyList
-							$BB echo '}
-						}},
-						{ SSeekBar:{
-							title:"CPU2 Input Boost Frequency",
-							description:"This will boost your minimum CPU2 speed to the selected frequency when you touch the screen or press a button.",
-							action:"cpuboostibf 2",
-							values:{ 0:"Disabled", '
-								sh $DEVICE CPUFrequencyList
-							$BB echo '}
-						}},
-						{ SSeekBar:{
-							title:"CPU3 Input Boost Frequency",
-							description:"This will boost your minimum CPU3 speed to the selected frequency when you touch the screen or press a button.",
-							action:"cpuboostibf 3",
-							values:{ 0:"Disabled", '
-								sh $DEVICE CPUFrequencyList
-							$BB echo '}
-						}},'
-					fi
+					
+					VALUE=0; for i in \`$BB cat /sys/module/cpu_boost/parameters/input_boost_freq\`; do VALUE=$(($VALUE+1)); done;
+					
+						if [ $VALUE -eq 1 ]; then
+							IBF=\`$BB cat /sys/module/cpu_boost/parameters/input_boost_freq\`
+							
+							$BB echo '{ SSeekBar:{
+								title:"Input Boost Frequency",
+								description:"This will boost your minimum CPU speed to the selected frequency when you touch the screen or press a button.",
+								default:'$IBF',
+								action:"generic /sys/module/cpu_boost/parameters/input_boost_freq",
+								values:{ 0:"Disabled", '
+									sh $DEVICE CPUFrequencyList
+								$BB echo '}
+							}},'
+						elif [ $VALUE -eq 4 ]; then
+							$BB echo '{ SSeekBar:{
+								title:"CPU0 Input Boost Frequency",
+								description:"This will boost your minimum CPU0 speed to the selected frequency when you touch the screen or press a button.",
+								action:"cpuboostibf 0",
+								values:{ 0:"Disabled", '
+									sh $DEVICE CPUFrequencyList
+								$BB echo '}
+							}},
+							{ SSeekBar:{
+								title:"CPU1 Input Boost Frequency",
+								description:"This will boost your minimum CPU1 speed to the selected frequency when you touch the screen or press a button.",
+								action:"cpuboostibf 1",
+								values:{ 0:"Disabled", '
+									sh $DEVICE CPUFrequencyList
+								$BB echo '}
+							}},
+							{ SSeekBar:{
+								title:"CPU2 Input Boost Frequency",
+								description:"This will boost your minimum CPU2 speed to the selected frequency when you touch the screen or press a button.",
+								action:"cpuboostibf 2",
+								values:{ 0:"Disabled", '
+									sh $DEVICE CPUFrequencyList
+								$BB echo '}
+							}},
+							{ SSeekBar:{
+								title:"CPU3 Input Boost Frequency",
+								description:"This will boost your minimum CPU3 speed to the selected frequency when you touch the screen or press a button.",
+								action:"cpuboostibf 3",
+								values:{ 0:"Disabled", '
+									sh $DEVICE CPUFrequencyList
+								$BB echo '}
+							}},'
+						fi;
+					fi;
 					if [ -f "/sys/module/cpu_boost/parameters/load_based_syncs" ]; then
 					LBS=\`bool /sys/module/cpu_boost/parameters/load_based_syncs\`
 						$BB echo '{ SCheckBox:{
