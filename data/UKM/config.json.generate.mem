@@ -85,7 +85,7 @@ cat << CTAG
 				{ SOptionList:{
 					title:"Drop Caches (Clear VFS Cache After Boot)",
 					description:"This option will force rebuild of file system cache based on actual app usage rather than boot/startup processes. NOTE: This process can take from 1-2 minutes (Enable for better file system read/write performance).",
-					default:`$BB cat $UKM/files/dropcaches_prof`,
+					default:0,
 					action:"dropcaches $UKM/files/dropcaches_prof",
 					values:{ 0:"Disabled", 1:"Enabled"
 					}
