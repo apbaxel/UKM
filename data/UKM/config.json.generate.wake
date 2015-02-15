@@ -66,7 +66,7 @@ cat << CTAG
 						action:"wake /sys/devices/virtual/misc/touchwake/delay"
 					}},'
 			fi`
-			`if [ -f "/sys/module/lge_touch_core/parameters/doubletap_to_wake" ]; then
+			`if [ -f "/sys/module/lge_touch_core/parameters/doubletap_to_wake" ] && [ ! -f "/sys/module/lge_touch_core/parameters/doubletap_pwrkey_suspend" ]; then
 			DT2W=\`$BB cat /sys/module/lge_touch_core/parameters/doubletap_to_wake\`
 				$BB echo '{ SPane:{
 					title:"DoubleTap2Wake"
@@ -76,6 +76,62 @@ cat << CTAG
 						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
 						default:'$DT2W',
 						action:"wake /sys/module/lge_touch_core/parameters/doubletap_to_wake"
+					}},'
+			fi`
+			`if [ -f "/sys/module/lge_touch_core/parameters/doubletap_to_wake" ] && [ -f "/sys/module/lge_touch_core/parameters/doubletap_pwrkey_suspend" ]; then
+			DT2W=\`bool /sys/module/lge_touch_core/parameters/doubletap_to_wake\`
+			DM=\`$BB cat /sys/module/lge_touch_core/parameters/debug_mask\`
+			PKS=\`bool /sys/module/lge_touch_core/parameters/doubletap_pwrkey_suspend\`
+			DTA=\`$BB cat /sys/module/lge_touch_core/parameters/doubletap_area\`
+			DTC=\`$BB cat /sys/module/lge_touch_core/parameters/doubletap_charger\`
+			DTD=\`$BB cat /sys/module/lge_touch_core/parameters/doubletap_delay\`
+			
+				$BB echo '{ SPane:{
+					title:"DoubleTap2Wake"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
+						default:'$DT2W',
+						action:"boolean /sys/module/lge_touch_core/parameters/doubletap_to_wake"
+					}},
+					{ SCheckBox:{
+						label:"Debug Mask",
+						description:"Allows you to activate debug mask for DT2W operations.",
+						default:'$DM',
+						action:"generic /sys/module/lge_touch_core/parameters/debug_mask"
+					}},
+					{ SCheckBox:{
+						label:"Power Key Suspend",
+						description:"If enabled, disables screen wake controls when scren is turned off by power key.",
+						default:'$PKS',
+						action:"boolean /sys/module/lge_touch_core/parameters/doubletap_pwrkey_suspend"
+					}},
+					{ SOptionList:{
+						title:"Doubletap Area",
+						description:"Allows the selection of the area of the device screen to activate DoubleTap2Wake.",
+						default:'$DTA',
+						values:{ 0:"Full (Default)", 1:"Bottom half", 2:"Top half", 3:"Center"
+						},
+						action:"generic /sys/module/lge_touch_core/parameters/doubletap_area"
+					}},
+					{ SOptionList:{
+						title:"Doubletap Charger",
+						description:"Changes the behaviour of DoubleTap2Wake when the device is charging.",
+						default:'$DTC',
+						values:{ 0:"Normal (Default)", 1:"Normal + Enabled when charging", 2:"Only enabled when charging"
+						},
+						action:"generic /sys/module/lge_touch_core/parameters/doubletap_charger"
+					}},
+					{ SSeekBar:{
+						title:"Doubletap Delay",
+						description:"Maximum number of milliseconds between 2 taps",
+						unit:" ms",
+						step:50,
+						min:500,
+						max:1500,
+						default:'$DTD',
+						action:"generic /sys/module/lge_touch_core/parameters/doubletap_delay"
 					}},'
 			fi`
 			`if [ -f "/sys/android_touch/doubletap2wake" ]; then
@@ -298,6 +354,25 @@ cat << CTAG
 						action:"generic /sys/android_touch/lid_suspend"
 					}},'
 			fi`
+			`if [ -f "/sys/android_touch/tap2unlock" ]; then
+			T2U=\`$BB cat /sys/android_touch/tap2unlock\`
+			T2UP=\`$BB cat /sys/android_touch/tap2unlock_pattern\`
+				$BB echo '{ SPane:{
+					title:"Tap2Unlock"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to enable Tap2Unlock.",
+						default:'$T2U',
+						action:"generic /sys/android_touch/tap2unlock"
+					}},
+					{ SGeneric:{
+						title:"Pattern",
+						description:"Allows you to set the pattern to unlock the screen.",
+						default:'$T2UP',
+						action:"generic /sys/android_touch/tap2unlock_pattern",
+					}},'
+			fi`
 			`if [ -f "/sys/module/lid/parameters/enable_lid" ]; then
 			MLID=\`$BB cat /sys/module/lid/parameters/enable_lid\`
 				$BB echo '{ SPane:{
@@ -317,9 +392,33 @@ cat << CTAG
 				}},
 					{ SCheckBox:{
 						label:"Enable",
-						description:"Allows you to wake the device by double tapping the screen (Causes more battery drain while in pocket).",
+						description:"Allows you to wake the device by double tapping the screen.",
 						default:'$DTOPO',
 						action:"generic /proc/touchpanel/double_tap_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/sweep_wake_enable" ]; then
+			STWOPO=\`$BB cat /proc/touchpanel/sweep_wake_enable\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Wake"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to wake the device by sweeping the screen.",
+						default:'$STWOPO',
+						action:"generic /proc/touchpanel/sweep_wake_enable"
+					}},'
+			fi`
+			`if [ -f "/proc/touchpanel/sweep_vol_enable" ]; then
+			STVOPO=\`$BB cat /proc/touchpanel/sweep_vol_enable\`
+				$BB echo '{ SPane:{
+					title:"Sweep2Volume"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to increase/decrease volume by sweeping the screen.",
+						default:'$STVOPO',
+						action:"generic /proc/touchpanel/sweep_vol_enable"
 					}},'
 			fi`
 			`if [ -f "/proc/touchpanel/camera_enable" ]; then
@@ -368,6 +467,18 @@ cat << CTAG
 						description:"Allows you to enable the smartcover control.",
 						default:'$STCOPO',
 						action:"generic /proc/touchpanel/smartcover_mode_enable"
+					}},'
+			fi`
+			`if [ -f "/sys/devices/virtual/input/clearpad/wakeup_gesture" ]; then
+			WUG=\`$BB cat /sys/devices/virtual/input/clearpad/wakeup_gesture\`
+				$BB echo '{ SPane:{
+					title:"Wakeup Gesture"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Allows you to enable wakeup gesture.",
+						default:'$WUG',
+						action:"generic /sys/devices/virtual/input/clearpad/wakeup_gesture"
 					}},'
 			fi`
 		]
