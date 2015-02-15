@@ -3,7 +3,12 @@ cat << CTAG
 	name:SOUND,
 		elements:[
 			`if [ -d "/sys/kernel/sound_control_3" ]; then
-				$BB echo '{ SPane:{
+				$BB echo '{ SLiveLabel:{
+					refresh:0,
+					style:italic,
+					action:"$BB echo FauxSound \`$BB cat /sys/kernel/sound_control_3/gpl_sound_control_version\`"
+				}},
+				{ SPane:{
 						title:"Sound Profiles",
 						description:"After you apply a profile, turn audio Off/On to update. Select custom profile if you set controls manually."
 					}},
