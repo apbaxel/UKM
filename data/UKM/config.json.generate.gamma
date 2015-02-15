@@ -456,6 +456,14 @@ cat << CTAG
 						action:"generic /sys/devices/virtual/graphics/fb0/sre"
 					}},'
 				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_invert" ]; then
+				KCALINV=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_invert\`;
+					$BB echo '{ SCheckBox:{
+						label:"KCAL inverted colors",
+						default:'$KCALINV',
+						action:"generic /sys/devices/platform/kcal_ctrl.0/kcal_invert"
+					}},'
+				fi
 				if [ -f "/sys/devices/virtual/graphics/fb0/gamma" ]; then
 				GAMMAOPO=\`$BB cat /sys/devices/virtual/graphics/fb0/gamma\`;
 					$BB echo '{ SSeekBar:{
