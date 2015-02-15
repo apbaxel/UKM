@@ -37,6 +37,15 @@ cat << CTAG
 					values:[ Enforcing, Permissive
 					],
 				}},
+			`if [ -f "/sys/module/selinux/parameters/force_audit" ]; then
+				FAUDIT=\`bool /sys/module/selinux/parameters/force_audit\`;
+					$BB echo '{ SCheckBox:{
+						label:"Force Audit",
+						description:"Enable for debugging SELinux driver.",
+						default:'$FAUDIT',
+						action:"boolean /sys/module/selinux/parameters/force_audit"
+					}},'
+			fi`
 			`if [ 1 == 1 ]; then
 				DB=/data/data/com.android.providers.settings/databases;
 				cd $DB;
@@ -73,8 +82,8 @@ cat << CTAG
 				`if [ -f "/sys/module/logger/parameters/enabled" ]; then
 				LOGMODE=\`$BB cat /sys/module/logger/parameters/enabled\`
 					$BB echo '{ SOptionList:{
-						title:"Log Mode",
-						description:"Allows you to toggle the log mode.",
+						title:"Logcat Mode",
+						description:"Allows you to toggle the logcat mode.",
 						default:'$LOGMODE',
 						action:"generic /sys/module/logger/parameters/enabled",
 						values:{
