@@ -15,7 +15,7 @@ cat << CTAG
 					description:"Created by <a href='http://forum.xda-developers.com/member.php?u=5658634'>apb_axel</a>."
 				}},
 				{ SDescription:{
-					description:"Version 3.6.1"
+					description:"Version 3.7"
 				}},
 				{ SDescription:{
 					description:"XDA Link: <a href='http://forum.xda-developers.com/android/software/zip-synapse-script-universal-kernel-t2736986'>HERE</a>"
@@ -92,13 +92,13 @@ cat << CTAG
 					description:"ACPU PVS:`$BB cat $UKM/debug/pvs_bin`"
 				}},
 				{ SDescription:{
-					description:"Values: 1 (Slow), 2 (Nominal), 3 (Fast), 4 (Faster). The higher the binning, the lower voltages your device can run."
+					description:"The higher value of the binning, the lower voltages your device can run."
 				}},
 				{ SDescription:{
 					description:"SPEED BIN:`$BB cat $UKM/debug/speed_bin`"
 				}},
 				{ SDescription:{
-					description:"Values: from 0 (Lowest) to 14 (Higher). The higher the speed, the higher frequencies your device can run (greater than 1512 MHz)."
+					description:"The higher value of the speed, the higher frequencies your device can run."
 				}},
 			{ STitleBar:{
 				title:{
