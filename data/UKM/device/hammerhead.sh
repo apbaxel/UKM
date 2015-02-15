@@ -146,6 +146,9 @@ case "$1" in
 	HasTamperFlag)
 		$BB echo "1";
 	;;
+	HeadphonePAValue)
+		$BB echo "38";
+	;;
 	IOSchedulerList)
 		for IOSCHED in `$BB cat /sys/block/mmcblk0/queue/scheduler | $BB sed -e 's/\]//;s/\[//'`; do
 			$BB echo "\"$IOSCHED\",";
