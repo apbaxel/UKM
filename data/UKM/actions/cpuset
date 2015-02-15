@@ -7,7 +7,7 @@ if [ -f $1 ]; then
 	$BB test $PERM -lt "664" && $BB chmod 664 $1 2> /dev/null;
 	
 	if [[ ! -z $2 ]]; then
-		$BB echo $2 > $1;
+		$BB echo $2 > $1 2> /dev/null;
 		
 		$BB test "$1" = "`sh $DEVICE DirCPUMinFrequency`" && sh $DEVICE SetCPUMinFrequency $2 2> /dev/null;
 		$BB test "$1" = "`sh $DEVICE DirCPUMaxFrequency`" && sh $DEVICE SetCPUMaxFrequency $2 2> /dev/null;

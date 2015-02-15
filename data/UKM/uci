@@ -41,7 +41,7 @@ if [ ! -f $UCI_CONFIG ]; then
 	fi
 	
 	if [ ! -f $DEBUG/last_kmsg ]; then
-		LAST_KMSG=`$BB tail -n 1 /proc/last_kmsg`;
+		LAST_KMSG=`$BB tail -n 1 /proc/last_kmsg 2> /dev/null`;
 		$BB echo $LAST_KMSG > $DEBUG/last_kmsg;
 	fi
 	
