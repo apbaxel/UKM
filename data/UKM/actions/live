@@ -19,7 +19,7 @@ case $1 in
 		$BB echo `sh $DEVICE LiveGPUFrequency`;
 	;;
 	InstallationCheck)
-		$BB echo `if [ ! -f "/system/etc/init.d/UKM" ]; then $BB echo "UKM file missing in init.d"; else $BB echo "All checks OK"; fi`;
+		$BB echo `if [ ! -f "/system/etc/init.d/UKM" ]; then $BB echo "UKM file missing in init.d"; elif [ ! -f "/system/addon.d/UKM.sh" ]; then $BB echo "UKM.sh file missing in addon.d"; else $BB echo "All checks OK"; fi`;
 	;;
 	Memory)
 		$BB echo `sh $DEVICE LiveMemory`;

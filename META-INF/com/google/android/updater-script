@@ -15,21 +15,24 @@ set_progress(0.100000);
 
 ui_print("Deleting old files...");
 delete_recursive("/data/N4UKM", "/data/UKM");
-delete("/system/etc/init.d/N4UKM", "/system/etc/init.d/UKM", "/system/etc/init.d/UKM_WAKE", "/system/xbin/uci");
+delete("/system/etc/init.d/N4UKM", "/system/etc/init.d/UKM", "/system/etc/init.d/UKM_WAKE", "/system/xbin/uci", "/system/addon.d/UKM.sh");
 set_progress(0.300000);
 
 ui_print("Extracting files...");
 package_extract_dir("data", "/data");
 run_program("/sbin/sh", "-c", "mkdir /system/etc/init.d");
+run_program("/sbin/sh", "-c", "mkdir /system/addon.d");
 set_perm_recursive(0, 0, 0755, 0755, "/system/etc/init.d");
-package_extract_file("data/UKM/UKM", "/system/etc/init.d/UKM");
 package_extract_file("data/UKM/uci", "/system/xbin/uci");
+package_extract_file("data/UKM/UKM", "/system/etc/init.d/UKM");
+package_extract_file("data/UKM/UKM.sh", "/system/addon.d/UKM.sh");
 set_progress(0.500000);
 
 ui_print("Setting permissions...");
 set_perm_recursive(0, 0, 0755, 0755, "/data/UKM");
-set_perm(0, 0, 0755, "/system/etc/init.d/UKM");
 set_perm(0, 0, 0755, "/system/xbin/uci");
+set_perm(0, 0, 0755, "/system/etc/init.d/UKM");
+set_perm(0, 0, 0755, "/system/addon.d/UKM.sh");
 set_progress(0.700000);
 
 # Unmounting filesystems...
