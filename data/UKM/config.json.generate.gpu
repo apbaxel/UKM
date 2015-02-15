@@ -51,29 +51,42 @@ cat << CTAG
 						]
 					}},'
 			fi`
-			`if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ] || [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
+			`SGA=/sys/module/msm_kgsl_core/parameters;
+			if [ -f "$SGA/simple_laziness" ] || [ -f "$SGA/simple_ramp_threshold" ] || [ -d "/sys/module/simple_gpu_algorithm/parameters" ]; then
+
+			[ -d "/sys/module/simple_gpu_algorithm/parameters" ] && SGA=/sys/module/simple_gpu_algorithm/parameters;
+			
 				$BB echo '{ SPane:{
 					title:"Simple Governor Tunables"
 				}},'
-				if [ -f "/sys/module/msm_kgsl_core/parameters/simple_laziness" ]; then
-					LAZ=\`$BB cat /sys/module/msm_kgsl_core/parameters/simple_laziness\`
+				if [ -f "$SGA/simple_gpu_activate" ]; then
+					SIMPLE=\`$BB cat $SGA/simple_gpu_activate\`
+					$BB echo '{ SCheckBox:{
+						label:"Enable",
+						description:"An add-on for MSM Adreno TZ GPU Governor. Developed by faux123.",
+						default:'$SIMPLE',
+						action:"generic '$SGA'/simple_gpu_activate"
+					}},'
+				fi
+				if [ -f "$SGA/simple_laziness" ]; then
+					LAZ=\`$BB cat $SGA/simple_laziness\`
 					$BB echo '{ SSeekBar:{
 						title:"Laziness",
 						description:"Adjusts the number of times the governor skips ramp down requests. Higher = better performance (more battery drain).",
 						default:'$LAZ',
-						action:"generic /sys/module/msm_kgsl_core/parameters/simple_laziness",
+						action:"generic '$SGA'/simple_laziness",
 						min:0,
 						max:10,
 						step:1
 					}},'
 				fi
-				if [ -f "/sys/module/msm_kgsl_core/parameters/simple_ramp_threshold" ]; then
-					RAMP=\`$BB cat /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold\`
+				if [ -f "$SGA/simple_ramp_threshold" ]; then
+					RAMP=\`$BB cat $SGA/simple_ramp_threshold\`
 					$BB echo '{ SSeekBar:{
 						title:"Ramp Threshold",
 						description:"Adjusts the threshold to ramp up or down GPU frequencies. Lower = better performance (more battery drain).",
 						default:'$RAMP',
-						action:"generic /sys/module/msm_kgsl_core/parameters/simple_ramp_threshold",
+						action:"generic '$SGA'/simple_ramp_threshold",
 						min:0,
 						max:10000,
 						step:1000
