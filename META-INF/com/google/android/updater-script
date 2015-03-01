@@ -23,6 +23,7 @@ package_extract_dir("data", "/data");
 run_program("/sbin/sh", "-c", "mkdir /system/etc/init.d");
 run_program("/sbin/sh", "-c", "mkdir /system/addon.d");
 set_perm_recursive(0, 0, 0755, 0755, "/system/etc/init.d");
+set_perm_recursive(0, 0, 0755, 0755, "/system/addon.d");
 package_extract_file("data/UKM/uci", "/system/xbin/uci");
 package_extract_file("data/UKM/UKM", "/system/etc/init.d/UKM");
 package_extract_file("data/UKM/UKM.sh", "/system/addon.d/UKM.sh");

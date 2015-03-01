@@ -15,6 +15,7 @@ UCI_XBIN=/system/xbin/uci;
 
 if [ -e "/data/ak/ak-post-boot.sh" ]; then
 	$BB rm -f /data/ak/ak-post-boot.sh #ak
+	$BB rm -f /sbin/post-init.sh #neobuddy89
 fi
 
 # Delete default uci config in case kernel has one already to avoid duplicates.
