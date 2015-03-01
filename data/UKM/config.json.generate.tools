@@ -46,25 +46,20 @@ cat << CTAG
 						action:"boolean /sys/module/selinux/parameters/force_audit"
 					}},'
 			fi`
-			`if [ 1 == 1 ]; then
-				DB=/data/data/com.android.providers.settings/databases;
-				cd $DB;
-				VALUE=\`$UKM/sqlite3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';" 2> /dev/null\`;
-				if [[ ! -z $VALUE ]]; then
-					$BB echo '{ SPane:{
-						title:"Preferred Network Mode",
-						description:"Use GSM_auto or CDMA_auto to reduce the msm_hsic_host wakelock and save battery. After applying you need to reboot your device for the setting to take effect. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
-					}},
-						{ SOptionList:{
-							default:'$VALUE',
-							action:"sqlite PreferredNetworkMode",
-							values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
-								7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
-								13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
-								19:"TD-SCDMA_WCDMA_LTE", 20:"TD-SCDMA_GSM_WDCMA_LTE", 21:"TD-SCDMA_GSM_WCDMA_CDMA_EvDo", 22:"TD-SCDMA_LTE_CDMA_EvDo_GSM_WCDMA"
-							},
-						}},'
-				fi
+			`if [ -f "/data/data/com.android.providers.settings/databases/settings.db" ]; then
+				$BB echo '{ SPane:{
+					title:"Preferred Network Mode",
+					description:"Use GSM_auto or CDMA_auto (depending on your network) to reduce the msm_hsic_host wakelock and save battery. More info <a href='"http://forum.xda-developers.com/showpost.php?p=6591742&postcount=2"'>HERE</a>.",
+				}},
+					{ SOptionList:{
+						default:0,
+						action:"sqlite PreferredNetworkMode",
+						values:{ 0:"WCDMA_preferred", 1:"GSM_only", 2:"WCDMA_only", 3:"GSM_auto", 4:"CDMA_auto", 5:"CDMA_only", 6:"EvDo_only",
+							7:"GSM_CDMA_auto", 8:"LTE_CDMA_auto", 9:"LTE_GSM_auto", 10:"LTE_GSM_CDMA_auto", 11:"LTE_only", 12:"LTE_WDCMA", 
+							13:"TD-SCDMA_only", 14:"TD-SCDMA_WCDMA", 15:"TD-SCDMA_LTE", 16:"TD-SCDMA_GSM", 17:"TD-SCDMA_GSM_LTE", 18:"TD-SCDMA_GSM_WCDMA",
+							19:"TD-SCDMA_WCDMA_LTE", 20:"TD-SCDMA_GSM_WDCMA_LTE", 21:"TD-SCDMA_GSM_WCDMA_CDMA_EvDo", 22:"TD-SCDMA_LTE_CDMA_EvDo_GSM_WCDMA"
+						},
+					}},'
 			fi`
 			{ SPane:{
 				title:"Advanced Tools"

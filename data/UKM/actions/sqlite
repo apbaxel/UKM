@@ -46,13 +46,15 @@ EOF
 	;;
 	PreferredNetworkMode)
 		DB=/data/data/com.android.providers.settings/databases;
+		cd $DB;
 
 		if [[ ! -z $2 ]]; then
-			cd $DB;
 			$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);";
+			#$SQL3 settings.db "UPDATE global/secure SET value = $2 WHERE name = 'preferred_network_mode';";
+			$BB killall com.android.phone
 		fi;
 
-		cd $DB;
-		$BB echo `$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';"`;
+		VALUE=`$SQL3 settings.db "SELECT value FROM global WHERE name = 'preferred_network_mode';" 2> /dev/null`;
+		if [[ ! -z $VALUE ]]; then $BB echo $VALUE; else $BB echo "0"; fi;
 	;;
 esac;
