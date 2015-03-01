@@ -339,6 +339,18 @@ cat << CTAG
 					}},'
 				fi
 			fi`
+			`if [ -f "/sys/module/wakeup/parameters/enable_msm_hsic_ws" ]; then
+			MHH=\`bool /sys/module/wakeup/parameters/enable_msm_hsic_ws\`;
+				$BB echo '{ SPane:{
+					title:"Msm_hsic_host wakelock",
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"Enable/Disable msm_hsic_host wakelock.",
+						default:'$MHH',
+						action:"boolean /sys/module/wakeup/parameters/enable_msm_hsic_ws"
+					}},'
+			fi`
 		]
 }
 CTAG
