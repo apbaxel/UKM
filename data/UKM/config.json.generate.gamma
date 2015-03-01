@@ -3,6 +3,18 @@ cat << CTAG
 	name:GAMMA,
 		elements:[
 			`if [ -d "/sys/devices/platform/kcal_ctrl.0" ]; then
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_enable" ]; then
+				KCALE=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_enable\`;
+					$BB echo '{ SPane:{
+						title:"KCAL",
+					}},
+						{ SCheckBox:{
+							label:"Enable",
+							description:"Enables/Disables RGB Multiplier Control",
+							default:'$KCALE',
+							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_enable",
+						}},'
+				fi
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal" ]; then
 				KCAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal\`;
 					$BB echo '{ SPane:{
@@ -10,21 +22,79 @@ cat << CTAG
 					}},
 						{ SGeneric:{
 							title:"KCAL",
+							description:"Controls R/G/B Multipliers",
 							default:'$KCAL',
 							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal",
 						}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_invert" ]; then
+				KCALINV=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_invert\`;
+					$BB echo '{ SCheckBox:{
+						label:"KCAL inverted colors",
+						description:"Enables/Disables Display Inversion Mode",
+						default:'$KCALINV',
+						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_invert"
+					}},'
 				fi
 				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_min" ]; then
 				KM=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_min\`
 						$BB echo '{ SSeekBar:{
 							title:"KCAL Min",
-							description:"Used to block and reset values in kcal that are lower this option.",
+							description:"Controls minimum RGB Multiplier value.",
 							min:0,
 							max:255,
 							step:1,
 							default:'$KM',
 							action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_min"
 						}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_cont" ]; then
+				KCALCONT=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_cont\`;
+					$BB echo '{ SSeekBar:{
+						title:"Contrast",
+						description:"Controls display contrast.",
+						min:128,
+						max:383,
+						step:1,
+						default:'$KCALCONT',
+						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_cont",
+					}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_hue" ]; then
+				KCALHUE=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_hue\`;
+					$BB echo '{ SSeekBar:{
+						title:"Hue",
+						description:"Controls display hue.",
+						min:0,
+						max:1536,
+						step:1,
+						default:'$KCALHUE',
+						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_hue",
+					}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_sat" ]; then
+				KCALSAT=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_sat\`;
+					$BB echo '{ SSeekBar:{
+						title:"Saturation",
+						description:"Controls saturation intensity. Move slider all the way to the left for grayscale mode.",
+						min:128,
+						max:383,
+						step:1,
+						default:'$KCALSAT',
+						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_sat",
+					}},'
+				fi
+				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_val" ]; then
+				KCALVAL=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_val\`;
+					$BB echo '{ SSeekBar:{
+						title:"Value",
+						description:"Controls display value.",
+						min:128,
+						max:383,
+						step:1,
+						default:'$KCALVAL',
+						action:"gamma /sys/devices/platform/kcal_ctrl.0/kcal_val",
+					}},'
 				fi
 			fi`
 			`if [ -f "/sys/devices/platform/mipi_lgit.1537/kgamma_b" ]; then
@@ -454,14 +524,6 @@ cat << CTAG
 						label:"Sunlight readability enhancement",
 						default:'$SRE',
 						action:"generic /sys/devices/virtual/graphics/fb0/sre"
-					}},'
-				fi
-				if [ -f "/sys/devices/platform/kcal_ctrl.0/kcal_invert" ]; then
-				KCALINV=\`$BB cat /sys/devices/platform/kcal_ctrl.0/kcal_invert\`;
-					$BB echo '{ SCheckBox:{
-						label:"KCAL inverted colors",
-						default:'$KCALINV',
-						action:"generic /sys/devices/platform/kcal_ctrl.0/kcal_invert"
 					}},'
 				fi
 				if [ -f "/sys/devices/virtual/graphics/fb0/gamma" ]; then
