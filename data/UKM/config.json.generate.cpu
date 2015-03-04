@@ -1,5 +1,5 @@
-[ -d "/sys/kernel/msm_limiter" ] && LIMITER=/sys/kernel/msm_limiter;
-[ -d "/sys/module/msm_limiter" ] && LIMITER=/sys/module/msm_limiter;
+[ -f "/sys/kernel/msm_limiter/suspend_min_freq_0" ] && LIMITER=/sys/kernel/msm_limiter;
+[ -f "/sys/module/msm_limiter/suspend_min_freq_0" ] && LIMITER=/sys/module/msm_limiter;
 
 cat << CTAG
 {
@@ -303,6 +303,15 @@ cat << CTAG
 							description:"An in kernel replacement for Qualcomms MPDecision. Developed by Cyanogenmod.",
 							default:'$CPUBOOST',
 							action:"generic /sys/module/cpu_boost/parameters/cpu_boost"
+						}},'
+					fi
+					if [ -f "/sys/module/cpu_boost/parameters/cpuboost_enable" ]; then
+					CPUBOOSTE=\`bool /sys/module/cpu_boost/parameters/cpuboost_enable\`;
+						$BB echo '{ SCheckBox:{
+							label:"Enable",
+							description:"Enable/Disable CPU Boost",
+							default:'$CPUBOOSTE',
+							action:"boolean /sys/module/cpu_boost/parameters/cpuboost_enable"
 						}},'
 					fi
 					if [ -f "/sys/module/cpu_boost/parameters/debug_mask" ]; then
