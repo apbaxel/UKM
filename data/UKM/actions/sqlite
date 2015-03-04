@@ -1,6 +1,6 @@
 UKM=/data/UKM;
 BB=$UKM/busybox;
-SQL3=$UKM/sqlite3;
+if [ -f "/system/xbin/sqlite3" ]; then SQL3=/system/xbin/sqlite3; else SQL3=$UKM/sqlite3; fi;
 
 SYNAPSE_SD_DIR=/sdcard/Synapse;
 SYNAPSE_CONFIG_DIR=$SYNAPSE_SD_DIR/saved_configs;
@@ -49,7 +49,7 @@ EOF
 		cd $DB;
 
 		if [[ ! -z $2 ]]; then
-			$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);";
+			$SQL3 settings.db "INSERT INTO global VALUES(null, 'preferred_network_mode', $2);" 2> /dev/null;
 			#$SQL3 settings.db "UPDATE global/secure SET value = $2 WHERE name = 'preferred_network_mode';";
 			$BB killall com.android.phone
 		fi;
