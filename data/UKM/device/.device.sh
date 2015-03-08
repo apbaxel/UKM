@@ -28,8 +28,10 @@ case $DEVICE in
 			#togari|C68xx = Sony Xperia Z Ultra, shamu = Nexus 6, , d2* = Samsung Galaxy S3, jflte* = Samsung Galaxy S4, klte* = Samsung Galaxy S5
 	grouper|tilapia)
 		CONFIG="deb";; #Nexus 7 2012
-	falcon*|peregrine*|sirius|D65??|titan*)
-		CONFIG="bacon";; #falcon* = Moto G 2013, peregrine* = Moto G 4G 2013, sirius|D65xx = Sony Xperia Z2, titan* = Moto G 2014
+	falcon*|peregrine*|titan*)
+		CONFIG="bacon";; #falcon* = Moto G 2013, peregrine* = Moto G 4G 2013, titan* = Moto G 2014
+	sirius|D65??|leo|D66??|Z3|aries|D58??|Z3C)
+		CONFIG="shinano";; #sirius|D65xx = Sony Xperia Z2, leo|D66??|Z3 = Sony Xperia Z3, aries|D58??|Z3C = Sony Xperia Z3 Compact
 	*)
 		CONFIG="";; #Not defined
 esac;
