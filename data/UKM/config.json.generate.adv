@@ -140,6 +140,56 @@ cat << CTAG
 						action:"generic /sys/kernel/mm/uksm/max_cpu_percentage"
 					}},'
 			fi`
+			`if [ -f "/sys/kernel/mm/pksm/run" ]; then
+			PKSM=\`$BB cat /sys/kernel/mm/pksm/run\`
+			PTS=\`$BB cat /sys/kernel/mm/pksm/pages_to_scan\`
+			PS=\`$BB cat /sys/kernel/mm/pksm/period_seconds\`
+			SLEEP=\`$BB cat /sys/kernel/mm/pksm/sleep_millisecs\`
+			DFT=\`$BB cat /sys/kernel/mm/pksm/deferred_timer\`
+					$BB echo '{ SPane:{
+					title:"Anon-Page KSM"
+				}},
+					{ SCheckBox:{
+						label:"Enable",
+						description:"a new algorithm and mechanism that it directly handle the Anon-pages that it was created/freed by the linux kernel. It is no need to waster CPU time to traversing all of the VMA areas to find valid anon-pages",
+						default:'$PKSM',
+						action:"generic /sys/kernel/mm/pksm/run"
+					}},
+					{ SSeekBar:{
+						title:"Sleep",
+						description:"How long will the daemon sleep before it wakes up and starts scanning memory pages.",
+						unit:" ms",
+						step:10,
+						min:10,
+						max:500,
+						default:'$SLEEP',
+						action:"generic /sys/kernel/mm/pksm/sleep_millisecs"
+					}},
+					{ SSeekBar:{
+						title:"Pages To Scan",
+						unit:" pages",
+						step:5,
+						min:10,
+						max:2000,
+						default:'$PTS',
+						action:"generic /sys/kernel/mm/pksm/pages_to_scan"
+					}},
+					{ SSeekBar:{
+						title:"Period (in seconds)",
+						unit:" s",
+						step:10,
+						min:10,
+						max:2000,
+						default:'$PS',
+						action:"generic /sys/kernel/mm/pksm/period_seconds"
+					}},
+					{ SCheckBox:{
+						label:"Use deferred time",
+						description:"Allows the PKSM to scan pages in a delayed time",
+						default:'$DFT',
+						action:"generic /sys/kernel/mm/pksm/deferred_timer"
+					}},'
+			fi`
 			`if [ -f "/sys/kernel/sched/gentle_fair_sleepers" ]; then
 			GFS=\`$BB cat /sys/kernel/sched/gentle_fair_sleepers\`
 			
